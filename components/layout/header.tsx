@@ -29,7 +29,7 @@ export function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6">
+        <div className="hidden lg:flex items-center space-x-6">
           {navigation.map((item) => (
             <Link
               key={item.name}
@@ -42,7 +42,12 @@ export function Header() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Button asChild className="hidden sm:inline-flex">
+          <Button asChild className="hidden lg:inline-flex">
+            <Link href="#reservar">Reservar sesión</Link>
+          </Button>
+
+          {/* Mobile CTA visible under 1024px */}
+          <Button asChild size="sm" className="inline-flex lg:hidden">
             <Link href="#reservar">Reservar sesión</Link>
           </Button>
 
@@ -50,7 +55,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="sm"
-            className="md:hidden"
+            className="lg:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -60,7 +65,7 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="absolute top-16 left-0 right-0 bg-background border-b border-border md:hidden">
+          <div className="absolute top-16 left-0 right-0 bg-background border-b border-border lg:hidden">
             <div className="container mx-auto px-4 py-4 space-y-4">
               {navigation.map((item) => (
                 <Link
