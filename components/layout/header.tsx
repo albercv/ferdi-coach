@@ -18,7 +18,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <nav className="container flex h-16 items-center justify-between px-4" aria-label="principal">
+      <nav className="container mx-auto flex h-16 items-center justify-between px-4" aria-label="principal">
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
             <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center">
@@ -61,7 +61,7 @@ export function Header() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="absolute top-16 left-0 right-0 bg-background border-b border-border md:hidden">
-            <div className="container px-4 py-4 space-y-4">
+            <div className="container mx-auto px-4 py-4 space-y-4">
               {navigation.map((item) => (
                 <Link
                   key={item.name}

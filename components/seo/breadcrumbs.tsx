@@ -8,7 +8,7 @@ export function PageBreadcrumbs({ items }: PageBreadcrumbsProps) {
   const breadcrumbItems = [{ name: "Inicio", href: "/" }, ...items]
 
   return (
-    <div className="container px-4 py-4">
+    <div className="container mx-auto px-4 py-4">
       <Breadcrumb items={breadcrumbItems} />
     </div>
   )
