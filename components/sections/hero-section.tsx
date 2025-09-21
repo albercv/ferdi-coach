@@ -9,6 +9,11 @@ export function HeroSection() {
 
   return (
     <Section id="hero" aria-labelledby="hero-title" className="pt-8 pb-16 md:pt-16 md:pb-24 relative overflow-hidden">
+      {/* Círculo pulsante posicionado como fondo en móviles y a la derecha en pantallas grandes */}
+      <Progressive3D
+        className="absolute pointer-events-none -z-10 top-6 right-[-18px] w-40 h-40 sm:w-52 sm:h-52 md:w-60 md:h-60 lg:w-[420px] lg:h-[420px] lg:top-8 lg:right-10 xl:w-[480px] xl:h-[480px]"
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-8 animate-fade-in-up">
           <div className="space-y-4">
@@ -39,9 +44,8 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="relative">
-          <Progressive3D className="aspect-square" />
-        </div>
+        {/* Reservamos espacio de la segunda columna en desktop sin contenido explícito */}
+        <div className="hidden lg:block" aria-hidden="true" />
       </div>
     </Section>
   )
