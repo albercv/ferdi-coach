@@ -1,6 +1,7 @@
 import { Section } from "@/components/ui/section"
 import { TestimonialCard } from "@/components/ui/testimonial-card"
 import { siteContent } from "@/data/content"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 
 export function TestimonialsSection() {
   const { testimonials } = siteContent
@@ -16,16 +17,23 @@ export function TestimonialsSection() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-        {testimonials.map((testimonial, index) => (
-          <TestimonialCard
-            key={index}
-            name={testimonial.name}
-            age={testimonial.age}
-            text={testimonial.text}
-            rating={testimonial.rating}
-          />
-        ))}
+      <div className="relative max-w-5xl mx-auto">
+        <Carousel opts={{ align: "start", loop: true }} className="w-full">
+          <CarouselContent>
+            {testimonials.map((testimonial, index) => (
+              <CarouselItem key={index} className="basis-full md:basis-1/2 lg:basis-1/3">
+                <TestimonialCard
+                  name={testimonial.name}
+                  age={testimonial.age}
+                  text={testimonial.text}
+                  rating={testimonial.rating}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="top-1/2 -left-6 md:-left-10" aria-label="Testimonio anterior" />
+          <CarouselNext className="top-1/2 -right-6 md:-right-10" aria-label="Siguiente testimonio" />
+        </Carousel>
       </div>
     </Section>
   )

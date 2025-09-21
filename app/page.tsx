@@ -22,6 +22,9 @@ export default function HomePage() {
       <PageBreadcrumbs items={[{ name: "Coach del desamor" }]} />
       <main id="main-content">
         <HeroSection />
+        <LazyLoad>
+          <TestimonialsSection />
+        </LazyLoad>
         <ForWhoSection />
         <SessionsSection />
         <ProgramSection />

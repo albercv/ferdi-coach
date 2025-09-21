@@ -1,13 +1,12 @@
 export const siteContent = {
   hero: {
-    title: "Supera tu ruptura y recupera tu bienestar emocional",
+    title: "Del adiós al RENACER. Tu nuevo YO",
     subtitle:
-      "Coach especializado en procesos de desamor. Te acompaño paso a paso para que salgas fortalecido de esta experiencia.",
+      "Te acompaño a transformar el dolor de tu ruptura en crecimiento personal y libertad.",
     bullets: [
-      "Sesiones personalizadas 1 a 1",
-      "Programa estructurado de 4 semanas",
-      "Herramientas prácticas para el día a día",
-      "Apoyo continuo en tu proceso",
+      "Herramientas que me ayudaron y que ahora comparto contigo.",
+      "Acompañamiento cercano, sin juicios, con pasos concretos.",
+      "Metodología cercana y realista adaptada a tus necesidades personales.",
     ],
     ctaPrimary: "Reservar sesión gratuita",
     ctaSecondary: "Ver Programa 4",
@@ -88,7 +87,7 @@ export const siteContent = {
     },
     {
       title: "Kit de Emergencia Emocional",
-      description: "Herramientas rápidas para momentos de crisis y recaídas emocionales",
+      description: "Herramientas rápidas para momentos de Crisis y recaídas emocionales",
       price: "19€",
     },
   ],

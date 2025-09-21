@@ -396,17 +396,29 @@
 
 @keyframes heart-beat {
   0% { transform: scale(1); }
-  10% { transform: scale(1.06); }
-  20% { transform: scale(1); }
-  30% { transform: scale(1.08); }
-  40% { transform: scale(1); }
+  12% { transform: scale(1.08); }
+  22% { transform: scale(1); }
+  42% { transform: scale(1.06); }
+  52% { transform: scale(1); }
   100% { transform: scale(1); }
 }
 
-@keyframes ring-out {
-  0% { transform: scale(1); opacity: 0.25; }
-  70% { transform: scale(1.35); opacity: 0.06; }
-  100% { transform: scale(1.45); opacity: 0; }
+@keyframes heart-brightness {
+  0% { filter: saturate(1) brightness(1); }
+  12% { filter: saturate(1.2) brightness(1.15); }
+  22% { filter: saturate(1.02) brightness(1.02); }
+  42% { filter: saturate(1.15) brightness(1.12); }
+  52% { filter: saturate(1) brightness(1); }
+  100% { filter: saturate(1) brightness(1); }
+}
+
+@keyframes ring-breathe {
+  0% { transform: scale(0.95); opacity: 0.18; }
+  12% { transform: scale(1.2); opacity: 0.14; }
+  22% { transform: scale(0.98); opacity: 0.12; }
+  42% { transform: scale(1.15); opacity: 0.14; }
+  60% { transform: scale(0.98); opacity: 0.1; }
+  100% { transform: scale(0.95); opacity: 0.08; }
 }
 
 @layer utilities {
@@ -419,33 +431,54 @@
 
     position: relative;
     border-radius: 9999px;
+    will-change: transform, filter;
     background:
       radial-gradient(circle at 35% 30%, var(--pulse-1) 0%, var(--pulse-2) 40%, var(--pulse-3) 70%, var(--pulse-4) 100%);
     box-shadow:
       0 22px 40px rgba(255, 77, 109, 0.28),
       inset 0 8px 16px rgba(255, 255, 255, 0.25),
       inset 0 -10px 16px rgba(0, 0, 0, 0.05);
-    animation: heart-beat 1.8s ease-out infinite;
+    animation: heart-beat 2.4s ease-out infinite, heart-brightness 2.4s ease-out infinite;
+  }
+  .pulse-circle::before {
+    content: "";
+    position: absolute;
+    inset: -6%;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 50%, rgba(255,77,109,0.55) 0%, rgba(255,77,109,0.28) 35%, rgba(255,77,109,0) 60%);
+    opacity: 0;
+    transform: scale(0.95);
+    filter: blur(1px);
+    will-change: transform, opacity;
+    animation: glow-flash 2.4s ease-out infinite;
+    pointer-events: none;
   }
   .pulse-circle::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: radial-gradient(circle, rgba(255, 77, 109, 0.18) 0%, rgba(255, 77, 109, 0.05) 55%, rgba(255, 77, 109, 0) 70%);
-    animation: ring-out 1.8s ease-out infinite;
+    background: radial-gradient(circle, rgba(255,77,109,0) 58%, rgba(255, 77, 109, 0.22) 66%, rgba(255, 77, 109, 0.08) 78%, rgba(255,77,109,0) 90%);
+    will-change: transform, opacity;
+    animation: ring-breathe 2.4s ease-in-out infinite;
+    pointer-events: none;
   }
+}
 
-  /* Fondo rosa del header acompasado al círculo */
-  .header-hero-bg {
-    background:
-      radial-gradient(800px 500px at 80% 0%, rgba(255, 143, 163, 0.18) 0%, rgba(255, 143, 163, 0.08) 55%, rgba(255, 143, 163, 0) 80%),
-      linear-gradient(180deg, #ffffff 0%, #fff7f9 100%);
-  }
+@keyframes glow-flash {
+  0% { opacity: 0; transform: scale(0.95); }
+  12% { opacity: 0.5; transform: scale(1.05); }
+  22% { opacity: 0.12; transform: scale(0.98); }
+  42% { opacity: 0.42; transform: scale(1.03); }
+  60% { opacity: 0.1; transform: scale(0.98); }
+  100% { opacity: 0; transform: scale(0.95); }
+}
 
-  @media (prefers-reduced-motion: reduce) {
-    .pulse-circle { animation: none; }
-    .pulse-circle::after { animation: none; opacity: 0.12; }
+@media (prefers-reduced-motion: reduce) {
+  @layer utilities {
+    .pulse-circle { animation: none; filter: none; }
+    .pulse-circle::before { animation: none; opacity: 0.18; transform: none; }
+    .pulse-circle::after { animation: none; opacity: 0.12; transform: none; }
   }
 }
 
