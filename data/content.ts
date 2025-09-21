@@ -14,14 +14,14 @@ export const siteContent = {
   },
 
   forWho: {
-    title: "¿Te sientes identificado?",
-    situations: [
-      "Acabas de terminar una relación y no sabes cómo seguir adelante",
-      "Llevas meses sin superar a tu ex pareja",
-      "Te cuesta mantener el contacto cero",
-      "Sientes dependencia emocional hacia tu ex",
-      "Quieres recuperar tu autoestima y confianza",
-      "Necesitas herramientas para gestionar el duelo",
+    title: "¿Estás viviendo alguna de estas situaciones?",
+    subtitle:
+      "Si te identificas con alguna de estas experiencias, mi método puede ayudarte a transformar tu dolor en crecimiento personal",
+    cards: [
+      { title: "Ruptura reciente", description: "Tu relación ha terminado y sientes que no puedes seguir adelante", icon: "heart-crack" },
+      { title: "Duelo prolongado", description: "Han pasado meses y sigues sin poder superarlo completamente", icon: "clock" },
+      { title: "Dependencia emocional", description: "Reconoces patrones tóxicos que se repiten en tus relaciones", icon: "users" },
+      { title: "Contacto cero fallido", description: "Has intentado aplicar contacto cero pero recaes constantemente", icon: "target" }
     ],
   },
 
