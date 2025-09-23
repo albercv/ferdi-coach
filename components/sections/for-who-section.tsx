@@ -61,7 +61,7 @@ export function ForWhoSection() {
           className="lg:hidden pointer-events-none absolute left-1/2 top-8 -z-10 transform-gpu"
           style={{ transform: `translate(-50%, ${Math.round(progress * distance)}px)` }}
         >
-          <Progressive3D className="opacity-90 w-40 h-40 sm:w-48 sm:h-48" />
+          <Progressive3D className="opacity-100 w-40 h-40 sm:w-48 sm:h-48" />
         </div>
 
         <div className="text-center max-w-6xl mx-auto">
@@ -107,10 +107,10 @@ export function ForWhoSection() {
               </div>
             </div>
 
-            {/* Corazón (derecha) en desktop */}
-            <div className="hidden lg:block lg:col-span-5 relative">
-              <div className="sticky top-24 w-full flex justify-end">
-                <Progressive3D className="w-56 h-56 xl:w-64 xl:h-64 opacity-95" />
+            {/* Motivo (derecha) en desktop */}
+            <div className="hidden lg:block lg:col-span-5 relative self-center">
+              <div className="h-full w-full flex items-center justify-center">
+                <Progressive3D className="w-56 h-56 xl:w-64 xl:h-64 opacity-100" />
               </div>
             </div>
           </div>

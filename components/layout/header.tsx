@@ -42,12 +42,12 @@ export function Header() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Button asChild className="hidden lg:inline-flex">
+          <Button asChild className="hidden lg:inline-flex bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90">
             <Link href="#reservar">Reservar sesión</Link>
           </Button>
 
           {/* Mobile CTA visible under 1024px */}
-          <Button asChild size="sm" className="inline-flex lg:hidden">
+          <Button asChild size="sm" className="inline-flex lg:hidden bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90">
             <Link href="#reservar">Reservar sesión</Link>
           </Button>
 
@@ -77,7 +77,7 @@ export function Header() {
                   {item.name}
                 </Link>
               ))}
-              <Button asChild className="w-full">
+              <Button asChild className="w-full bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90">
                 <Link href="#reservar" onClick={() => setIsMenuOpen(false)}>
                   Reservar sesión
                 </Link>

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 
 // 2D Pulse Circle (fallback and primary render)
 function PulseCircle() {
@@ -11,6 +11,38 @@ function PulseCircle() {
         role="img"
         aria-label="Círculo pulsando como latido"
       />
+    </div>
+  )
+}
+
+// 2D Waveform (fallback and primary render)
+function Waveform() {
+  const pathRef = useRef<SVGPathElement>(null)
+  const [dash, setDash] = useState<number>(800) // fallback para longitud de trazo
+
+  useEffect(() => {
+    const el = pathRef.current
+    if (!el) return
+    const len = el.getTotalLength()
+    // Inicializa el trazo para efecto "se va dibujando"
+    setDash(len)
+  }, [])
+
+  return (
+    <div className="aspect-square flex items-center justify-center">
+      <svg
+        className="wave-svg"
+        viewBox="0 0 200 100"
+        role="img"
+        aria-label="Línea de crecimiento animada"
+      >
+        <path
+          ref={pathRef}
+          className="wave-path"
+          style={{ strokeDasharray: dash, strokeDashoffset: dash }}
+          d="M0 50 L20 50 L30 35 L35 65 L40 40 L45 60 L50 50 L70 50 L80 30 L85 70 L90 35 L95 65 L100 50 L120 50 L130 20 L135 80 L140 30 L145 70 L150 50 L170 50 L180 35 L185 65 L190 50 L200 50"
+        />
+      </svg>
     </div>
   )
 }
@@ -55,6 +87,6 @@ interface Progressive3DProps {
 }
 
 export function Progressive3D({ fallback, className = "aspect-square" }: Progressive3DProps) {
-  // Render único: círculo 2D que emite pulsos regulares
-  return <div className={className}>{fallback || <PulseCircle />}</div>
+  // Render único: motivo 2D tipo waveform (línea de crecimiento)
+  return <div className={className}>{fallback || <Waveform />}</div>
 }
