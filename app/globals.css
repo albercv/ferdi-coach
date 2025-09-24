@@ -8,7 +8,7 @@
   /* Ferdy Coach 3-color palette */
   --color-1: #0d0d0d; /* primary - dark */
   --color-2: #ffffff; /* contrast - white */
-  --color-3: #ff4d6d; /* accent - coral/pink */
+  --color-3: #b6ac69; /* accent - updated */
 
   /* Semantic design tokens based on 3-color palette */
   --background: var(--color-2);
@@ -652,10 +652,11 @@
   .wave-path {
     fill: none;
     stroke: var(--primary); /* usar color principal de la web */
-    stroke-width: 3;
+    stroke-width: 6; /* x2 del valor original (3) */
     stroke-linecap: round;
     stroke-linejoin: round;
-    filter: drop-shadow(0 6px 14px rgba(81,126,97,0.18));
+    /* Sombra principal (verde sutil) + acento terciario (rojo) muy discreto */
+    filter: drop-shadow(0 6px 14px rgba(81,126,97,0.18)) drop-shadow(0 2px 8px rgba(238,64,66,0.18));
     /* dasharray/offset se inicializan vía JS; se mantiene fallback */
     stroke-dasharray: var(--dash-default, 800);
     stroke-dashoffset: var(--dash-default, 800);
@@ -670,6 +671,62 @@
 @media (prefers-reduced-motion: reduce) {
   @layer utilities {
     .wave-path { animation: none; filter: none; stroke-dashoffset: 0; }
+  }
+}
+
+@keyframes glow-flash {
+  0% { opacity: 0; transform: scale(0.95); }
+  12% { opacity: 0.5; transform: scale(1.05); }
+  22% { opacity: 0.12; transform: scale(0.98); }
+  42% { opacity: 0.42; transform: scale(1.03); }
+  60% { opacity: 0.1; transform: scale(0.98); }
+  100% { opacity: 0; transform: scale(0.95); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer utilities {
+    .pulse-circle { animation: none; filter: none; }
+    .pulse-circle::before { animation: none; opacity: 0.18; transform: none; }
+    .pulse-circle::after { animation: none; opacity: 0.12; transform: none; }
+  }
+}
+
+/* 3D Cards utilities */
+@layer utilities {
+  .perspective-1000 { perspective: 1000px; }
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 450ms cubic-bezier(.2,.7,.2,1), box-shadow 450ms ease;
+  }
+  .card-3d:hover {
+    transform: translateY(-2px) rotateX(2.2deg) rotateY(-2.2deg);
+    box-shadow: 0 18px 45px -15px rgba(0,0,0,.25), 0 6px 16px -10px rgba(0,0,0,.2);
+  }
+  .icon-lift { transform: translateZ(24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer utilities {
+    .card-3d { transition: none; }
+    .card-3d:hover { transform: none; box-shadow: 0 10px 25px -10px rgba(0,0,0,.25); }
+    .icon-lift { transform: none; }
+  }
+}
+
+/* Wave acento terciario visible detrás del trazo principal */
+@layer utilities {
+  .wave-shadow {
+    fill: none;
+    stroke: var(--destructive);
+    stroke-width: 7.2; /* 1.2x respecto al trazo principal (6) */
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.22; /* sutil para no saturar */
+    filter: blur(1px); /* ligero desenfoque como halo */
+    animation: wave-draw 2.8s linear infinite;
+    /* fallback JS mantiene dasharray/offset */
+    stroke-dasharray: var(--dash-default, 800);
+    stroke-dashoffset: var(--dash-default, 800);
   }
 }
 

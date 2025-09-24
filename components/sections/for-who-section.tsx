@@ -19,23 +19,30 @@ type IconKey = keyof typeof iconMap
 export function ForWhoSection() {
   const { forWho } = siteContent
   const sectionRef = useRef<HTMLDivElement>(null)
+  const heartRef = useRef<HTMLDivElement>(null)
   const [progress, setProgress] = useState(0)
   const [distance, setDistance] = useState(0)
 
   // Movimiento suave del corazón en mobile según el scroll dentro de la sección
   useEffect(() => {
     const update = () => {
-      const el = sectionRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
+      const elSection = sectionRef.current
+      const elHeart = heartRef.current
+      if (!elSection) return
+
+      const rect = elSection.getBoundingClientRect()
       const sectionTop = rect.top + window.scrollY
-      const sectionHeight = el.offsetHeight || 1
-      const y = window.scrollY
-      const p = Math.min(Math.max((y - sectionTop) / sectionHeight, 0), 1)
-      setProgress(p)
-      // Recorrido total en px (hasta el final de la sección menos un margen para no salirnos de la vista)
-      const travel = Math.max(sectionHeight - 320, 0)
-      setDistance(travel)
+      const sectionHeight = elSection.offsetHeight || 1
+      const heartHeight = elHeart?.offsetHeight || 0
+
+      const padding = 20
+      // Desplazamiento vertical deseado: scroll dentro de la sección con padding
+      const inside = window.scrollY - sectionTop + padding
+      const maxTravel = Math.max(sectionHeight - heartHeight - padding * 2, 0)
+      const clamped = Math.min(Math.max(inside, 0), maxTravel)
+
+      setProgress(0) // ya no usamos progress, mantenemos para no romper
+      setDistance(clamped) // reutilizamos distance como offsetY directo
     }
     let raf = 0
     const onScroll = () => {
@@ -54,12 +61,13 @@ export function ForWhoSection() {
 
   return (
     <Section id="para-quien" aria-labelledby="para-quien-title" className="bg-secondary/30 relative overflow-hidden">
-      <div ref={sectionRef} className="relative">
-        {/* Corazón móvil: centrado detrás del título y desplazándose con el scroll */}
+      <div ref={sectionRef} className="relative sm:py-0 py-5">
+        {/* Corazón móvil: recorre de arriba a abajo con padding de 20px (py-5) y sigue el scroll de la sección */}
         <div
+          ref={heartRef}
           aria-hidden
-          className="lg:hidden pointer-events-none absolute left-1/2 top-8 -z-10 transform-gpu"
-          style={{ transform: `translate(-50%, ${Math.round(progress * distance)}px)` }}
+          className="lg:hidden pointer-events-none absolute left-1/2 top-0 -z-10 transform-gpu"
+          style={{ transform: `translate(-50%, ${Math.round(distance)}px)` }}
         >
           <Progressive3D className="opacity-100 w-40 h-40 sm:w-48 sm:h-48" />
         </div>
@@ -80,7 +88,7 @@ export function ForWhoSection() {
             <div className="lg:col-span-7">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
                 {forWho.cards?.map((card, idx) => {
-                  const Icon = iconMap[(card.icon as IconKey) ?? "heart-crack"]
+                  const Icon = iconMap[(card.icon as keyof typeof iconMap) ?? "heart-crack"]
                   return (
                     <Card
                       key={idx}
@@ -90,7 +98,7 @@ export function ForWhoSection() {
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
                           <div className="shrink-0 rounded-2xl bg-accent/10 text-accent p-3 ring-1 ring-accent/15 group-hover:translate-y-[-2px] group-hover:scale-105 transition-transform duration-500">
-                            <Icon className="h-6 w-6" aria-hidden="true" />
+                            <Icon className="h-6 w-6 drop-shadow-[0_1px_2px_rgba(238,64,66,0.4)]" aria-hidden="true" />
                           </div>
                           <div>
                             <h3 className="font-semibold text-lg leading-tight">{card.title}</h3>

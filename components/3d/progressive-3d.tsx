@@ -2,19 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react"
 
-// 2D Pulse Circle (fallback and primary render)
-function PulseCircle() {
-  return (
-    <div className="aspect-square flex items-center justify-center">
-      <div
-        className="w-3/4 h-3/4 pulse-circle"
-        role="img"
-        aria-label="Círculo pulsando como latido"
-      />
-    </div>
-  )
-}
-
 // 2D Waveform (fallback and primary render)
 function Waveform() {
   const pathRef = useRef<SVGPathElement>(null)
@@ -36,6 +23,12 @@ function Waveform() {
         role="img"
         aria-label="Línea de crecimiento animada"
       >
+        {/* Sombra/acento terciario detrás del trazo principal */}
+        <path
+          className="wave-shadow"
+          style={{ strokeDasharray: dash, strokeDashoffset: dash }}
+          d="M0 50 L20 50 L30 35 L35 65 L40 40 L45 60 L50 50 L70 50 L80 30 L85 70 L90 35 L95 65 L100 50 L120 50 L130 20 L135 80 L140 30 L145 70 L150 50 L170 50 L180 35 L185 65 L190 50 L200 50"
+        />
         <path
           ref={pathRef}
           className="wave-path"

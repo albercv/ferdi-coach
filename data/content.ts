@@ -105,6 +105,25 @@ export const siteContent = {
       text: "El programa me ayudó no solo a superar mi ruptura, sino a entender patrones que tenía en mis relaciones. Ahora me siento mucho más segura de mí misma.",
       rating: 5,
     },
+    // Tarjetas de prueba para el layout
+    {
+      name: "Test Usuario 1",
+      age: 30,
+      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet.",
+      rating: 4,
+    },
+    {
+      name: "Test Usuario 2",
+      age: 42,
+      text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      rating: 4,
+    },
+    {
+      name: "Test Usuario 3",
+      age: 25,
+      text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      rating: 5,
+    },
   ],
 
   about: {
@@ -141,4 +160,4 @@ export const siteContent = {
         "Sí, muchos clientes combinan ambos servicios para un acompañamiento más intensivo. Te haré un descuento especial si decides tomar ambos.",
     },
   ],
-}
+} as const

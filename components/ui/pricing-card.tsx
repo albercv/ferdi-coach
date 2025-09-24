@@ -28,7 +28,8 @@ export function PricingCard({
     <Card className={cn("relative", popular && "border-accent shadow-lg", className)}>
       {popular && (
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <span className="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
+          <span className="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-2">
+            <span className="inline-block size-1.5 rounded-full bg-destructive" aria-hidden />
             Más popular
           </span>
         </div>

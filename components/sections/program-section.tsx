@@ -1,3 +1,4 @@
+'use client'
 import { Section } from "@/components/ui/section"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -19,21 +20,29 @@ export function ProgramSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
         <div className="space-y-6">
           <h3 className="text-2xl font-semibold mb-6">Hitos del programa:</h3>
-          {program4.milestones.map((milestone, index) => (
-            <Card key={index} className="bg-primary-foreground text-primary">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-sm">
-                    {milestone.week}
+          <div className="grid grid-cols-1 gap-6">
+            {program4.milestones.map((milestone, index) => (
+              <Card
+                key={index}
+                className="group relative overflow-hidden will-change-transform transition-transform duration-500 ease-out border-0 shadow-[0_10px_25px_-10px_rgba(0,0,0,0.25)] bg-primary-foreground text-primary backdrop-blur hover:scale-[1.02]"
+             >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-sm ring-1 ring-accent/15 group-hover:translate-y-[-2px] group-hover:scale-105 transition-transform duration-500">
+                      {milestone.week}
+                    </div>
+                    <CardTitle className="text-lg">{milestone.title}</CardTitle>
                   </div>
-                  <CardTitle className="text-lg">{milestone.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-muted-foreground">{milestone.description}</CardDescription>
+                </CardContent>
+                <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true">
+                  <div className="absolute -top-16 -right-10 h-40 w-40 rounded-full bg-accent/20 blur-2xl" />
                 </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-muted-foreground">{milestone.description}</CardDescription>
-              </CardContent>
-            </Card>
-          ))}
+              </Card>
+            ))}
+          </div>
         </div>
 
         <div className="space-y-8">

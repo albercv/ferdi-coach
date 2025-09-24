@@ -1,10 +1,23 @@
+"use client"
+
 import { Section } from "@/components/ui/section"
 import { TestimonialCard } from "@/components/ui/testimonial-card"
 import { siteContent } from "@/data/content"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
+import { useEffect, useState } from "react"
 
 export function TestimonialsSection() {
   const { testimonials } = siteContent
+  const [api, setApi] = useState<CarouselApi | null>(null)
+
+  // Autoplay simple: avanza cada 3.2s; loop ya está activo en opts
+  useEffect(() => {
+    if (!api) return
+    const id = setInterval(() => {
+      api.scrollNext()
+    }, 3200)
+    return () => clearInterval(id)
+  }, [api])
 
   return (
     <Section id="testimonios" aria-labelledby="testimonios-title">
@@ -18,7 +31,7 @@ export function TestimonialsSection() {
       </div>
 
       <div className="relative max-w-5xl mx-auto">
-        <Carousel opts={{ align: "start", loop: true }} className="w-full">
+        <Carousel opts={{ align: "start", loop: true }} setApi={setApi} className="w-full">
           <CarouselContent>
             {testimonials.map((testimonial, index) => (
               <CarouselItem key={index} className="basis-full md:basis-1/2 lg:basis-1/3">

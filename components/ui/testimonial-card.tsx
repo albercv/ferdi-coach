@@ -17,7 +17,11 @@ export function TestimonialCard({ name, age, text, rating }: TestimonialCardProp
             <Star key={i} className={`h-4 w-4 ${i < rating ? "text-accent fill-accent" : "text-muted-foreground"}`} />
           ))}
         </div>
-        <blockquote className="text-muted-foreground mb-4 italic">"{text}"</blockquote>
+        <blockquote className="text-muted-foreground mb-4 italic pl-4 border-l-2 border-destructive/30">
+          <span className="text-destructive">“</span>
+          {text}
+          <span className="text-destructive">”</span>
+        </blockquote>
         <cite className="text-sm font-medium text-foreground not-italic">
           {name}, {age} años
         </cite>
