@@ -62,16 +62,6 @@ export function ForWhoSection() {
   return (
     <Section id="para-quien" aria-labelledby="para-quien-title" className="bg-secondary/30 relative overflow-hidden">
       <div ref={sectionRef} className="relative sm:py-0 py-5">
-        {/* Corazón móvil: recorre de arriba a abajo con padding de 20px (py-5) y sigue el scroll de la sección */}
-        <div
-          ref={heartRef}
-          aria-hidden
-          className="lg:hidden pointer-events-none absolute left-1/2 top-0 -z-10 transform-gpu"
-          style={{ transform: `translate(-50%, ${Math.round(distance)}px)` }}
-        >
-          <Progressive3D className="opacity-100 w-40 h-40 sm:w-48 sm:h-48" />
-        </div>
-
         <div className="text-center max-w-6xl mx-auto">
           <h2 id="para-quien-title" className="text-3xl md:text-4xl font-bold text-balance">
             {forWho.title}
@@ -81,6 +71,11 @@ export function ForWhoSection() {
               {forWho.subtitle}
             </p>
           )}
+          
+          {/* Wave fijo debajo del subtítulo en pantallas pequeñas */}
+          <div className="lg:hidden flex justify-center mt-6 mb-8">
+            <Progressive3D className="opacity-100 w-40 h-40 sm:w-48 sm:h-48" />
+          </div>
 
           {/* Layout principal: en desktop 2 columnas (tarjetas a la izquierda, corazón a la derecha) */}
           <div className="mt-10 lg:grid lg:grid-cols-12 lg:gap-8 items-start">

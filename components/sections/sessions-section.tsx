@@ -19,7 +19,7 @@ export function SessionsSection() {
           title="Sesión individual"
           description="Sesión personalizada de 60 minutos"
           price={sessions.prices.single}
-          features={sessions.benefits}
+          features={Array.from(sessions.benefits)}
           ctaText="Reservar sesión"
           ctaHref="#reservar"
         />
@@ -27,7 +27,7 @@ export function SessionsSection() {
           title="Pack 4 sesiones"
           description="4 sesiones con seguimiento personalizado"
           price={sessions.prices.pack4}
-          features={[...sessions.benefits, "Ahorro de 20€", "Seguimiento entre sesiones"]}
+          features={[...Array.from(sessions.benefits), "Ahorro de 20€", "Seguimiento entre sesiones"]}
           ctaText="Reservar pack"
           ctaHref="#reservar"
           popular={true}
