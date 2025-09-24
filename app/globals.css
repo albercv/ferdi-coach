@@ -128,6 +128,53 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
+  
+  /* Prevenir overflow horizontal en móvil */
+  @media (max-width: 768px) {
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
+      position: relative;
+    }
+    
+    main {
+      overflow-x: hidden;
+      width: 100%;
+    }
+    
+    /* Corregir elementos específicos que causan overflow */
+    .overflow-hidden {
+      overflow-x: hidden !important;
+    }
+    
+    /* Carousel específico */
+    [data-slot="carousel-content"] {
+      overflow-x: hidden;
+    }
+    
+    .flex.-ml-4 {
+      margin-left: 0 !important;
+    }
+    
+    /* Elementos con padding lateral problemático */
+    .pl-4, .pr-4 {
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+    }
+    
+    /* Contenedores que pueden causar overflow */
+    .container {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    
+    /* Secciones específicas */
+    section {
+      overflow-x: hidden;
+      width: 100%;
+    }
   }
   /* Added explicit text color classes for better contrast */
   h1,
