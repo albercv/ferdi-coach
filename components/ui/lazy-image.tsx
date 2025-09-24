@@ -36,7 +36,7 @@ export function LazyImage({
         role="img"
         aria-label={alt}
       >
-        <span className="text-sm">Image unavailable</span>
+        <Image src="/logo2.webp" alt="fallback" width={width} height={height} className="object-contain" />
       </div>
     )
   }
@@ -44,7 +44,7 @@ export function LazyImage({
   return (
     <div className={cn("relative overflow-hidden", className)}>
       <Image
-        src={src || "/placeholder.svg"}
+        src={src || "/logo2.webp"}
         alt={alt}
         width={width}
         height={height}

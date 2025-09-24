@@ -66,17 +66,17 @@ export function HeroSection() {
         </div>
 
         {/* Columna derecha: vídeo */}
-        <div className="relative w-full aspect-[16/10] lg:aspect-[9/10] xl:aspect-[16/10] rounded-xl overflow-hidden ring-1 ring-black/10 shadow-2xl bg-transparent">
+        <div className="relative w-full rounded-xl overflow-hidden ring-1 ring-black/10 shadow-2xl bg-transparent">
           <video
-            className="h-full w-full object-cover"
-            src="https://www.w3schools.com/html/mov_bbb.mp4"
-            poster="/placeholder.jpg"
+            className="w-full h-auto rounded-xl shadow-md ring-1 ring-foreground/10"
+            autoPlay
             muted
             loop
-            autoPlay
             playsInline
-            aria-label="Vídeo de presentación"
-          />
+            poster="/logo2.webp"
+          >
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+          </video>
           {/* Borde simulado de pantalla */}
           <div aria-hidden className="pointer-events-none absolute inset-0 ring-1 ring-white/10" />
         </div>

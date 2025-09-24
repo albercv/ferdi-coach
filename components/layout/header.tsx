@@ -21,8 +21,8 @@ export function Header() {
       <nav className="container mx-auto flex h-16 items-center justify-between px-4" aria-label="principal">
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center">
-              <span className="text-accent-foreground font-bold text-sm">F</span>
+            <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center overflow-hidden">
+              <img src="/logo2.webp" alt="Ferdy logo" className="w-full h-full object-cover" />
             </div>
             <span className="font-bold text-lg text-foreground">Ferdy | Coach del desamor</span>
           </Link>

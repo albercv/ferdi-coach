@@ -34,14 +34,15 @@ export function AboutSection() {
         </div>
 
         <div className="relative">
-          {/* Placeholder for Ferdy's photo */}
-          <div className="aspect-[4/5] bg-gradient-to-br from-accent/20 to-accent/5 rounded-2xl flex items-center justify-center">
-            <div className="text-center text-muted-foreground">
-              <div className="w-24 h-24 bg-accent/30 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <span className="text-2xl font-bold text-accent">F</span>
-              </div>
-              <p className="text-sm">Foto de Ferdy</p>
-            </div>
+          {/* Foto de Ferdy */}
+          <div className="aspect-[4/5] rounded-2xl overflow-hidden ring-1 ring-black/10 bg-secondary/20">
+            <img
+              src="/logo2.webp"
+              alt="Foto de Ferdy"
+              className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         </div>
       </div>
