@@ -27,21 +27,55 @@ export function GuidesSection() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {guides.map((guide, index) => (
-          <PricingCard
-            key={index}
-            title={guide.title}
-            description={guide.description}
-            price={guide.price}
-            features={["Descarga inmediata", "Acceso de por vida", "Formato PDF", "Ejercicios prácticos"]}
-            ctaText="Comprar guía"
-            ctaHref="#comprar"
-            flipOnHover
-            backSynopsis={funSynopses[guide.title] ?? guide.description}
-            backCoverSrc="/logo2.webp"
-          />
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+        <PricingCard
+          title="Guía de Nutrición Básica"
+          description="Fundamentos esenciales para una alimentación saludable"
+          price="Gratis"
+          features={[
+            "Fundamentos de nutrición",
+            "Planificación de comidas",
+            "Recetas saludables",
+            "Tips de hidratación"
+          ]}
+          ctaText="Descargar Guía"
+          ctaHref="#descargar"
+          flipOnHover={true}
+          backSynopsis="Descubre los fundamentos esenciales de la nutrición con esta guía completa que transformará tu relación con la comida. Aprende a planificar comidas balanceadas que nutran tu cuerpo y mente, conoce en profundidad los macronutrientes y micronutrientes necesarios para optimizar tu rendimiento físico y mental, domina el arte de crear hábitos alimenticios sostenibles que te acompañarán toda la vida, y desarrolla una comprensión integral de cómo los alimentos afectan tu energía, estado de ánimo y bienestar general. Esta guía incluye estrategias prácticas para superar los antojos, técnicas de preparación de alimentos que maximizan los nutrientes, y un enfoque holístico hacia la alimentación consciente que te permitirá disfrutar de la comida mientras alcanzas tus objetivos de salud y fitness."
+          backCoverSrc="/logo2.webp"
+        />
+        <PricingCard
+          title="Plan de Entrenamiento"
+          description="Rutinas personalizadas para alcanzar tus objetivos"
+          price="€29"
+          features={[
+            "Rutinas personalizadas",
+            "Seguimiento de progreso",
+            "Videos explicativos",
+            "Soporte 24/7"
+          ]}
+          ctaText="Comprar Plan"
+          ctaHref="#comprar"
+          flipOnHover={true}
+          backSynopsis="Un programa de entrenamiento diseñado específicamente para tus objetivos y nivel de condición física. Incluye rutinas progresivas, técnicas avanzadas y el apoyo constante que necesitas para alcanzar tus metas de forma segura y efectiva con resultados garantizados."
+          backCoverSrc="/logo2.webp"
+        />
+        <PricingCard
+          title="Coaching Personalizado"
+          description="Atención individual para tu transformación completa"
+          price="€99"
+          features={[
+            "Sesiones 1 a 1",
+            "Plan nutricional completo",
+            "Seguimiento diario",
+            "Acceso prioritario"
+          ]}
+          ctaText="Contratar Coaching"
+          ctaHref="#coaching"
+          flipOnHover={true}
+          backSynopsis="Transformación total."
+          backCoverSrc="/logo2.webp"
+        />
       </div>
     </Section>
   )
