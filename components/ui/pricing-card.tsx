@@ -1,7 +1,10 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useState } from "react"
 
 interface PricingCardProps {
   title: string
@@ -30,9 +33,26 @@ export function PricingCard({
   backSynopsis,
   backCoverSrc,
 }: PricingCardProps) {
+  // Estado para controlar flip y expansión en dispositivos táctiles
+  const [isFlipped, setIsFlipped] = useState(false)
+  const [isTextExpanded, setIsTextExpanded] = useState(false)
+  
   // Datos para la cara trasera (sinopsis e imagen de portada)
   const backSynopsisFinal = backSynopsis ?? description
   const backCover = backCoverSrc ?? "/logo2.webp"
+  
+  // Funciones para manejar taps en móvil
+  const handleCardTap = () => {
+    if (flipOnHover) {
+      setIsFlipped(!isFlipped)
+      setIsTextExpanded(false) // Reset text expansion when flipping
+    }
+  }
+  
+  const handleTextTap = (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent card flip when tapping text
+    setIsTextExpanded(!isTextExpanded)
+  }
 
   return (
     <Card className={cn("relative overflow-hidden", flipOnHover && "group", popular && "border-accent shadow-lg", className)}>
@@ -47,8 +67,12 @@ export function PricingCard({
 
       {/* Contenido principal: condicional según flipOnHover */}
       {flipOnHover ? (
-        <div className="relative group h-[320px] [perspective:1000px]">
-          <div className="relative w-full h-full transition-transform duration-700 ease-in-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+        <div className="relative group h-[320px] [perspective:1000px]" onClick={handleCardTap}>
+          <div className={cn(
+            "relative w-full h-full transition-transform duration-700 ease-in-out [transform-style:preserve-3d] cursor-pointer",
+            "group-hover:[transform:rotateY(180deg)]",
+            isFlipped && "[transform:rotateY(180deg)]"
+          )}>
             {/* Frente */}
             <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] bg-card rounded-lg">
               <CardHeader className="pb-4">
@@ -78,13 +102,24 @@ export function PricingCard({
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-semibold text-accent">Sinopsis</CardTitle>
               </CardHeader>
-              <CardContent className="pt-0 h-full flex flex-col relative">
-                <div className="h-1/5 overflow-hidden relative z-20 transition-all duration-300 group/text hover:h-full hover:bg-card/95 hover:backdrop-blur-sm hover:-m-6 hover:p-6 hover:z-30">
-                  <CardDescription className="text-sm text-muted-foreground leading-relaxed line-clamp-8 group-hover/text:line-clamp-none transition-all duration-300 cursor-pointer">
-                    {backSynopsisFinal}
-                  </CardDescription>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-32 z-10">
+              <CardContent className="relative h-full overflow-hidden p-6 flex flex-col gap-1.5">
+                <div className={cn(
+                  "relative transition-all duration-500 ease-in-out cursor-pointer group/text",
+                  "hover:h-full hover:bg-card/95 hover:backdrop-blur-sm hover:-m-6 hover:p-6 hover:z-30",
+                  isTextExpanded ? "h-full bg-card/95 backdrop-blur-sm -m-6 p-6 z-30" : "h-auto max-h-[20%] min-h-[60px]"
+                )}
+                onClick={handleTextTap}
+              >
+                <CardDescription className={cn(
+                   "text-sm text-muted-foreground leading-snug transition-all duration-300 cursor-pointer",
+                   "group-hover/text:line-clamp-none overflow-hidden",
+                   "bg-secondary/70 p-2 rounded-md backdrop-blur-sm",
+                   isTextExpanded ? "line-clamp-none" : "line-clamp-3"
+                 )}>
+                  {backSynopsisFinal}
+                </CardDescription>
+              </div>
+              <div className="flex-1 z-10">
                   <img
                     src={backCover}
                     alt={`Portada de ${title}`}
