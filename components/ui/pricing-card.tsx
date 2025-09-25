@@ -55,7 +55,7 @@ export function PricingCard({
   }
 
   return (
-    <Card className={cn("relative overflow-hidden flex flex-col", flipOnHover && "group", popular && "border-accent shadow-lg", className)}>
+    <Card className={cn("relative overflow-hidden", flipOnHover && "group", popular && "border-accent shadow-lg", className)}>
       {popular && (
         <div className="absolute top-[4px] right-4 z-10">
           <span className="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-2">
@@ -67,79 +67,119 @@ export function PricingCard({
 
       {/* Contenido principal: condicional según flipOnHover */}
       {flipOnHover ? (
-        <div className="relative group h-[320px] [perspective:1000px] flex-1" onClick={handleCardTap}>
+        <div className="relative group min-h-[520px] [perspective:1000px]" onClick={handleCardTap}>
           <div className={cn(
             "relative w-full h-full transition-transform duration-700 ease-in-out [transform-style:preserve-3d] cursor-pointer",
             "group-hover:[transform:rotateY(180deg)]",
             isFlipped && "[transform:rotateY(180deg)]"
           )}>
             {/* Frente */}
-            <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] bg-card rounded-lg flex flex-col">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-xl font-semibold">{title}</CardTitle>
-                <CardDescription className="text-sm text-muted-foreground leading-relaxed">{description}</CardDescription>
-                <div className="mt-6">
-                  <span className="text-3xl font-bold text-foreground">{price}</span>
+            <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] bg-card rounded-lg flex flex-col p-6">
+              <div className="flex-1 flex flex-col">
+                <div className="mb-4">
+                  <h3 className="text-xl font-semibold mb-2">{title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">{description}</p>
+                  <div className="mb-6">
+                    <span className="text-3xl font-bold text-foreground">{price}</span>
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-0 flex-1">
-                <ul className="space-y-3">
-                  {features.slice(0, 4).map((feature, index) => (
-                    <li key={index} className="flex items-start">
-                      <Check className="h-4 w-4 text-accent mr-3 mt-1 flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground leading-relaxed">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                {features.length > 4 && (
-                  <p className="text-xs text-muted-foreground mt-4 italic">Y más características...</p>
-                )}
-              </CardContent>
+                
+                <div className="flex-1 mb-6">
+                  <ul className="space-y-3">
+                    {features.slice(0, 4).map((feature, index) => (
+                      <li key={index} className="flex items-start">
+                        <Check className="h-4 w-4 text-accent mr-3 mt-1 flex-shrink-0" />
+                        <span className="text-sm text-muted-foreground leading-relaxed">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {features.length > 4 && (
+                    <p className="text-xs text-muted-foreground mt-4 italic">Y más características...</p>
+                  )}
+                </div>
+                
+                {/* Botón incluido en el frente */}
+                <div className="mt-auto">
+                  <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
+                    <a href={ctaHref}>{ctaText}</a>
+                  </Button>
+                </div>
+              </div>
             </div>
 
             {/* Reverso */}
             <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-lg group/back overflow-hidden">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-xl font-semibold text-accent">Sinopsis</CardTitle>
-              </CardHeader>
-              <CardContent className="relative h-full overflow-hidden p-6 flex flex-col gap-1.5">
-                <div className={cn(
-                  "relative transition-all duration-500 ease-in-out cursor-pointer group/text overflow-hidden",
-                  "hover:h-full hover:bg-card/95 hover:backdrop-blur-sm hover:-m-6 hover:p-6 hover:z-50",
-                  isTextExpanded ? "h-full bg-card/95 backdrop-blur-sm -m-6 p-6 z-50" : "h-[160px]"
-                )}
-                onClick={handleTextTap}
-              >
-                <CardDescription className={cn(
-                   "text-sm text-foreground leading-snug transition-all duration-300 cursor-pointer",
-                   "group-hover/text:line-clamp-none overflow-hidden",
-                   "bg-background/90 p-3 rounded-md backdrop-blur-sm border shadow-sm",
-                   isTextExpanded ? "line-clamp-none" : "line-clamp-3"
-                 )}>
-                  {backSynopsisFinal}
-                </CardDescription>
-              </div>
-              <div className="flex-1 z-0">
+              <div className="p-6 h-full flex flex-col relative">
+                <h3 className="text-xl font-semibold text-accent mb-4 flex-shrink-0">Sinopsis</h3>
+                
+                {/* Imagen fija en el fondo */}
+                <div className="absolute inset-x-6 top-20 bottom-20 z-0">
                   <img
                     src={backCover}
                     alt={`Portada de ${title}`}
-                    className="w-full h-full object-cover rounded-b-lg"
+                    className="w-full h-full object-cover rounded-lg"
                   />
                 </div>
-              </CardContent>
+                
+                {/* Texto expandible por encima - contraído inicialmente */}
+                <div className="flex-1 relative z-10 mb-4 min-h-0">
+                  <div className={cn(
+                    "w-full transition-all duration-700 ease-out cursor-pointer group",
+                    // Altura inicial pequeña, expandida hasta ocupar todo el espacio disponible
+                    isTextExpanded ? "h-full" : "h-24"
+                  )}
+                  onClick={handleTextTap}
+                  onMouseEnter={() => {
+                    // Solo activar hover en desktop (pantallas >= 1024px)
+                    if (window.innerWidth >= 1024) {
+                      setIsTextExpanded(true)
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    // Solo desactivar hover en desktop
+                    if (window.innerWidth >= 1024) {
+                      setIsTextExpanded(false)
+                    }
+                  }}
+                  >
+                    <div className={cn(
+                      "w-full bg-card/95 backdrop-blur-sm rounded-lg p-4 border shadow-sm h-full transition-all duration-700 ease-out",
+                      isTextExpanded ? "overflow-y-auto" : "overflow-hidden",
+                      // Hover effect solo en desktop con transición suave
+                      "lg:group-hover:overflow-y-auto"
+                    )}>
+                      <p className={cn(
+                         "text-sm text-foreground leading-snug cursor-pointer w-full transition-all duration-700 ease-out",
+                         isTextExpanded ? "line-clamp-none" : "line-clamp-3",
+                         // Hover effect solo en desktop
+                         "lg:group-hover:line-clamp-none"
+                       )}>
+                        {backSynopsisFinal}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Botón incluido en el reverso - siempre visible */}
+                <div className="flex-shrink-0 relative z-10">
+                  <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
+                    <a href={ctaHref}>{ctaText}</a>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       ) : (
-        <>
-          <CardHeader>
-            <CardTitle className="text-xl">{title}</CardTitle>
-            <CardDescription>{description}</CardDescription>
-            <div className="mt-4">
+        <div className="p-6 flex flex-col h-full min-h-[400px]">
+          <div className="mb-4">
+            <h3 className="text-xl font-semibold mb-2">{title}</h3>
+            <p className="text-sm text-muted-foreground mb-4">{description}</p>
+            <div className="mb-6">
               <span className="text-3xl font-bold text-foreground">{price}</span>
             </div>
-          </CardHeader>
-          <CardContent className="flex-1">
+          </div>
+          <div className="flex-1 mb-6">
             <ul className="space-y-3">
               {features.map((feature, index) => (
                 <li key={index} className="flex items-start">
@@ -148,16 +188,23 @@ export function PricingCard({
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </>
+          </div>
+          <div className="mt-auto">
+            <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
+              <a href={ctaHref}>{ctaText}</a>
+            </Button>
+          </div>
+        </div>
       )}
 
-      {/* El botón no se da la vuelta */}
-      <CardFooter className="mt-auto pt-4 pb-4">
-        <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
-          <a href={ctaHref}>{ctaText}</a>
-        </Button>
-      </CardFooter>
+      {/* El botón no se da la vuelta - Solo para tarjetas sin flip */}
+      {!flipOnHover && (
+        <CardFooter className="mt-auto pt-4 pb-4">
+          <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
+            <a href={ctaHref}>{ctaText}</a>
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   )
 }
