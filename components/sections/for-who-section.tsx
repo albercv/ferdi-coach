@@ -3,6 +3,7 @@
 import { Section } from "@/components/ui/section"
 import { siteContent } from "@/data/content"
 import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { HeartCrack, Clock, Users, Target } from "lucide-react"
 import { Progressive3D } from "@/components/3d/progressive-3d"
 import { useEffect, useRef, useState } from "react"
@@ -91,7 +92,7 @@ export function ForWhoSection() {
                       aria-label={`${card.title}`}
                     >
                       <CardContent className="p-6">
-                        <div className="flex items-start gap-4">
+                        <div className="flex items-center gap-4">
                           <div className="shrink-0 rounded-2xl bg-accent/10 text-accent p-3 ring-1 ring-accent/15 group-hover:translate-y-[-2px] group-hover:scale-105 transition-transform duration-500">
                             <Icon className="h-6 w-6 drop-shadow-[0_1px_2px_rgba(238,64,66,0.4)]" aria-hidden="true" />
                           </div>
@@ -116,6 +117,19 @@ export function ForWhoSection() {
                 <Progressive3D className="w-56 h-56 xl:w-64 xl:h-64 opacity-100" />
               </div>
             </div>
+          </div>
+
+          {/* Botón CTA debajo de las tarjetas */}
+          <div className="mt-12 text-center">
+            <Button 
+              size="lg" 
+              className="bg-accent hover:bg-accent/90 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              asChild
+            >
+              <a href="#reservar">
+                Quiero salir de este bucle
+              </a>
+            </Button>
           </div>
         </div>
       </div>

@@ -13,14 +13,15 @@ export const siteContent = {
   },
 
   forWho: {
-    title: "¿Estás viviendo alguna de estas situaciones?",
+    title: "¿Para quién es?",
     subtitle:
-      "Si te identificas con alguna de estas experiencias, mi método puede ayudarte a transformar tu dolor en crecimiento personal",
+      "Este espacio está diseñado para acompañarte, apoyarte y ayudarte si alguna de estas situaciones resuena contigo.",
     cards: [
-      { title: "Ruptura reciente", description: "Tu relación ha terminado y sientes que no puedes seguir adelante", icon: "heart-crack" },
-      { title: "Duelo prolongado", description: "Han pasado meses y sigues sin poder superarlo completamente", icon: "clock" },
-      { title: "Dependencia emocional", description: "Reconoces patrones tóxicos que se repiten en tus relaciones", icon: "users" },
-      { title: "Contacto cero fallido", description: "Has intentado aplicar contacto cero pero recaes constantemente", icon: "target" }
+      { title: "Vacío interior", description: "Te despiertas con un vacío tremendo en lo más profundo de tu interior y estás atrapado en la película del pasado.", icon: "heart-crack" },
+      { title: "Pérdida de dirección", description: "Te sientes perdido, desmotivado, sin dirección en la vida y desanimado para seguir adelante.", icon: "target" },
+      { title: "Realidad insatisfactoria", description: "Tu vida es una pesadilla y quieres despertar de una realidad con la que no estás conforme.", icon: "clock" },
+      { title: "Emociones negativas", description: "Sientes vergüenza, ira, culpa y has perdido fe en este mundo.", icon: "users" },
+      { title: "Abrumado", description: "Se te ha hecho un mundo todo esto y no puedes ni sabes manejarlo.", icon: "heart-crack" }
     ],
   },
 
