@@ -1,5 +1,7 @@
 import { Section } from "@/components/ui/section"
 import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { siteContent } from "@/data/content"
 import { Award } from "lucide-react"
 
@@ -7,7 +9,7 @@ export function AboutSection() {
   const { about } = siteContent
 
   return (
-    <Section id="sobre-mi" aria-labelledby="sobre-mi-title" className="bg-secondary/30">
+    <Section id="sobre-mi" aria-labelledby="sobre-mi-title" className="bg-secondary/50">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
           <h2 id="sobre-mi-title" className="text-3xl md:text-4xl font-bold text-balance">
@@ -31,6 +33,13 @@ export function AboutSection() {
               </ul>
             </CardContent>
           </Card>
+
+          <Button 
+            asChild 
+            className="w-full sm:w-auto bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90"
+          >
+            <Link href="#reservar">Reservar sesión</Link>
+          </Button>
         </div>
 
         <div className="relative">
