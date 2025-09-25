@@ -48,6 +48,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://ferdycoach.com",
   },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
   generator: "Next.js",
   verification: {
     google: "your-google-verification-code",
