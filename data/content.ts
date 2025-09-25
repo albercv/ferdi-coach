@@ -26,19 +26,60 @@ export const siteContent = {
   },
 
   sessions: {
-    title: "Sesiones 1 a 1",
-    description: "Acompañamiento personalizado para tu proceso de sanación emocional",
-    benefits: [
-      "Sesión de diagnóstico gratuita",
-      "Plan personalizado según tu situación",
-      "Herramientas específicas para tu caso",
-      "Seguimiento continuo entre sesiones",
-      "Acceso a recursos exclusivos",
-    ],
-    prices: {
-      single: "75€",
-      pack4: "280€",
-    },
+    title: "¿Cómo te puedo ayudar?",
+    cards: [
+      {
+        title: "Sesiones 1 a 1",
+        description: "Acompañamiento individual para generar el punto de inflexión que necesitas en tu vida para encontrar claridad y abrirte a nuevas posibilidades.",
+        whatYouGet: {
+          title: "Qué te llevas en cada sesión (60'):",
+          items: [
+            "Te prometo un espacio seguro y sin juicios donde podrás expresar lo que sientes libremente.",
+            "1–2 herramientas prácticas (meditación, journaling, poner límites, contacto cero sostenible, ejercicios…)",
+            "Mini-plan de 7 días por escrito."
+          ]
+        },
+        idealFor: "Primeros auxilios emocionales o revisiones puntuales.",
+        format: "Online (Zoom/Meet). Materiales descargables cuando aplique. Soporte por email 48h.",
+        pricing: {
+          single: "89€",
+          singleLabel: "(lanzamiento)",
+          pack: "249€",
+          packLabel: "Pack 3 sesiones"
+        },
+        cta: "Reservar sesión",
+        paymentInfo: "Pago seguro → Calendly → confirmación inmediata por email."
+      },
+      {
+        title: "Programa 4 (4 semanas / 4 hitos)",
+        promise: "Encontrarás luz en medio de toda esa oscuridad porque empezarás a tomar conciencia de quien eres y hacia donde vas. Hoy lloras por un desamor y mañana llorarás de alegría por haberte transformado en una persona más preparada para la vida.",
+        keyPoints: [
+          {
+            title: "Caminar contigo en tu proceso",
+            description: "Sostenerte en este cambio de piel que necesitas para tu vida."
+          },
+          {
+            title: "Cierre y límites",
+            description: "Contacto cero sostenible, gestión de recaídas, ritual de cierre."
+          },
+          {
+            title: "Transformar tu dolor en aprendizaje",
+            description: "Redefinir lo que viviste para darle sentido en la historia de tu vida."
+          },
+          {
+            title: "Mirar al futuro con optimismo",
+            description: "Plan de vida, relaciones sanas, energía y propósito."
+          }
+        ],
+        includes: "4 sesiones 1 a 1 (60–75'), guías y ejercicios semanales, seguimiento entre sesiones (email/WhatsApp profesional), checklist final y plan de continuidad.",
+        bonus: "\"Caja de herramientas para días difíciles\" (audios + plantillas).",
+        pricing: {
+          full: "497€",
+          installments: "2 cuotas de 259€"
+        },
+        cta: "Quiero el Programa 4"
+      }
+    ]
   },
 
   program4: {
