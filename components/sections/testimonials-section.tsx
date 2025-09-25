@@ -44,8 +44,8 @@ export function TestimonialsSection() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="top-1/2 -left-6 md:-left-10" aria-label="Testimonio anterior" />
-          <CarouselNext className="top-1/2 -right-6 md:-right-10" aria-label="Siguiente testimonio" />
+          <CarouselPrevious className="hidden md:flex top-1/2 md:-left-10" aria-label="Testimonio anterior" />
+          <CarouselNext className="hidden md:flex top-1/2 md:-right-10" aria-label="Siguiente testimonio" />
         </Carousel>
       </div>
     </Section>
