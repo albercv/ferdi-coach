@@ -16,16 +16,16 @@ export function SessionsSection() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto items-stretch">
         {/* Sesiones 1 a 1 Card */}
-        <Card className="relative">
+        <Card className="relative group-trigger flex flex-col h-full">
           <CardHeader>
             <CardTitle className="text-2xl">{sessions.cards[0].title}</CardTitle>
             <CardDescription className="text-base">
               {sessions.cards[0].description}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="flex-1 flex flex-col space-y-6">
             {/* What you get section */}
             <div>
               <h4 className="font-semibold mb-3">{sessions.cards[0].whatYouGet.title}</h4>
@@ -50,7 +50,7 @@ export function SessionsSection() {
             </div>
 
             {/* Pricing */}
-            <div className="bg-muted/50 p-4 rounded-lg">
+            <div className="bg-gray-50 p-4 rounded-lg mt-auto">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl font-bold">{sessions.cards[0].pricing.single}</span>
                 <Badge variant="secondary">{sessions.cards[0].pricing.singleLabel}</Badge>
@@ -58,21 +58,18 @@ export function SessionsSection() {
               <p className="text-sm text-muted-foreground mb-3">
                 {sessions.cards[0].pricing.packLabel}: <strong>{sessions.cards[0].pricing.pack}</strong>
               </p>
-              <Button className="w-full mb-3 bg-primary hover:bg-primary/90" size="lg">
+              <Button className="w-full bg-primary hover:bg-primary/90" size="lg">
                 {sessions.cards[0].cta}
               </Button>
-              <p className="text-xs text-center text-muted-foreground">
-                {sessions.cards[0].paymentInfo}
-              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Programa 4 Card */}
-        <Card className="relative border-primary">
+        <Card className="relative border-primary group flex flex-col h-full">
           <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
             <Badge className="bg-primary text-primary-foreground relative flex items-center gap-2">
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-red-500 rounded-full red-dot-pulse relative"></div>
               Más Popular
             </Badge>
           </div>
@@ -82,7 +79,7 @@ export function SessionsSection() {
               {sessions.cards[1].promise}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="flex-1 flex flex-col space-y-6">
             {/* Key Points */}
             <div>
               <h4 className="font-semibold mb-3">Puntos clave:</h4>
@@ -110,7 +107,7 @@ export function SessionsSection() {
             </div>
 
             {/* Pricing */}
-            <div className="bg-muted/50 p-4 rounded-lg">
+            <div className="bg-gray-50 p-4 rounded-lg mt-auto">
               <div className="text-center mb-3">
                 <div className="text-3xl font-bold">{sessions.cards[1].pricing.full}</div>
                 <p className="text-sm text-muted-foreground">o {sessions.cards[1].pricing.installments}</p>
@@ -121,6 +118,29 @@ export function SessionsSection() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Payment Security Seals */}
+      <div className="mt-8 flex justify-center items-center gap-6 flex-wrap">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+          </svg>
+          <span>Pago 100% seguro</span>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+            <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+          </svg>
+          <span>Tarjetas aceptadas</span>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <span>SSL certificado</span>
+        </div>
       </div>
     </Section>
   )

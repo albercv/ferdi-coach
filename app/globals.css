@@ -683,6 +683,48 @@
     box-shadow: 0 18px 45px -15px rgba(0,0,0,.25), 0 6px 16px -10px rgba(0,0,0,.2);
   }
   .icon-lift { transform: translateZ(24px); }
+
+  /* Red dot pulse animation */
+  .red-dot-pulse::before,
+  .red-dot-pulse::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffff00 0%, #ff6600 50%, #ff0000 100%);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .group-trigger:hover ~ .group .red-dot-pulse::before {
+    animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  }
+
+  .group-trigger:hover ~ .group .red-dot-pulse::after {
+    animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite 0.5s;
+  }
+
+  @keyframes pulse-ring {
+    0% {
+      transform: translate(-50%, -50%) scale(0.8);
+      opacity: 1;
+    }
+    40% {
+      opacity: 0.8;
+    }
+    80% {
+      transform: translate(-50%, -50%) scale(2.5);
+      opacity: 0.3;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(3);
+      opacity: 0;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -690,6 +732,12 @@
     .card-3d { transition: none; }
     .card-3d:hover { transform: none; box-shadow: 0 10px 25px -10px rgba(0,0,0,.25); }
     .icon-lift { transform: none; }
+    
+    /* Disable pulse animation for users who prefer reduced motion */
+    .group-trigger:hover ~ .group .red-dot-pulse::before,
+    .group-trigger:hover ~ .group .red-dot-pulse::after {
+      animation: none;
+    }
   }
 }
 
