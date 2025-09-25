@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Section } from "@/components/ui/section"
 import { siteContent } from "@/data/content"
-import { Wrench, Handshake, SlidersHorizontal } from "lucide-react"
+import { Wrench, Handshake, SlidersHorizontal, Shield, Calendar, CreditCard } from "lucide-react"
+import { TrustSeals } from "@/components/ui/trust-seals"
 
 export function HeroSection() {
   const { hero } = siteContent
@@ -62,6 +63,40 @@ export function HeroSection() {
             >
               <a href="#programa-4">{hero.ctaSecondary}</a>
             </Button>
+          </div>
+
+          {/* 2 pasos para reservar */}
+          <div className="space-y-4 pt-4 border-t border-gray-200">
+            <h3 className="font-semibold text-lg text-gray-800 text-center">2 pasos para reservar</h3>
+            
+            {/* Paso 1: Pago 100% seguro */}
+            <div className="flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                1
+              </div>
+              <div className="flex items-center gap-3">
+                <Shield className="h-6 w-6 text-green-600 flex-shrink-0" />
+                <CreditCard className="h-5 w-5 text-green-600" />
+                <span className="font-semibold text-green-800">Pago 100% seguro</span>
+              </div>
+            </div>
+
+            {/* Paso 2: Eliges día y hora en Calendly */}
+            <div className="flex items-center gap-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                2
+              </div>
+              <div className="flex items-center gap-3">
+                <Calendar className="h-6 w-6 text-blue-600 flex-shrink-0" />
+                <span className="font-semibold text-blue-800">Eliges día y hora en Calendly</span>
+              </div>
+            </div>
+
+            {/* Sellos de confianza reales */}
+            <div className="pt-4">
+              <p className="text-sm text-gray-600 text-center mb-3">Protegido por:</p>
+              <TrustSeals className="justify-center" />
+            </div>
           </div>
         </div>
 
