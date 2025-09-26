@@ -46,15 +46,16 @@ export default function HomePage() {
         </LazyLoad>
         <CTASection
           title="No tienes que pasar por esto solo"
-          description="Reserva tu sesión gratuita y comienza tu proceso de transformación hoy mismo"
+          description="En 60 minutos puedes tener un plan para esta semana y volver a respirar con calma."
           primaryCTA={{
-            text: "Reservar sesión gratuita",
+            text: "Reservar sesión",
             href: "#reservar",
           }}
           secondaryCTA={{
-            text: "Ver Programa 4",
+            text: "Quiero el Programa 4",
             href: "#programa-4",
           }}
+          showTrustSeals={true}
         />
       </main>
       <Footer />

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Section } from "@/components/ui/section"
+import { TrustSeals } from "@/components/ui/trust-seals"
 
 interface CTASectionProps {
   title: string
@@ -12,9 +13,10 @@ interface CTASectionProps {
     text: string
     href: string
   }
+  showTrustSeals?: boolean
 }
 
-export function CTASection({ title, description, primaryCTA, secondaryCTA }: CTASectionProps) {
+export function CTASection({ title, description, primaryCTA, secondaryCTA, showTrustSeals }: CTASectionProps) {
   return (
     <Section className="bg-accent text-accent-foreground">
       <div className="text-center max-w-3xl mx-auto">
@@ -35,6 +37,12 @@ export function CTASection({ title, description, primaryCTA, secondaryCTA }: CTA
             </Button>
           )}
         </div>
+        {showTrustSeals && (
+          <div className="mt-8 pt-6 border-t border-accent-foreground/20">
+            <p className="text-sm text-accent-foreground/70 text-center mb-4">Protegido por:</p>
+            <TrustSeals className="justify-center" />
+          </div>
+        )}
       </div>
     </Section>
   )

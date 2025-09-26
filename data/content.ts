@@ -181,24 +181,34 @@ export const siteContent = {
 
   faq: [
     {
-      question: "¿Cuánto tiempo dura el proceso de recuperación?",
+      question: "¿Qué diferencia hay entre una sesión suelta y el Programa 4?",
       answer:
-        "Cada persona es diferente, pero con el Programa 4 la mayoría de mis clientes experimentan una mejora significativa en 4 semanas. El proceso completo puede tomar entre 2-6 meses dependiendo de cada caso.",
+        "La sesión te permite entender la raíz del problema. Te entrego un informe completo donde vas a tener conocimiento de los bloqueos. El Programa 4 es una llamada a la acción porque trabajas sobre los bloqueos analizados en el informe con seguimiento.",
     },
     {
-      question: "¿Las sesiones son presenciales u online?",
+      question: "¿Y si recaigo/contacto con mi ex?",
       answer:
-        "Todas las sesiones se realizan online a través de videollamada, lo que te permite acceder desde cualquier lugar y en horarios flexibles.",
+        "Nunca te voy a juzgar, estoy para ayudarte. Lo contamos como parte del proceso y ajustamos el plan reforzando límites.",
     },
     {
-      question: "¿Qué pasa si no veo resultados?",
+      question: "¿Necesito estar listo para empezar?",
       answer:
-        "Ofrezco garantía de satisfacción. Si después de las primeras 2 semanas no sientes que estás avanzando, te devuelvo el 100% de tu inversión.",
+        "No necesitar estar listo porque precisamente mi programa es para ordenarte, sanar y encontrar claridad.",
     },
     {
-      question: "¿Puedo combinar sesiones individuales con el Programa 4?",
+      question: "¿Y si estoy en terapia psicológica?",
       answer:
-        "Sí, muchos clientes combinan ambos servicios para un acompañamiento más intensivo. Te haré un descuento especial si decides tomar ambos.",
+        "Mi trabajo no sustituye a tu psicólogo, pueden ir de la mano. Potenciará tu bienestar emocional.",
+    },
+    {
+      question: "¿Es para todo el mundo?",
+      answer:
+        "Sí, trabajo con cualquier persona que esté atravesando una ruptura. Hombres, mujeres y personas de cualquier edad o condición. La premisa fundamental es el compromiso de cambio.",
+    },
+    {
+      question: "Política de cancelación",
+      answer:
+        "Cambios o cancelaciones hasta 24h antes.",
     },
   ],
 } as const
