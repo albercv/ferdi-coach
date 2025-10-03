@@ -43,15 +43,23 @@ export function AboutSection() {
         </div>
 
         <div className="relative">
-          {/* Foto de Ferdy */}
+          {/* Video de Ferdy */}
           <div className="aspect-[4/5] rounded-2xl overflow-hidden ring-1 ring-black/10 bg-secondary/20">
-            <img
-              src="/logo2.webp"
-              alt="Ferdy - Coach emocional certificado especializado en superar rupturas de pareja y dependencia emocional"
+            <video
+              src="/video-muestra-NOPUBLISH.MP4"
               className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
+              controls
+              preload="metadata"
+              poster="/logo2.webp"
+              aria-label="Video de presentación de Ferdy - Coach emocional certificado especializado en superar rupturas de pareja y dependencia emocional"
+            >
+              Tu navegador no soporta el elemento de video.
+              <img
+                src="/logo2.webp"
+                alt="Ferdy - Coach emocional certificado especializado en superar rupturas de pareja y dependencia emocional"
+                className="w-full h-full object-cover"
+              />
+            </video>
           </div>
         </div>
       </div>
