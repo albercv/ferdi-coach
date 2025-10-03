@@ -25,45 +25,38 @@ export function SessionsSection() {
               {sessions.cards[0].description}
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col space-y-6">
-            {/* What you get section */}
+          <CardContent className="flex-1 flex flex-col space-y-4">
+            {/* What you get section - condensed */}
             <div>
-              <h4 className="font-semibold mb-3">{sessions.cards[0].whatYouGet.title}</h4>
-              <ul className="space-y-2">
-                {sessions.cards[0].whatYouGet.items.map((item, index) => (
+              <h4 className="font-semibold mb-2 text-sm">Qué incluye:</h4>
+              <ul className="space-y-1">
+                {sessions.cards[0].whatYouGet.items.slice(0, 3).map((item, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">{item}</span>
+                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-xs">{item}</span>
                   </li>
                 ))}
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-xs">+ 2 beneficios adicionales</span>
+                </li>
               </ul>
             </div>
 
-            {/* Ideal for */}
-            <div>
-              <p className="text-sm"><strong>Ideal para:</strong> {sessions.cards[0].idealFor}</p>
+            {/* Ideal for - condensed */}
+            <div className="bg-blue-50 p-2 rounded text-center">
+              <p className="text-xs text-blue-700"><strong>Ideal para apoyo inmediato tras ruptura</strong></p>
             </div>
 
-            {/* Format */}
-            <div>
-              <p className="text-sm"><strong>Formato:</strong> {sessions.cards[0].format}</p>
-            </div>
-
-            {/* Pricing */}
-            <div className="bg-gray-50 p-4 rounded-lg mt-auto">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-2xl font-bold">{sessions.cards[0].pricing.single}</span>
-                <Badge variant="secondary">{sessions.cards[0].pricing.singleLabel}</Badge>
+            {/* Pricing - simplified */}
+            <div className="bg-gray-50 p-3 rounded-lg mt-auto">
+              <div className="text-center mb-2">
+                <span className="text-xl font-bold">{sessions.cards[0].pricing.full}</span>
+                <p className="text-xs text-muted-foreground">{sessions.cards[0].pricing.note}</p>
               </div>
-              <p className="text-sm text-muted-foreground mb-3">
-                {sessions.cards[0].pricing.packLabel}: <strong>{sessions.cards[0].pricing.pack}</strong>
-              </p>
-              <Button className="w-full bg-primary hover:bg-primary/90" size="lg">
+              <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
                 {sessions.cards[0].cta}
               </Button>
-              <p className="text-xs text-center text-muted-foreground mt-2">
-                {sessions.cards[0].paymentInfo}
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -82,40 +75,39 @@ export function SessionsSection() {
               {sessions.cards[1].promise}
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col space-y-6">
-            {/* Key Points */}
+          <CardContent className="flex-1 flex flex-col space-y-4">
+            {/* Key Points - condensed */}
             <div>
-              <h4 className="font-semibold mb-3">Puntos clave:</h4>
-              <ul className="space-y-3">
+              <h4 className="font-semibold mb-2 text-sm">Programa semanal:</h4>
+              <ul className="space-y-2">
                 {sessions.cards[1].keyPoints.map((point, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                     <div>
-                      <strong className="text-sm">{point.title}:</strong>
-                      <span className="text-sm ml-1">{point.description}</span>
+                      <span className="text-xs font-medium">{point.title}</span>
                     </div>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Includes */}
-            <div>
-              <p className="text-sm"><strong>Incluye:</strong> {sessions.cards[1].includes}</p>
+            {/* Includes - simplified */}
+            <div className="bg-green-50 p-2 rounded text-center">
+              <p className="text-xs text-green-700"><strong>4 sesiones + material + seguimiento diario</strong></p>
             </div>
 
-            {/* Bonus */}
-            <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-              <p className="text-sm"><strong>Bonus lanzamiento:</strong> {sessions.cards[1].bonus}</p>
+            {/* Bonus - compact */}
+            <div className="bg-yellow-50 p-2 rounded border border-yellow-200">
+              <p className="text-xs"><strong>Bonus:</strong> {sessions.cards[1].bonus}</p>
             </div>
 
-            {/* Pricing */}
-            <div className="bg-gray-50 p-4 rounded-lg mt-auto">
-              <div className="text-center mb-3">
-                <div className="text-3xl font-bold">{sessions.cards[1].pricing.full}</div>
-                <p className="text-sm text-muted-foreground">o {sessions.cards[1].pricing.installments}</p>
+            {/* Pricing - simplified */}
+            <div className="bg-gray-50 p-3 rounded-lg mt-auto">
+              <div className="text-center mb-2">
+                <div className="text-xl font-bold">{sessions.cards[1].pricing.full}</div>
+                <p className="text-xs text-muted-foreground">o {sessions.cards[1].pricing.installments}</p>
               </div>
-              <Button className="w-full bg-primary hover:bg-primary/90" size="lg">
+              <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
                 {sessions.cards[1].cta}
               </Button>
             </div>
