@@ -28,6 +28,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#sesiones"
+                  title="Sesiones individuales de coaching emocional para superar rupturas de pareja"
                   className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                 >
                   Sesiones 1 a 1
@@ -36,6 +37,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#programa-4"
+                  title="Programa intensivo de 4 semanas para superar ruptura de pareja completamente"
                   className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                 >
                   Programa 4
@@ -44,6 +46,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#guias"
+                  title="Guías gratuitas descargables para comenzar tu proceso de sanación emocional"
                   className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                 >
                   Guías digitales
@@ -52,6 +55,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#sobre-mi"
+                  title="Conoce a Ferdy, coach emocional especializado en rupturas de pareja y dependencia emocional"
                   className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                 >
                   Sobre mí

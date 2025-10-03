@@ -47,7 +47,7 @@ export function AboutSection() {
           <div className="aspect-[4/5] rounded-2xl overflow-hidden ring-1 ring-black/10 bg-secondary/20">
             <img
               src="/logo2.webp"
-              alt="Foto de Ferdy"
+              alt="Ferdy - Coach emocional certificado especializado en superar rupturas de pareja y dependencia emocional"
               className="w-full h-full object-cover"
               loading="lazy"
               decoding="async"

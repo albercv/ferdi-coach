@@ -36,7 +36,7 @@ export function LazyImage({
         role="img"
         aria-label={alt}
       >
-        <Image src="/logo2.webp" alt="fallback" width={width} height={height} className="object-contain" />
+        <Image src="/logo2.webp" alt="Ferdy Coach - Imagen no disponible" width={width} height={height} className="object-contain" />
       </div>
     )
   }

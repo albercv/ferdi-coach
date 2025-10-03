@@ -13,45 +13,70 @@ const geistSans = GeistSans
 const geistMono = GeistMono
 
 export const metadata: Metadata = {
-  title: "Ferdy | Coach del desamor - Supera tu ruptura amorosa",
+  title: "Ferdy Coach - Superar Ruptura de Pareja | Coaching Emocional Especializado",
   description:
-    "Coach especializado en superar rupturas amorosas. Sesiones 1 a 1 y programas para salir del desamor. Reserva tu consulta gratuita.",
-  keywords:
-    "coach del desamor, superar ruptura, sesiones 1 a 1 desamor, contacto cero, duelo de pareja, dependencia emocional",
+    "¿Acabas de terminar una relación? Te ayudo a superar tu ruptura de pareja en 4 semanas. Coach emocional especializado en duelo amoroso, dependencia emocional y recuperación tras separación. Programa personalizado con resultados comprobados.",
+  keywords: [
+    "superar ruptura de pareja",
+    "coaching emocional ruptura",
+    "como superar una separación",
+    "duelo amoroso",
+    "dependencia emocional",
+    "coach especialista rupturas",
+    "terapia ruptura pareja",
+    "sanación emocional",
+    "recuperarse de una ruptura",
+    "bienestar tras separación",
+    "coaching transpersonal",
+    "proceso de duelo",
+    "límites emocionales",
+    "autoestima después ruptura"
+  ],
   authors: [{ name: "Ferdy Coach" }],
   creator: "Ferdy Coach",
   publisher: "Ferdy Coach",
-  robots: "index, follow",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "es_ES",
-    url: "https://ferdycoach.com",
-    title: "Ferdy | Coach del desamor - Supera tu ruptura amorosa",
-    description: "Coach especializado en superar rupturas amorosas. Sesiones 1 a 1 y programas para salir del desamor.",
+    url: "https://ferdy-coach.com",
+    title: "Ferdy Coach - Superar Ruptura de Pareja | Coaching Emocional Especializado",
+    description:
+      "¿Acabas de terminar una relación? Te ayudo a superar tu ruptura de pareja en 4 semanas. Coach emocional especializado en duelo amoroso y dependencia emocional con resultados comprobados.",
     siteName: "Ferdy Coach",
     images: [
       {
-        url: "https://ferdycoach.com/og-image.jpg",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Ferdy Coach - Especialista en superar rupturas amorosas",
-      },
-    ],
+        alt: "Ferdy Coach - Especialista en superar rupturas de pareja"
+      }
+    ]
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ferdy | Coach del desamor - Supera tu ruptura amorosa",
-    description: "Coach especializado en superar rupturas amorosas. Sesiones 1 a 1 y programas para salir del desamor.",
-    creator: "@ferdycoach",
-    images: ["https://ferdycoach.com/og-image.jpg"],
+    title: "Ferdy Coach - Superar Ruptura de Pareja | Coaching Emocional",
+    description:
+      "¿Acabas de terminar una relación? Te ayudo a superar tu ruptura de pareja en 4 semanas. Coach emocional especializado con resultados comprobados.",
+    images: ["/og-image.jpg"]
   },
   alternates: {
-    canonical: "https://ferdycoach.com",
+    canonical: "https://ferdy-coach.com",
   },
   icons: {
     icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
   },
   generator: "Next.js",
   verification: {

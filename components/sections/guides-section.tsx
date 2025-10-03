@@ -13,17 +13,17 @@ export function GuidesSection() {
     "Workbook de Sanación Emocional":
       "El cuaderno que no te juzga: ejercicios simples para llorar lo justo, reír a tiempo y reconstruirte sin mensajes a las 2 a.m.",
     "Kit de Emergencia Emocional":
-      "Para esos momentos de ‘abro Instagram y me pongo peor’. Herramientas rápidas para sobrevivir a oleadas de nostalgia y otras catástrofes emocionales.",
+      "Para esos momentos de 'abro Instagram y me pongo peor'. Herramientas rápidas para sobrevivir a oleadas de nostalgia y otras catástrofes emocionales.",
   }
 
   return (
     <Section id="guias" aria-labelledby="guias-title">
       <div className="text-center mb-12">
         <h2 id="guias-title" className="text-3xl md:text-4xl font-bold mb-6 text-balance">
-          Guías digitales
+          Guías gratuitas
         </h2>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
-          Recursos prácticos para acompañarte en tu proceso de sanación
+          Recursos descargables para comenzar tu proceso de sanación
         </p>
       </div>
 

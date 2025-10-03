@@ -67,11 +67,9 @@ export function ForWhoSection() {
           <h2 id="para-quien-title" className="text-3xl md:text-4xl font-bold text-balance">
             {forWho.title}
           </h2>
-          {forWho.subtitle && (
-            <p className="mt-3 text-muted-foreground text-balance">
-              {forWho.subtitle}
-            </p>
-          )}
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
+            {forWho.subtitle}
+          </p>
           
           {/* Layout principal: en desktop 2 columnas (tarjetas a la izquierda) */}
           <div className="mt-10 lg:grid lg:grid-cols-12 lg:gap-8 items-start">

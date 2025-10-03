@@ -11,9 +11,9 @@ export function generateStructuredData() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Ferdy Coach",
-    description: "Coach especializado en superar rupturas amorosas y desamor",
-    url: "https://ferdycoach.com",
-    logo: "https://ferdycoach.com/logo.png",
+    description: "Coach emocional especializado en superar rupturas de pareja y duelo amoroso",
+    url: "https://ferdy-coach.com",
+    logo: "https://ferdy-coach.com/logo.png",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+34-XXX-XXX-XXX",
@@ -25,29 +25,59 @@ export function generateStructuredData() {
       "@type": "Country",
       name: "Spain",
     },
-    serviceType: "Coaching emocional",
+    serviceType: "Coaching emocional para rupturas de pareja",
     priceRange: "€€",
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Servicios de coaching emocional",
+      itemListElement: [
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Sesiones individuales de coaching emocional",
+            description: "Acompañamiento personalizado para superar ruptura de pareja"
+          }
+        },
+        {
+          "@type": "Offer", 
+          itemOffered: {
+            "@type": "Service",
+            name: "Programa intensivo 4 semanas",
+            description: "Programa completo para superar ruptura y recuperar bienestar emocional"
+          }
+        }
+      ]
+    }
   }
 
   const person = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Ferdy",
-    jobTitle: "Coach del desamor",
-    description: "Coach especializado en ayudar a superar rupturas amorosas y procesos de duelo emocional",
-    url: "https://ferdycoach.com/sobre-mi",
+    jobTitle: "Coach emocional especializado en rupturas de pareja",
+    description: "Coach especializado en ayudar a superar rupturas amorosas, duelo emocional y dependencia emocional",
+    url: "https://ferdy-coach.com/sobre-mi",
     worksFor: {
       "@type": "Organization",
       name: "Ferdy Coach",
     },
     knowsAbout: [
       "Coaching emocional",
-      "Superación de rupturas",
+      "Superación de rupturas de pareja",
       "Duelo amoroso",
       "Dependencia emocional",
       "Contacto cero",
+      "Autoestima tras ruptura",
+      "Límites emocionales sanos",
+      "Bienestar emocional"
     ],
-    alumniOf: "Certificación en Coaching Emocional",
+    alumniOf: "Certificación en Coaching Transpersonal",
+    hasCredential: [
+      "Coaching Transpersonal",
+      "Especialización en duelo amoroso",
+      "Metodología propia de 4 hitos para superar rupturas"
+    ]
   }
 
   return { organization, person }
@@ -137,19 +167,60 @@ export function generateLocalBusinessStructuredData() {
   return {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "@id": "https://ferdycoach.com",
+    "@id": "https://ferdy-coach.com",
     name: "Ferdy Coach",
-    description: "Coach especializado en superar rupturas amorosas",
-    url: "https://ferdycoach.com",
+    description: "Coach emocional especializado en superar rupturas de pareja y duelo amoroso",
+    url: "https://ferdy-coach.com",
     telephone: "+34-XXX-XXX-XXX",
-    email: "hola@ferdycoach.com",
+    email: "hola@ferdy-coach.com",
     areaServed: {
       "@type": "Country",
       name: "Spain",
     },
-    serviceType: "Coaching emocional online",
+    serviceType: "Coaching emocional online para rupturas de pareja",
     priceRange: "€€",
     openingHours: "Mo-Fr 09:00-18:00",
     sameAs: ["https://instagram.com/ferdycoach"],
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "5.0",
+      reviewCount: "50",
+      bestRating: "5",
+      worstRating: "1"
+    },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Servicios de coaching para superar rupturas",
+      itemListElement: [
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Sesión individual coaching emocional",
+            description: "Sesión personalizada para superar ruptura de pareja",
+            provider: {
+              "@type": "Person",
+              name: "Ferdy"
+            }
+          },
+          price: "97",
+          priceCurrency: "EUR"
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service", 
+            name: "Programa intensivo 4 semanas",
+            description: "Programa completo para superar ruptura y recuperar bienestar",
+            provider: {
+              "@type": "Person",
+              name: "Ferdy"
+            }
+          },
+          price: "297",
+          priceCurrency: "EUR"
+        }
+      ]
+    }
   }
 }

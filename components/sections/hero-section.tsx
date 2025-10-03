@@ -74,7 +74,7 @@ export function HeroSection() {
             <div className="relative col-span-7 row-span-8 z-10">
               <img
                 src="/hero-img-v1.png"
-                alt="Ferdy Coach - Especialista en superar rupturas amorosas"
+                alt="Coach emocional Ferdy especializado en superar rupturas de pareja y duelo amoroso - Sesiones online personalizadas"
                 className="w-full h-full object-cover rounded-l-2xl shadow-lg"
               />
               {/* Overlay sutil para la imagen principal */}
@@ -93,6 +93,7 @@ export function HeroSection() {
                 loop
                 playsInline
                 className="w-full h-full object-cover rounded-tr-xl rounded-br-xl shadow-md border-2 border-white/50"
+                aria-label="Video testimonial de cliente superando ruptura de pareja con coaching emocional de Ferdy"
               />
               {/* Overlay para el video */}
               <div 
@@ -105,7 +106,7 @@ export function HeroSection() {
             <div className="relative col-span-7 row-span-5 col-start-1 row-start-9 z-15">
               <img
                 src="/hero-img-v2.png"
-                alt="Ferdy Coach - Imagen complementaria"
+                alt="Proceso de coaching emocional para superar dependencia emocional y recuperar autoestima después de ruptura"
                 className="w-full h-full object-cover rounded-l-xl shadow-md border border-white/30 m-4"
               />
               {/* Overlay para la imagen secundaria */}
