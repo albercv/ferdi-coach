@@ -12,14 +12,12 @@ import { AboutSection } from "@/components/sections/about-section"
 import { FAQSection } from "@/components/sections/faq-section"
 import { CTASection } from "@/components/ui/cta-section"
 import { Toggle3D } from "@/components/ui/3d-toggle"
-import { PageBreadcrumbs } from "@/components/seo/breadcrumbs"
 import { LazyLoad } from "@/components/performance/intersection-observer"
 
 export default function HomePage() {
   return (
     <>
       <Header />
-      <PageBreadcrumbs items={[{ name: "Coach del desamor" }]} />
       <main id="main-content">
         <HeroSection />
         <LazyLoad>
