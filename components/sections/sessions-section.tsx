@@ -61,6 +61,9 @@ export function SessionsSection() {
               <Button className="w-full bg-primary hover:bg-primary/90" size="lg">
                 {sessions.cards[0].cta}
               </Button>
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                {sessions.cards[0].paymentInfo}
+              </p>
             </div>
           </CardContent>
         </Card>

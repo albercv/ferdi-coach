@@ -60,7 +60,7 @@ export function HeroSection() {
               size="lg"
               className="text-lg px-8 bg-white text-black border-2 border-black hover:shadow-sm hover:bg-white"
             >
-              <a href="#programa-4">{hero.ctaSecondary}</a>
+              <a href="#sesiones">{hero.ctaSecondary}</a>
             </Button>
           </div>
         </div>

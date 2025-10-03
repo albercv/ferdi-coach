@@ -19,15 +19,15 @@ export default function HomePage() {
       <main id="main-content">
         <HeroSection />
         <LazyLoad>
+          <HowItWorksSection />
+        </LazyLoad>
+        <LazyLoad>
           <TestimonialsSection />
         </LazyLoad>
         <ForWhoSection />
         <SessionsSection />
         <LazyLoad>
           <GuidesSection />
-        </LazyLoad>
-        <LazyLoad>
-          <HowItWorksSection />
         </LazyLoad>
         <LazyLoad>
           <TestimonialsSection />

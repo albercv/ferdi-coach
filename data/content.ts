@@ -52,68 +52,34 @@ export const siteContent = {
       },
       {
         title: "Programa 4 (4 semanas / 4 hitos)",
-        promise: "Encontrarás luz en medio de toda esa oscuridad porque empezarás a tomar conciencia de quien eres y hacia donde vas. Hoy lloras por un desamor y mañana llorarás de alegría por haberte transformado en una persona más preparada para la vida.",
+        promise: "En 4 semanas recuperarás tu bienestar emocional",
         keyPoints: [
           {
-            title: "Caminar contigo en tu proceso",
-            description: "Sostenerte en este cambio de piel que necesitas para tu vida."
+            title: "Semana 1: Estabilización emocional",
+            description: "Herramientas para gestionar la ansiedad y el dolor inicial"
           },
           {
-            title: "Cierre y límites",
-            description: "Contacto cero sostenible, gestión de recaídas, ritual de cierre."
+            title: "Semana 2: Claridad mental",
+            description: "Técnicas para salir del bucle de pensamientos negativos"
           },
           {
-            title: "Transformar tu dolor en aprendizaje",
-            description: "Redefinir lo que viviste para darle sentido en la historia de tu vida."
+            title: "Semana 3: Reconstrucción personal",
+            description: "Redefinir tu identidad y valores personales"
           },
           {
-            title: "Mirar al futuro con optimismo",
-            description: "Plan de vida, relaciones sanas, energía y propósito."
+            title: "Semana 4: Nuevo comienzo",
+            description: "Plan de acción para tu nueva vida"
           }
         ],
-        includes: "4 sesiones 1 a 1 (60–75'), guías y ejercicios semanales, seguimiento entre sesiones (email/WhatsApp profesional), checklist final y plan de continuidad.",
-        bonus: "\"Caja de herramientas para días difíciles\" (audios + plantillas).",
+        includes: "4 sesiones individuales + materiales + seguimiento diario por WhatsApp",
+        bonus: "Guía de contacto cero + workbook de sanación emocional (valor 58€)",
         pricing: {
-          full: "497€",
-          installments: "2 cuotas de 259€"
+          full: "297€",
+          installments: "3 pagos de 99€"
         },
-        cta: "Quiero el Programa 4"
+        cta: "Ver Programa 4"
       }
     ]
-  },
-
-  program4: {
-    title: "Programa 4 - Transformación completa",
-    promise: "En 4 semanas recuperarás tu bienestar emocional y estarás listo para una nueva etapa",
-    milestones: [
-      {
-        week: 1,
-        title: "Aceptación y comprensión",
-        description: "Entender qué ha pasado y por qué te sientes así",
-      },
-      {
-        week: 2,
-        title: "Contacto cero efectivo",
-        description: "Implementar estrategias para mantener la distancia necesaria",
-      },
-      {
-        week: 3,
-        title: "Reconstrucción personal",
-        description: "Trabajar en tu autoestima y redescubrir quién eres",
-      },
-      {
-        week: 4,
-        title: "Proyección al futuro",
-        description: "Prepararte para nuevas relaciones y oportunidades",
-      },
-    ],
-    bonus: [
-      "Guía de contacto cero (PDF)",
-      "Meditaciones guiadas para el desamor",
-      "Plantillas de journaling emocional",
-      "Acceso al grupo privado de apoyo",
-    ],
-    price: "497€",
   },
 
   guides: [
@@ -180,11 +146,6 @@ export const siteContent = {
   },
 
   faq: [
-    {
-      question: "¿Qué diferencia hay entre una sesión suelta y el Programa 4?",
-      answer:
-        "La sesión te permite entender la raíz del problema. Te entrego un informe completo donde vas a tener conocimiento de los bloqueos. El Programa 4 es una llamada a la acción porque trabajas sobre los bloqueos analizados en el informe con seguimiento.",
-    },
     {
       question: "¿Y si recaigo/contacto con mi ex?",
       answer:
