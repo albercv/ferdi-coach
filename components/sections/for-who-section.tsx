@@ -5,7 +5,7 @@ import { siteContent } from "@/data/content"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { HeartCrack, Clock, Users, Target } from "lucide-react"
-import { Progressive3D } from "@/components/3d/progressive-3d"
+
 import { useEffect, useRef, useState } from "react"
 
 const iconMap = {
@@ -73,15 +73,10 @@ export function ForWhoSection() {
             </p>
           )}
           
-          {/* Wave fijo debajo del subtítulo en pantallas pequeñas */}
-          <div className="lg:hidden flex justify-center mt-6 mb-8">
-            <Progressive3D className="opacity-100 w-40 h-40 sm:w-48 sm:h-48" />
-          </div>
-
-          {/* Layout principal: en desktop 2 columnas (tarjetas a la izquierda, corazón a la derecha) */}
+          {/* Layout principal: en desktop 2 columnas (tarjetas a la izquierda) */}
           <div className="mt-10 lg:grid lg:grid-cols-12 lg:gap-8 items-start">
             {/* Tarjetas (izquierda) - 2x2 en pantallas grandes */}
-            <div className="lg:col-span-7">
+            <div className="lg:col-span-12">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
                 {forWho.cards?.map((card, idx) => {
                   const Icon = iconMap[(card.icon as keyof typeof iconMap) ?? "heart-crack"]
@@ -108,13 +103,6 @@ export function ForWhoSection() {
                     </Card>
                   )
                 })}
-              </div>
-            </div>
-
-            {/* Motivo (derecha) en desktop */}
-            <div className="hidden lg:block lg:col-span-5 relative self-center">
-              <div className="h-full w-full flex items-center justify-center">
-                <Progressive3D className="w-56 h-56 xl:w-64 xl:h-64 opacity-100" />
               </div>
             </div>
           </div>
