@@ -8,7 +8,7 @@ export const siteContent = {
       "Acompañamiento cercano, sin juicios, con pasos concretos.",
       "Metodología cercana y realista adaptada a tus necesidades personales.",
     ],
-    ctaPrimary: "Reservar sesión gratuita",
+    ctaPrimary: "Reservar sesión",
     ctaSecondary: "Ver Programa 4",
   },
 

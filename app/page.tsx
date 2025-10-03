@@ -3,8 +3,6 @@ import { Footer } from "@/components/layout/footer"
 import { HeroSection } from "@/components/sections/hero-section"
 import { ForWhoSection } from "@/components/sections/for-who-section"
 import { SessionsSection } from "@/components/sections/sessions-section"
-import { ProgramSection } from "@/components/sections/program-section"
-import { ComparisonSection } from "@/components/sections/comparison-section"
 import { GuidesSection } from "@/components/sections/guides-section"
 import { HowItWorksSection } from "@/components/sections/how-it-works-section"
 import { TestimonialsSection } from "@/components/sections/testimonials-section"
@@ -25,8 +23,6 @@ export default function HomePage() {
         </LazyLoad>
         <ForWhoSection />
         <SessionsSection />
-        <ProgramSection />
-        <ComparisonSection />
         <LazyLoad>
           <GuidesSection />
         </LazyLoad>
@@ -48,10 +44,6 @@ export default function HomePage() {
           primaryCTA={{
             text: "Reservar sesión",
             href: "#reservar",
-          }}
-          secondaryCTA={{
-            text: "Quiero el Programa 4",
-            href: "#programa-4",
           }}
           showTrustSeals={true}
         />

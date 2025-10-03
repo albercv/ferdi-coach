@@ -20,26 +20,26 @@ export function HeroSection() {
         className="hidden lg:block absolute inset-0 -z-10 bg-gradient-to-l from-primary to-white"
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-start lg:items-center w-full max-h-full overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center w-full max-h-full overflow-hidden">
         {/* Columna izquierda: texto */}
-        <div className="relative z-10 space-y-8 animate-fade-in-up pt-4 lg:pt-0">
-          <div className="space-y-4">
-            <h1 id="hero-title" className="text-4xl md:text-5xl lg:text-6xl font-bold text-balance leading-tight">
+        <div className="relative z-10 space-y-8 animate-fade-in-up pt-4 lg:pt-0 flex flex-col items-center lg:items-start">
+          <div className="space-y-4 w-full max-w-xl">
+            <h1 id="hero-title" className="text-4xl md:text-5xl lg:text-6xl font-bold text-balance leading-tight text-center lg:text-left">
               {hero.title}
             </h1>
-            <p className="text-xl text-muted-foreground text-pretty leading-relaxed">
+            <p className="text-xl text-muted-foreground text-pretty leading-relaxed text-center lg:text-left">
               {hero.subtitle}
             </p>
           </div>
 
-          <div>
-            <p className="font-medium mb-3">Te ayudo con</p>
+          <div className="w-full max-w-lg">
+            <p className="font-medium mb-3 text-center lg:text-left">Te ayudo con</p>
             <ul className="space-y-3">
               {hero.bullets.map((bullet: string, index: number) => {
                 const Icon = bulletIcons[index % bulletIcons.length]
                 return (
-                  <li key={index} className="flex items-start">
-                    <Icon aria-hidden className="h-5 w-5 text-accent mr-3 mt-1 flex-shrink-0" />
+                  <li key={index} className="flex items-start gap-3">
+                    <Icon aria-hidden className="h-5 w-5 text-accent flex-shrink-0 mt-1" />
                     <span className="text-muted-foreground">{bullet}</span>
                   </li>
                 )
@@ -47,7 +47,7 @@ export function HeroSection() {
             </ul>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-lg justify-center lg:justify-start">
             <Button
               asChild
               size="lg"
