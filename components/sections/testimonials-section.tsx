@@ -20,7 +20,7 @@ export function TestimonialsSection() {
   }, [api])
 
   return (
-    <Section id="testimonios" aria-labelledby="testimonios-title">
+    <Section id="testimonios" aria-labelledby="testimonios-title" className="bg-primary/5">
       <div className="text-center mb-12">
         <h2 id="testimonios-title" className="text-3xl md:text-4xl font-bold mb-6 text-balance">
           Lo que dicen mis clientes

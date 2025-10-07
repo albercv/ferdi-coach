@@ -67,7 +67,7 @@ export function PricingCard({
 
       {/* Contenido principal: condicional según flipOnHover */}
       {flipOnHover ? (
-        <div className="relative group min-h-[520px] [perspective:1000px]" onClick={handleCardTap}>
+        <div className="relative group min-h-[420px] [perspective:1000px]" onClick={handleCardTap}>
           <div className={cn(
             "relative w-full h-full transition-transform duration-700 ease-in-out [transform-style:preserve-3d] cursor-pointer",
             "group-hover:[transform:rotateY(180deg)]",
@@ -171,7 +171,7 @@ export function PricingCard({
           </div>
         </div>
       ) : (
-        <div className="p-6 flex flex-col h-full min-h-[400px]">
+        <div className="p-6 flex flex-col h-full min-h-[320px]">
           <div className="mb-4">
             <h3 className="text-xl font-semibold mb-2">{title}</h3>
             <p className="text-sm text-muted-foreground mb-4">{description}</p>

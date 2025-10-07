@@ -1,46 +1,45 @@
 import { Button } from "@/components/ui/button"
 import { Section } from "@/components/ui/section"
 import { siteContent } from "@/data/content"
-import { Wrench, Handshake, SlidersHorizontal, Shield, Calendar, CreditCard } from "lucide-react"
-import { TrustSeals } from "@/components/ui/trust-seals"
+import { Wrench, Handshake, SlidersHorizontal } from "lucide-react"
 
 export function HeroSection() {
   const { hero } = siteContent
   const bulletIcons = [Wrench, Handshake, SlidersHorizontal]
 
   return (
-    <Section id="hero" aria-labelledby="hero-title" className="pt-8 pb-16 md:pt-16 md:pb-24 relative overflow-hidden">
-      {/* Fondo móvil: degradado vertical de rosa a blanco */}
+    <Section id="hero" aria-labelledby="hero-title" className="pt-8 pb-16 md:pt-16 md:pb-24 relative overflow-hidden min-h-screen flex items-center">
+      {/* Fondo móvil: degradado del color primario a blanco de derecha a izquierda */}
       <div
         aria-hidden
-        className="lg:hidden absolute inset-0 -z-10 bg-gradient-to-b from-accent/30 via-accent/10 to-white"
+        className="lg:hidden absolute inset-0 -z-10 bg-gradient-to-l from-primary to-white"
       />
-      {/* Fondo que simula la pantalla del vídeo expandiéndose por detrás del texto */}
+      {/* Fondo desktop: degradado del color primario a blanco de derecha a izquierda */}
       <div
         aria-hidden
-        className="hidden lg:block absolute inset-y-0 right-0 w-[70%] -z-10 bg-gradient-to-l from-accent/30 via-accent/10 to-white"
+        className="hidden lg:block absolute inset-0 -z-10 bg-gradient-to-l from-primary to-white"
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center w-full max-h-full overflow-hidden">
         {/* Columna izquierda: texto */}
-        <div className="relative z-10 space-y-8 animate-fade-in-up">
-          <div className="space-y-4">
-            <h1 id="hero-title" className="text-4xl md:text-5xl lg:text-6xl font-bold text-balance leading-tight">
+        <div className="relative z-10 space-y-8 animate-fade-in-up pt-4 lg:pt-0 flex flex-col items-center lg:items-start">
+          <div className="space-y-4 w-full max-w-xl">
+            <h1 id="hero-title" className="text-4xl md:text-5xl lg:text-6xl font-bold text-balance leading-tight text-center lg:text-left">
               {hero.title}
             </h1>
-            <p className="text-xl text-muted-foreground text-pretty leading-relaxed">
+            <p className="text-xl text-muted-foreground text-pretty leading-relaxed text-center lg:text-left">
               {hero.subtitle}
             </p>
           </div>
 
-          <div>
-            <p className="font-medium mb-3">Te ayudo con</p>
+          <div className="w-full max-w-lg">
+            <p className="font-medium mb-3 text-center lg:text-left">Te ayudo con</p>
             <ul className="space-y-3">
               {hero.bullets.map((bullet: string, index: number) => {
                 const Icon = bulletIcons[index % bulletIcons.length]
                 return (
-                  <li key={index} className="flex items-start">
-                    <Icon aria-hidden className="h-5 w-5 text-accent mr-3 mt-1 flex-shrink-0" />
+                  <li key={index} className="flex items-start gap-3">
+                    <Icon aria-hidden className="h-5 w-5 text-accent flex-shrink-0 mt-1" />
                     <span className="text-muted-foreground">{bullet}</span>
                   </li>
                 )
@@ -48,7 +47,7 @@ export function HeroSection() {
             </ul>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-lg justify-center lg:justify-start">
             <Button
               asChild
               size="lg"
@@ -61,59 +60,64 @@ export function HeroSection() {
               size="lg"
               className="text-lg px-8 bg-white text-black border-2 border-black hover:shadow-sm hover:bg-white"
             >
-              <a href="#programa-4">{hero.ctaSecondary}</a>
+              <a href="#sesiones">{hero.ctaSecondary}</a>
             </Button>
-          </div>
-
-          {/* 2 pasos para reservar */}
-          <div className="space-y-4 pt-4 border-t border-gray-200">
-            <h3 className="font-semibold text-lg text-gray-800 text-center">2 pasos para reservar</h3>
-            
-            {/* Paso 1: Pago 100% seguro */}
-            <div className="flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                1
-              </div>
-              <div className="flex items-center gap-3">
-                <Shield className="h-6 w-6 text-green-600 flex-shrink-0" />
-                <CreditCard className="h-5 w-5 text-green-600" />
-                <span className="font-semibold text-green-800">Pago 100% seguro</span>
-              </div>
-            </div>
-
-            {/* Paso 2: Eliges día y hora en Calendly */}
-            <div className="flex items-center gap-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                2
-              </div>
-              <div className="flex items-center gap-3">
-                <Calendar className="h-6 w-6 text-blue-600 flex-shrink-0" />
-                <span className="font-semibold text-blue-800">Eliges día y hora en Calendly</span>
-              </div>
-            </div>
-
-            {/* Sellos de confianza reales */}
-            <div className="pt-4">
-              <p className="text-sm text-gray-600 text-center mb-3">Protegido por:</p>
-              <TrustSeals className="justify-center" />
-            </div>
           </div>
         </div>
 
-        {/* Columna derecha: vídeo */}
-        <div className="relative w-full rounded-xl overflow-hidden ring-1 ring-black/10 shadow-2xl bg-transparent">
-          <video
-            className="w-full h-auto rounded-xl shadow-md ring-1 ring-foreground/10"
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="/logo2.webp"
-          >
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
-          </video>
-          {/* Borde simulado de pantalla */}
-          <div aria-hidden className="pointer-events-none absolute inset-0 ring-1 ring-white/10" />
+        {/* Columna derecha: composición multimedia hero */}
+        <div className="relative w-full max-w-2xl mx-auto lg:mx-0 h-full max-h-[70vh]">
+          {/* Contenedor de la composición de 3 elementos */}
+          <div className="relative h-full grid grid-cols-12 grid-rows-12 gap-[5px]">
+            
+            {/* Imagen principal (hero-img-v1) - Elemento dominante */}
+            <div className="relative col-span-7 row-span-8 z-10">
+              <img
+                src="/hero-img-v1.png"
+                alt="Coach emocional Ferdy especializado en superar rupturas de pareja y duelo amoroso - Sesiones online personalizadas"
+                className="w-full h-full object-cover rounded-l-2xl shadow-lg"
+              />
+              {/* Overlay sutil para la imagen principal */}
+              <div 
+                aria-hidden 
+                className="absolute inset-0 bg-gradient-to-t from-white/10 via-transparent to-transparent rounded-l-2xl pointer-events-none"
+              />
+            </div>
+
+            {/* Video muestra - Elemento secundario */}
+            <div className="relative col-span-5 row-span-9 col-start-8 row-start-1 z-20">
+              <video
+                src="/video-muestra-NOPUBLISH.MP4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover rounded-tr-xl rounded-br-xl shadow-md border-2 border-white/50"
+                aria-label="Video testimonial de cliente superando ruptura de pareja con coaching emocional de Ferdy"
+              />
+              {/* Overlay para el video */}
+              <div 
+                aria-hidden 
+                className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent rounded-tr-xl rounded-br-xl pointer-events-none"
+              />
+            </div>
+
+            {/* Imagen secundaria (hero-img-v2) - Elemento de apoyo */}
+            <div className="relative col-span-7 row-span-5 col-start-1 row-start-9 z-15">
+              <img
+                src="/hero-img-v2.png"
+                alt="Proceso de coaching emocional para superar dependencia emocional y recuperar autoestima después de ruptura"
+                className="w-full h-full object-cover rounded-l-xl shadow-md border border-white/30 m-4"
+              />
+              {/* Overlay para la imagen secundaria */}
+              <div 
+                aria-hidden 
+                className="w-full h-full object-cover rounded-l-xl shadow-md border border-white/30 object-top object-left"
+              />
+            </div>
+
+
+          </div>
         </div>
       </div>
     </Section>

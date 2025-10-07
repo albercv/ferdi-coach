@@ -3,37 +3,40 @@ import {
   generateFAQStructuredData,
   generateBreadcrumbStructuredData,
   generateProductStructuredData,
+  generateLocalBusinessStructuredData,
 } from "@/lib/seo"
-import { faqData } from "@/data/faq"
+import { siteContent } from "@/data/content"
 
 export function StructuredData() {
   const { organization, person } = generateStructuredData()
 
   const faqStructuredData = generateFAQStructuredData(
-    faqData.map((item) => ({
+    siteContent.faq.items.map((item: { question: string; answer: string }) => ({
       question: item.question,
       answer: item.answer,
     })),
   )
 
   const breadcrumbData = generateBreadcrumbStructuredData([
-    { name: "Inicio", url: "https://ferdycoach.com" },
-    { name: "Coach del desamor", url: "https://ferdycoach.com" },
+    { name: "Inicio", url: "https://ferdy-coach.com" },
+    { name: "Coach para superar rupturas", url: "https://ferdy-coach.com" },
   ])
 
   const sessionProduct = generateProductStructuredData({
-    name: "Sesiones 1 a 1 - Coach del desamor",
-    description: "Sesiones personalizadas para superar rupturas amorosas",
-    price: "75",
+    name: "Sesiones individuales de coaching emocional",
+    description: "Acompañamiento personalizado para superar tu ruptura de pareja",
+    price: "97",
     currency: "EUR",
   })
 
   const programProduct = generateProductStructuredData({
-    name: "Programa 4 - Transformación completa",
-    description: "Programa de 4 semanas para superar el desamor",
-    price: "497",
+    name: "Programa intensivo: Supera tu ruptura en 4 semanas",
+    description: "Transforma tu dolor en crecimiento personal y recupera tu bienestar emocional",
+    price: "297",
     currency: "EUR",
   })
+
+  const localBusiness = generateLocalBusinessStructuredData()
 
   return (
     <>
@@ -43,6 +46,7 @@ export function StructuredData() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(sessionProduct) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(programProduct) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusiness) }} />
     </>
   )
 }

@@ -9,11 +9,11 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const navigation = [
-    { name: "Sesiones", href: "#sesiones" },
-    { name: "Programa 4", href: "#programa-4" },
-    { name: "Guías", href: "#guias" },
-    { name: "Cómo funciona", href: "#como-funciona" },
-    { name: "Sobre mí", href: "#sobre-mi" },
+    { name: "Sesiones", href: "#sesiones", title: "Sesiones individuales de coaching emocional para superar rupturas" },
+    { name: "Programa 4", href: "#programa-4", title: "Programa intensivo de 4 semanas para superar ruptura de pareja" },
+    { name: "Guías", href: "#guias", title: "Guías gratuitas para comenzar tu proceso de sanación emocional" },
+    { name: "Cómo funciona", href: "#como-funciona", title: "Metodología de coaching emocional para superar dependencia emocional" },
+    { name: "Sobre mí", href: "#sobre-mi", title: "Conoce a Ferdy, coach especializado en rupturas de pareja" },
   ]
 
   return (
@@ -22,7 +22,7 @@ export function Header() {
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
             <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center overflow-hidden">
-              <img src="/logo2.webp" alt="Ferdy logo" className="w-full h-full object-cover" />
+              <img src="/logo2.webp" alt="Ferdy Coach - Logo del especialista en superar rupturas de pareja y coaching emocional" className="w-full h-full object-cover" />
             </div>
             <span className="font-bold text-lg text-foreground">Ferdy | Coach del desamor</span>
           </Link>
@@ -34,6 +34,7 @@ export function Header() {
             <Link
               key={item.name}
               href={item.href}
+              title={item.title}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               {item.name}
@@ -71,6 +72,7 @@ export function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
+                  title={item.title}
                   className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >

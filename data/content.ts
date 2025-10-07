@@ -1,119 +1,98 @@
 export const siteContent = {
   hero: {
-    title: "Del adiós al RENACER. Tu nuevo YO",
+    title: "Supera tu ruptura de pareja en 4 semanas",
     subtitle:
-      "Te acompaño a transformar el dolor de tu ruptura en crecimiento personal y libertad.",
+      "Coach emocional especializado en procesos de duelo amoroso. Te acompaño para recuperar tu bienestar, autoestima y paz mental después de una separación.",
     bullets: [
-      "Herramientas que me ayudaron y que ahora comparto contigo.",
-      "Acompañamiento cercano, sin juicios, con pasos concretos.",
-      "Metodología cercana y realista adaptada a tus necesidades personales.",
+      "Duelo amoroso y sanación emocional",
+      "Dependencia emocional y límites sanos",
+      "Autoestima y confianza personal",
     ],
     ctaPrimary: "Reservar sesión gratuita",
-    ctaSecondary: "Ver Programa 4",
+    ctaSecondary: "Ver servicios",
   },
 
   forWho: {
-    title: "¿Para quién es?",
-    subtitle:
-      "Este espacio está diseñado para acompañarte, apoyarte y ayudarte si alguna de estas situaciones resuena contigo.",
+    title: "¿Acabas de terminar una relación?",
+    subtitle: "Si te identificas con alguna de estas situaciones, puedo ayudarte a superar tu ruptura de pareja",
     cards: [
-      { title: "Vacío interior", description: "Te despiertas con un vacío tremendo en lo más profundo de tu interior y estás atrapado en la película del pasado.", icon: "heart-crack" },
-      { title: "Pérdida de dirección", description: "Te sientes perdido, desmotivado, sin dirección en la vida y desanimado para seguir adelante.", icon: "target" },
-      { title: "Realidad insatisfactoria", description: "Tu vida es una pesadilla y quieres despertar de una realidad con la que no estás conforme.", icon: "clock" },
-      { title: "Emociones negativas", description: "Sientes vergüenza, ira, culpa y has perdido fe en este mundo.", icon: "users" },
-      { title: "Abrumado", description: "Se te ha hecho un mundo todo esto y no puedes ni sabes manejarlo.", icon: "heart-crack" }
+      {
+        icon: "heart-crack",
+        title: "Ruptura reciente",
+        description: "Acabas de terminar una relación y sientes que no puedes seguir adelante. El dolor emocional es intenso y necesitas apoyo profesional para procesar el duelo amoroso.",
+      },
+      {
+        icon: "clock",
+        title: "Dependencia emocional",
+        description: "Tienes dificultades para establecer límites sanos en tus relaciones. Sientes que necesitas constantemente la validación de tu ex pareja o de otros para sentirte bien contigo mismo.",
+      },
+      {
+        icon: "users",
+        title: "Patrones tóxicos",
+        description: "Repites los mismos errores en tus relaciones amorosas. Quieres romper con patrones de dependencia emocional y construir relaciones más sanas en el futuro.",
+      },
+      {
+        icon: "target",
+        title: "Baja autoestima",
+        description: "La ruptura ha afectado tu autoestima y confianza personal. Necesitas recuperar tu amor propio y aprender a valorarte independientemente de una relación de pareja.",
+      },
     ],
   },
 
   sessions: {
-    title: "¿Cómo te puedo ayudar?",
+    title: "Cómo te puedo ayudar a superar tu ruptura",
     cards: [
       {
-        title: "Sesiones 1 a 1",
-        description: "Acompañamiento individual para generar el punto de inflexión que necesitas en tu vida para encontrar claridad y abrirte a nuevas posibilidades.",
+        title: "Sesiones individuales de coaching emocional",
+        description: "Acompañamiento personalizado para superar tu ruptura de pareja",
         whatYouGet: {
-          title: "Qué te llevas en cada sesión (60'):",
+          title: "Qué incluye cada sesión:",
           items: [
-            "Te prometo un espacio seguro y sin juicios donde podrás expresar lo que sientes libremente.",
-            "1–2 herramientas prácticas (meditación, journaling, poner límites, contacto cero sostenible, ejercicios…)",
-            "Mini-plan de 7 días por escrito."
+            "Sesión 1 a 1 de 60 minutos por videollamada",
+            "Plan personalizado para tu proceso de duelo amoroso",
+            "Herramientas prácticas para gestionar emociones",
+            "Ejercicios específicos para romper la dependencia emocional",
+            "Seguimiento entre sesiones vía WhatsApp"
           ]
         },
-        idealFor: "Primeros auxilios emocionales o revisiones puntuales.",
-        format: "Online (Zoom/Meet). Materiales descargables cuando aplique. Soporte por email 48h.",
+        idealFor: "Personas que necesitan apoyo inmediato tras una ruptura reciente",
+        format: "Videollamada de 60 minutos",
         pricing: {
-          single: "89€",
-          singleLabel: "(lanzamiento)",
-          pack: "249€",
-          packLabel: "Pack 3 sesiones"
+          full: "€97",
+          note: "Sesión individual"
         },
-        cta: "Reservar sesión",
-        paymentInfo: "Pago seguro → Calendly → confirmación inmediata por email."
+        cta: "Reservar sesión"
       },
       {
-        title: "Programa 4 (4 semanas / 4 hitos)",
-        promise: "Encontrarás luz en medio de toda esa oscuridad porque empezarás a tomar conciencia de quien eres y hacia donde vas. Hoy lloras por un desamor y mañana llorarás de alegría por haberte transformado en una persona más preparada para la vida.",
+        title: "Programa intensivo: Supera tu ruptura en 4 semanas",
+        promise: "Transforma tu dolor en crecimiento personal y recupera tu bienestar emocional",
         keyPoints: [
           {
-            title: "Caminar contigo en tu proceso",
-            description: "Sostenerte en este cambio de piel que necesitas para tu vida."
+            title: "Semana 1: Aceptación del duelo",
+            description: "Aprende a procesar el dolor de la ruptura de forma sana"
           },
           {
-            title: "Cierre y límites",
-            description: "Contacto cero sostenible, gestión de recaídas, ritual de cierre."
+            title: "Semana 2: Rompe la dependencia emocional",
+            description: "Establece límites sanos y recupera tu independencia"
           },
           {
-            title: "Transformar tu dolor en aprendizaje",
-            description: "Redefinir lo que viviste para darle sentido en la historia de tu vida."
+            title: "Semana 3: Reconstruye tu autoestima",
+            description: "Fortalece tu amor propio y confianza personal"
           },
           {
-            title: "Mirar al futuro con optimismo",
-            description: "Plan de vida, relaciones sanas, energía y propósito."
+            title: "Semana 4: Diseña tu nueva vida",
+            description: "Crea un plan para relaciones futuras más sanas"
           }
         ],
-        includes: "4 sesiones 1 a 1 (60–75'), guías y ejercicios semanales, seguimiento entre sesiones (email/WhatsApp profesional), checklist final y plan de continuidad.",
-        bonus: "\"Caja de herramientas para días difíciles\" (audios + plantillas).",
+        includes: "4 sesiones individuales + material de apoyo + seguimiento diario",
+        bonus: "Guía 'Kit de emergencia emocional' + acceso a comunidad privada",
         pricing: {
-          full: "497€",
-          installments: "2 cuotas de 259€"
+          full: "€297",
+          installments: "3 pagos de €99"
         },
-        cta: "Quiero el Programa 4"
+        cta: "Comenzar programa"
       }
     ]
-  },
-
-  program4: {
-    title: "Programa 4 - Transformación completa",
-    promise: "En 4 semanas recuperarás tu bienestar emocional y estarás listo para una nueva etapa",
-    milestones: [
-      {
-        week: 1,
-        title: "Aceptación y comprensión",
-        description: "Entender qué ha pasado y por qué te sientes así",
-      },
-      {
-        week: 2,
-        title: "Contacto cero efectivo",
-        description: "Implementar estrategias para mantener la distancia necesaria",
-      },
-      {
-        week: 3,
-        title: "Reconstrucción personal",
-        description: "Trabajar en tu autoestima y redescubrir quién eres",
-      },
-      {
-        week: 4,
-        title: "Proyección al futuro",
-        description: "Prepararte para nuevas relaciones y oportunidades",
-      },
-    ],
-    bonus: [
-      "Guía de contacto cero (PDF)",
-      "Meditaciones guiadas para el desamor",
-      "Plantillas de journaling emocional",
-      "Acceso al grupo privado de apoyo",
-    ],
-    price: "497€",
   },
 
   guides: [
@@ -171,44 +150,49 @@ export const siteContent = {
   about: {
     title: "Sobre mí (Ferdy)",
     description:
-      "Soy Ferdy, coach emocional especializado en procesos de ruptura de pareja. Tras 12 años de matrimonio mi ruptura me llevó a dejar un país que llevo en mi corazón; Perú, personas que amaba y también una profesión que ya no me llenaba; la cocina. Tras una etapa de duelo personal inicié un viaje de mochilero por el sudeste asiático donde me encontré conmigo mismo y con una verdad clara: quería ayudar a otros a superar una ruptura. No fue fácil, primero tuve que transitar mi propia sanación antes de guiar. Estudié coaching transpersonal para contar con las herramientas necesarias y hoy quiero compartirlas contigo junto con lo más valioso que tengo; mi experiencia y sobre todo mi presencia.",
+      "Soy Ferdy, coach emocional especializado en procesos de ruptura de pareja. Tras 12 años de matrimonio mi ruptura me llevó a dejar un país que llevo en mi corazón, Perú, personas que amaba y también una profesión que ya no me llenaba, la cocina. Tras una etapa de duelo personal inicié un viaje de mochilero por el sudeste asiático donde me encontré conmigo mismo y con una verdad clara: quería ayudar a otros a superar una ruptura. No fue fácil, primero tuve que transitar mi propia sanación emocional antes de guiar a otros. Estudié coaching transpersonal para contar con las herramientas necesarias y hoy quiero compartirlas contigo junto con lo más valioso que tengo, mi experiencia personal y sobre todo mi presencia auténtica.",
     credentials: [
-      "Formación en coaching (pendientes)",
-      "Metodología propia basada en 4 hitos",
-      "Experiencia acompañando duelo, dependencia emocional y límites",
+      "Formación en coaching transpersonal para superar rupturas de pareja",
+      "Enfoque integral: combinación de introspección, fuerza interior y acompañamiento emocional",
+      "Guiar sin juicios, con comprensión y cercanía en procesos de duelo amoroso",
+      "Hablo desde la experiencia: estuve en tu lugar y salí adelante tras mi ruptura",
     ],
   },
 
-  faq: [
-    {
-      question: "¿Qué diferencia hay entre una sesión suelta y el Programa 4?",
-      answer:
-        "La sesión te permite entender la raíz del problema. Te entrego un informe completo donde vas a tener conocimiento de los bloqueos. El Programa 4 es una llamada a la acción porque trabajas sobre los bloqueos analizados en el informe con seguimiento.",
-    },
-    {
-      question: "¿Y si recaigo/contacto con mi ex?",
-      answer:
-        "Nunca te voy a juzgar, estoy para ayudarte. Lo contamos como parte del proceso y ajustamos el plan reforzando límites.",
-    },
-    {
-      question: "¿Necesito estar listo para empezar?",
-      answer:
-        "No necesitar estar listo porque precisamente mi programa es para ordenarte, sanar y encontrar claridad.",
-    },
-    {
-      question: "¿Y si estoy en terapia psicológica?",
-      answer:
-        "Mi trabajo no sustituye a tu psicólogo, pueden ir de la mano. Potenciará tu bienestar emocional.",
-    },
-    {
-      question: "¿Es para todo el mundo?",
-      answer:
-        "Sí, trabajo con cualquier persona que esté atravesando una ruptura. Hombres, mujeres y personas de cualquier edad o condición. La premisa fundamental es el compromiso de cambio.",
-    },
-    {
-      question: "Política de cancelación",
-      answer:
-        "Cambios o cancelaciones hasta 24h antes.",
-    },
-  ],
+  faq: {
+    title: "Preguntas frecuentes sobre coaching para superar rupturas",
+    subtitle: "Resuelve tus dudas sobre el proceso de sanación emocional tras una ruptura",
+    items: [
+      {
+        question: "¿Qué diferencia hay entre una sesión suelta y el Programa 4?",
+        answer:
+          "La sesión individual de coaching emocional te proporciona alivio y claridad inmediata para superar tu ruptura de pareja. El Programa 4 consolida hábitos duraderos de bienestar emocional y acompaña tu progreso con seguimiento personalizado durante 4 semanas completas.",
+      },
+      {
+        question: "¿Y si recaigo o contacto con mi ex pareja?",
+        answer:
+          "Las recaídas emocionales son parte natural del proceso de superar una ruptura. Lo analizamos juntos sin juicios y seguimos fortaleciendo tu proceso de sanación emocional. Te proporciono herramientas específicas para manejar estos momentos y convertirlos en oportunidades de crecimiento personal.",
+      },
+      {
+        question: "¿Necesito estar 'listo' para empezar el coaching emocional?",
+        answer:
+          "Nunca se está completamente listo para superar una ruptura de pareja. Tu transformación emocional comienza en el momento exacto que decides avanzar y buscar apoyo profesional. El coaching emocional te acompaña desde donde estés ahora hacia tu bienestar.",
+      },
+      {
+        question: "¿Y si ya estoy yendo al psicólogo?",
+        answer:
+          "El coaching emocional es completamente complementario con la terapia psicológica. Yo viví personalmente el dolor de una ruptura tras 12 años de matrimonio y aquí te enseño a transformar ese dolor en poder personal. Combinamos enfoques para potenciar tu proceso de sanación.",
+      },
+      {
+        question: "¿Trabajas con hombres o mujeres para superar rupturas?",
+        answer:
+          "Trabajo tanto con hombres como con mujeres que buscan superar su ruptura de pareja. Mi metodología de coaching emocional transforma el dolor en fuerza interior con conciencia plena, adaptándose a las necesidades específicas de cada persona independientemente de su género.",
+      },
+      {
+        question: "¿Cuál es la política de cancelación de las sesiones?",
+        answer:
+          "Puedes realizar cambios o cancelaciones de tus sesiones de coaching emocional hasta 24 horas antes del horario programado. Esto nos permite reorganizar la agenda y mantener la continuidad de tu proceso de sanación emocional tras la ruptura.",
+      },
+    ],
+  },
 } as const
