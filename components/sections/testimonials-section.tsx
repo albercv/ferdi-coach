@@ -40,6 +40,8 @@ export function TestimonialsSection() {
                   age={testimonial.age}
                   text={testimonial.text}
                   rating={testimonial.rating}
+                  video={testimonial.video}
+                  image={testimonial.image}
                 />
               </CarouselItem>
             ))}
