@@ -51,7 +51,7 @@ export function AboutSection() {
           </h2>
           <p className="text-lg text-muted-foreground text-pretty leading-relaxed">{about.description}</p>
 
-          <Card>
+          <Card className="relative">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Award className="h-5 w-5 text-accent" />
@@ -65,6 +65,14 @@ export function AboutSection() {
                   </li>
                 ))}
               </ul>
+              {/* Logo stamp en esquina superior derecha */}
+              <div className="absolute -top-2 -right-2 w-12 h-12 bg-white rounded-full shadow-lg border-2 border-accent/20 flex items-center justify-center">
+                <img 
+                  src="/logo2.webp" 
+                  alt="Logo Ferdy Coach" 
+                  className="w-8 h-8 object-contain"
+                />
+              </div>
             </CardContent>
           </Card>
 
