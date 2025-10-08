@@ -87,8 +87,7 @@ export const siteContent = {
         includes: "4 sesiones individuales + material de apoyo + seguimiento diario",
         bonus: "Guía 'Kit de emergencia emocional' + acceso a comunidad privada",
         pricing: {
-          full: "€297",
-          installments: "3 pagos de €99"
+          full: "€297"
         },
         cta: "Comenzar programa"
       }
