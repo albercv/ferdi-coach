@@ -20,7 +20,7 @@ export function TestimonialsSection() {
   }, [api])
 
   return (
-    <Section id="testimonios" aria-labelledby="testimonios-title" className="bg-primary/5">
+    <Section id="testimonios" aria-labelledby="testimonios-title" className="bg-secondary">
       <div className="text-center mb-12">
         <h2 id="testimonios-title" className="text-3xl md:text-4xl font-bold mb-6 text-balance">
           Lo que dicen mis clientes
@@ -40,6 +40,8 @@ export function TestimonialsSection() {
                   age={testimonial.age}
                   text={testimonial.text}
                   rating={testimonial.rating}
+                  video={testimonial.video}
+                  image={testimonial.image}
                 />
               </CarouselItem>
             ))}

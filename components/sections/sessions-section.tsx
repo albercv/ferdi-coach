@@ -9,7 +9,7 @@ export function SessionsSection() {
   const { sessions } = siteContent
 
   return (
-    <Section id="sesiones" aria-labelledby="sesiones-title" className="bg-primary/5">
+    <Section id="sesiones" aria-labelledby="sesiones-title" className="bg-secondary">
       <div className="text-center mb-12">
         <h2 id="sesiones-title" className="text-3xl md:text-4xl font-bold mb-6 text-balance">
           {sessions.title}
@@ -49,7 +49,7 @@ export function SessionsSection() {
             </div>
 
             {/* Pricing - simplified */}
-            <div className="bg-gray-50 p-3 rounded-lg mt-auto">
+            <div className="bg-secondary/30 p-3 rounded-lg mt-auto">
               <div className="text-center mb-2">
                 <span className="text-xl font-bold">{sessions.cards[0].pricing.full}</span>
                 <p className="text-xs text-muted-foreground">{sessions.cards[0].pricing.note}</p>
@@ -102,10 +102,9 @@ export function SessionsSection() {
             </div>
 
             {/* Pricing - simplified */}
-            <div className="bg-gray-50 p-3 rounded-lg mt-auto">
+            <div className="bg-secondary/30 p-3 rounded-lg mt-auto">
               <div className="text-center mb-2">
                 <div className="text-xl font-bold">{sessions.cards[1].pricing.full}</div>
-                <p className="text-xs text-muted-foreground">o {sessions.cards[1].pricing.installments}</p>
               </div>
               <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
                 {sessions.cards[1].cta}

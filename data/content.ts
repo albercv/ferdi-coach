@@ -1,6 +1,15 @@
+interface Testimonial {
+  name: string
+  age: number
+  text: string
+  rating: number
+  video?: string
+  image?: string
+}
+
 export const siteContent = {
   hero: {
-    title: "Supera tu ruptura de pareja en 4 semanas",
+    title: "Transformación personal tras una ruptura: empieza a sanar desde dentro",
     subtitle:
       "Coach emocional especializado en procesos de duelo amoroso. Te acompaño para recuperar tu bienestar, autoestima y paz mental después de una separación.",
     bullets: [
@@ -87,8 +96,7 @@ export const siteContent = {
         includes: "4 sesiones individuales + material de apoyo + seguimiento diario",
         bonus: "Guía 'Kit de emergencia emocional' + acceso a comunidad privada",
         pricing: {
-          full: "€297",
-          installments: "3 pagos de €99"
+          full: "€297"
         },
         cta: "Comenzar programa"
       }
@@ -119,12 +127,14 @@ export const siteContent = {
       age: 32,
       text: "Después de 6 meses sin poder superar mi ruptura, en solo 4 semanas con Ferdy conseguí recuperar mi paz mental. Sus herramientas son realmente efectivas.",
       rating: 5,
+      video: "ferdy-presentation",
     },
     {
       name: "M.J.",
       age: 28,
       text: "El programa me ayudó no solo a superar mi ruptura, sino a entender patrones que tenía en mis relaciones. Ahora me siento mucho más segura de mí misma.",
       rating: 5,
+      image: "hero-img-v2",
     },
     // Tarjetas de prueba para el layout
     {
@@ -132,6 +142,7 @@ export const siteContent = {
       age: 30,
       text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet.",
       rating: 4,
+      image: "hero-img-v2",
     },
     {
       name: "Test Usuario 2",
@@ -145,7 +156,21 @@ export const siteContent = {
       text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
       rating: 5,
     },
-  ],
+    {
+      name: "Ana G.",
+      age: 35,
+      text: "El coaching emocional de Ferdy me ayudó a entender que merecía una relación sana. Ahora tengo herramientas para no repetir patrones tóxicos.",
+      rating: 5,
+      video: "ferdy-presentation",
+    },
+    {
+      name: "Carlos R.",
+      age: 29,
+      text: "Pensé que nunca superaría mi ruptura después de 8 años juntos. El programa me dio esperanza y un camino claro hacia la sanación.",
+      rating: 5,
+      image: "hero-img-v2",
+    },
+  ] as Testimonial[],
 
   about: {
     title: "Sobre mí (Ferdy)",

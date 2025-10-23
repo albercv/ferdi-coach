@@ -1,12 +1,46 @@
+"use client"
+
 import { Section } from "@/components/ui/section"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { siteContent } from "@/data/content"
 import { Award } from "lucide-react"
+import { useEffect, useRef } from "react"
 
 export function AboutSection() {
   const { about } = siteContent
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Reproducir video cuando entra en vista
+            video.play().catch((error) => {
+              console.log("Error al reproducir video automáticamente:", error)
+            })
+          } else {
+            // Pausar video cuando sale de vista
+            video.pause()
+          }
+        })
+      },
+      {
+        threshold: 0.5, // Se activa cuando el 50% del video es visible
+      }
+    )
+
+    observer.observe(video)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
 
   return (
     <Section id="sobre-mi" aria-labelledby="sobre-mi-title" className="bg-secondary/50">
@@ -17,7 +51,7 @@ export function AboutSection() {
           </h2>
           <p className="text-lg text-muted-foreground text-pretty leading-relaxed">{about.description}</p>
 
-          <Card>
+          <Card className="relative">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Award className="h-5 w-5 text-accent" />
@@ -31,6 +65,14 @@ export function AboutSection() {
                   </li>
                 ))}
               </ul>
+              {/* Logo stamp en esquina superior derecha */}
+              <div className="absolute -top-2 -right-2 w-12 h-12 bg-white rounded-full shadow-lg border-2 border-accent/20 flex items-center justify-center">
+                <img 
+                  src="/logo2.webp" 
+                  alt="Logo Ferdy Coach" 
+                  className="w-8 h-8 object-contain"
+                />
+              </div>
             </CardContent>
           </Card>
 
@@ -46,9 +88,11 @@ export function AboutSection() {
           {/* Video de Ferdy */}
           <div className="aspect-[4/5] rounded-2xl overflow-hidden ring-1 ring-black/10 bg-secondary/20">
             <video
-              src="/video-muestra-NOPUBLISH.MP4"
+              ref={videoRef}
+              src="/ferdy-presentation.mp4"
               className="w-full h-full object-cover"
               controls
+              muted
               preload="metadata"
               poster="/logo2.webp"
               aria-label="Video de presentación de Ferdy - Coach emocional certificado especializado en superar rupturas de pareja y dependencia emocional"

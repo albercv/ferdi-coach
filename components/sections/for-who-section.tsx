@@ -61,7 +61,7 @@ export function ForWhoSection() {
   }, [])
 
   return (
-    <Section id="para-quien" aria-labelledby="para-quien-title" className="bg-secondary/30 relative overflow-hidden">
+    <Section id="para-quien" aria-labelledby="para-quien-title" className="bg-background relative overflow-hidden">
       <div ref={sectionRef} className="relative sm:py-0 py-5">
         <div className="text-center max-w-6xl mx-auto">
           <h2 id="para-quien-title" className="text-3xl md:text-4xl font-bold text-balance">
