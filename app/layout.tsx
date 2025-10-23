@@ -13,7 +13,7 @@ const geistSans = GeistSans
 const geistMono = GeistMono
 
 export const metadata: Metadata = {
-  title: "Ferdy Coach - Superar Ruptura de Pareja | Coaching Emocional Especializado",
+  title: "Transformación personal tras una ruptura: empieza a sanar desde dentro",
   description:
     "¿Acabas de terminar una relación? Te ayudo a superar tu ruptura de pareja en 4 semanas. Coach emocional especializado en duelo amoroso, dependencia emocional y recuperación tras separación. Programa personalizado con resultados comprobados.",
   keywords: [
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_ES",
     url: "https://ferdy-coach.com",
-    title: "Ferdy Coach - Superar Ruptura de Pareja | Coaching Emocional Especializado",
+    title: "Transformación personal tras una ruptura: empieza a sanar desde dentro",
     description:
       "¿Acabas de terminar una relación? Te ayudo a superar tu ruptura de pareja en 4 semanas. Coach emocional especializado en duelo amoroso y dependencia emocional con resultados comprobados.",
     siteName: "Ferdy Coach",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ferdy Coach - Superar Ruptura de Pareja | Coaching Emocional",
+    title: "Transformación personal tras una ruptura: empieza a sanar desde dentro",
     description:
       "¿Acabas de terminar una relación? Te ayudo a superar tu ruptura de pareja en 4 semanas. Coach emocional especializado con resultados comprobados.",
     images: ["/og-image.jpg"]

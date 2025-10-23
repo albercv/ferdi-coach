@@ -17,7 +17,7 @@ export function GuidesSection() {
   }
 
   return (
-    <Section id="guias" aria-labelledby="guias-title">
+    <Section id="guias" aria-labelledby="guias-title" className="bg-background">
       <div className="text-center mb-12">
         <h2 id="guias-title" className="text-3xl md:text-4xl font-bold mb-6 text-balance">
           Guías gratuitas

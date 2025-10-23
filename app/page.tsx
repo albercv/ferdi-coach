@@ -30,9 +30,6 @@ export default function HomePage() {
           <GuidesSection />
         </LazyLoad>
         <LazyLoad>
-          <TestimonialsSection />
-        </LazyLoad>
-        <LazyLoad>
           <AboutSection />
         </LazyLoad>
         <LazyLoad>

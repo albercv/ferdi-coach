@@ -9,7 +9,7 @@ interface Testimonial {
 
 export const siteContent = {
   hero: {
-    title: "Supera tu ruptura de pareja en 4 semanas",
+    title: "Transformación personal tras una ruptura: empieza a sanar desde dentro",
     subtitle:
       "Coach emocional especializado en procesos de duelo amoroso. Te acompaño para recuperar tu bienestar, autoestima y paz mental después de una separación.",
     bullets: [

@@ -9,7 +9,7 @@ export function SessionsSection() {
   const { sessions } = siteContent
 
   return (
-    <Section id="sesiones" aria-labelledby="sesiones-title" className="bg-primary/5">
+    <Section id="sesiones" aria-labelledby="sesiones-title" className="bg-secondary">
       <div className="text-center mb-12">
         <h2 id="sesiones-title" className="text-3xl md:text-4xl font-bold mb-6 text-balance">
           {sessions.title}
