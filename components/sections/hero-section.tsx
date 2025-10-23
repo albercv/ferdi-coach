@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Section } from "@/components/ui/section"
 import { siteContent } from "@/data/content"
 import { Wrench, Handshake, SlidersHorizontal } from "lucide-react"
+import { GoogleSignInButton } from "@/components/ui/google-sign-in-button"
 
 export function HeroSection() {
   const { hero } = siteContent
@@ -65,6 +66,8 @@ export function HeroSection() {
             >
               <a href="#sesiones">{hero.ctaSecondary}</a>
             </Button>
+            {/* Botón de Sign-In con Google (mock) */}
+            <GoogleSignInButton />
           </div>
         </div>
 
