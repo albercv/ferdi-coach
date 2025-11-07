@@ -11,8 +11,12 @@ import { FAQSection } from "@/components/sections/faq-section"
 import { CTASection } from "@/components/ui/cta-section"
 import { Toggle3D } from "@/components/ui/3d-toggle"
 import { LazyLoad } from "@/components/performance/intersection-observer"
+import { getTestimonials, getFAQ, getAbout } from "@/lib/content-md"
 
 export default function HomePage() {
+  const testimonials = getTestimonials()
+  const about = getAbout()
+  const faq = getFAQ()
   return (
     <>
       <Header />
@@ -22,7 +26,7 @@ export default function HomePage() {
           <HowItWorksSection />
         </LazyLoad>
         <LazyLoad>
-          <TestimonialsSection />
+          <TestimonialsSection testimonials={testimonials} />
         </LazyLoad>
         <ForWhoSection />
         <SessionsSection />
@@ -30,10 +34,10 @@ export default function HomePage() {
           <GuidesSection />
         </LazyLoad>
         <LazyLoad>
-          <AboutSection />
+          <AboutSection about={about} />
         </LazyLoad>
         <LazyLoad>
-          <FAQSection />
+          <FAQSection faq={faq} />
         </LazyLoad>
         <CTASection
           title="No tienes que pasar por esto solo"

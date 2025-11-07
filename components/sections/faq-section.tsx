@@ -1,9 +1,9 @@
 import { Section } from "@/components/ui/section"
 import { FAQItem } from "@/components/ui/faq-item"
-import { siteContent } from "@/data/content"
+import type { FAQItem as FAQItemType } from "@/lib/content-md"
 
-export function FAQSection() {
-  const { faq } = siteContent
+export function FAQSection({ faq }: { faq: { title: string; subtitle?: string; items: FAQItemType[] } }) {
+  // const { faq } = siteContent
 
   return (
     <Section id="preguntas" aria-labelledby="faq-title" className="bg-primary/5">

@@ -2,12 +2,12 @@
 
 import { Section } from "@/components/ui/section"
 import { TestimonialCard } from "@/components/ui/testimonial-card"
-import { siteContent } from "@/data/content"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
 import { useEffect, useState } from "react"
+import type { Testimonial } from "@/lib/content-md"
 
-export function TestimonialsSection() {
-  const { testimonials } = siteContent
+export function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
+  // const { testimonials } = siteContent
   const [api, setApi] = useState<CarouselApi | null>(null)
 
   // Autoplay simple: avanza cada 3.2s; loop ya está activo en opts

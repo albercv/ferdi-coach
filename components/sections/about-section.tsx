@@ -4,12 +4,11 @@ import { Section } from "@/components/ui/section"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { siteContent } from "@/data/content"
 import { Award } from "lucide-react"
 import { useEffect, useRef } from "react"
+import type { AboutContent } from "@/lib/content-md"
 
-export function AboutSection() {
-  const { about } = siteContent
+export function AboutSection({ about }: { about: AboutContent }) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
