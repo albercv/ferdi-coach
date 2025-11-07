@@ -65,6 +65,7 @@ export function HeroSection() {
             >
               <a href="#sesiones">{hero.ctaSecondary}</a>
             </Button>
+            {/* Botón de Sign-In con Google (mock) eliminado del hero */}
           </div>
         </div>
 

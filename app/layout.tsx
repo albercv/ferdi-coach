@@ -7,6 +7,7 @@ import { Suspense } from "react"
 import { StructuredData } from "@/components/seo/structured-data"
 import { SkipLink } from "@/components/ui/skip-link"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { AuthProvider } from "@/components/providers/session-provider"
 import "./globals.css"
 
 const geistSans = GeistSans
@@ -105,15 +106,17 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.className} antialiased bg-background text-foreground`}>
         <SkipLink />
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center min-h-screen">
-              <LoadingSpinner size="lg" />
-            </div>
-          }
-        >
-          {children}
-        </Suspense>
+        <AuthProvider>
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center min-h-screen">
+                <LoadingSpinner size="lg" />
+              </div>
+            }
+          >
+            {children}
+          </Suspense>
+        </AuthProvider>
         <Analytics />
       </body>
     </html>
