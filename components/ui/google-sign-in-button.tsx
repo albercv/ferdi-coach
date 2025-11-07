@@ -19,7 +19,7 @@ export function GoogleSignInButton() {
 
   return (
     <Button onClick={handleClick} className="text-sm px-2 py-1 border border-border rounded-md bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted">
-      Google
+      Login
     </Button>
   )
 }

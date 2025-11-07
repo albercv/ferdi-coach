@@ -1,27 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
-import { GoogleSignInButton } from "@/components/ui/google-sign-in-button"
+import { useSession, signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isDashboardEnabled, setIsDashboardEnabled] = useState(false)
+  const { data: session, status } = useSession()
+  const isAuthenticated = status === "authenticated"
+  const router = useRouter()
 
-  useEffect(() => {
-    // Inicializa desde localStorage
-    try {
-      const enabled = localStorage.getItem("dashboardEnabled") === "true"
-      setIsDashboardEnabled(enabled)
-    } catch {}
-
-    // Escucha el evento global para cambios
-    const onEnabled = () => setIsDashboardEnabled(true)
-    window.addEventListener("dashboard-enabled", onEnabled)
-    return () => window.removeEventListener("dashboard-enabled", onEnabled)
-  }, [])
+  const handleLogout = async () => {
+    await signOut({ redirect: false })
+    router.push("/")
+  }
 
   const navigation = [
     { name: "Sesiones", href: "#sesiones", title: "Sesiones individuales de coaching emocional para superar rupturas" },
@@ -55,7 +49,7 @@ export function Header() {
               {item.name}
             </a>
           ))}
-          {isDashboardEnabled && (
+          {isAuthenticated && (
             <a
               href="/dashboard"
               title="Panel de gestión"
@@ -67,9 +61,18 @@ export function Header() {
         </div>
 
         <div className="flex items-center space-x-4">
-          {/* Sign in button in navbar (desktop) when not enabled */}
-          {!isDashboardEnabled && (
-            <GoogleSignInButton />
+          {/* Botón Login cuando NO autenticado (desktop) */}
+          {!isAuthenticated && (
+            <Link href="/login" className="hidden lg:inline-flex">
+              <Button className="text-sm px-2 py-1 border border-border rounded-md bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted">Login</Button>
+            </Link>
+          )}
+
+          {/* Botón Logout cuando autenticado (desktop) */}
+          {isAuthenticated && (
+            <Button onClick={handleLogout} className="hidden lg:inline-flex text-sm px-2 py-1 border border-border rounded-md bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted">
+              Logout
+            </Button>
           )}
 
           {/* Existing CTA */}
@@ -107,7 +110,7 @@ export function Header() {
                   {item.name}
                 </a>
               ))}
-              {isDashboardEnabled && (
+              {isAuthenticated && (
                 <a
                   href="/dashboard"
                   title="Panel de gestión"
@@ -117,11 +120,13 @@ export function Header() {
                   Dashboard
                 </a>
               )}
-              {/* Sign in button in navbar (mobile) when not enabled */}
-              {!isDashboardEnabled && (
-                <div className="w-full">
-                  <GoogleSignInButton />
-                </div>
+              {/* Login/Logout en móvil */}
+              {!isAuthenticated ? (
+                <Link href="/login" className="block" onClick={() => setIsMenuOpen(false)}>
+                  <Button className="w-full text-sm px-2 py-1 border border-border rounded-md bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted">Login</Button>
+                </Link>
+              ) : (
+                <Button onClick={async () => { setIsMenuOpen(false); await signOut({ redirect: false }); router.push("/") }} className="w-full text-sm px-2 py-1 border border-border rounded-md bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted">Logout</Button>
               )}
               <button className="w-full bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90 rounded-md px-4 py-2">
                 <a href="#reservar" onClick={() => setIsMenuOpen(false)}>Reservar sesión</a>

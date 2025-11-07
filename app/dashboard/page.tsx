@@ -5,14 +5,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import Link from "next/link"
+import { signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 export default function DashboardPage() {
+  const router = useRouter()
+  const handleLogout = async () => {
+    await signOut({ redirect: false })
+    router.push("/")
+  }
   return (
     <main className="min-h-screen py-10">
       <div className="container mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Dashboard (Mock)</h1>
           <p className="text-muted-foreground">Este panel es un mockup sin funcionalidad real. Más adelante se securizará con Google Sign-In.</p>
+          <div className="flex gap-3 mt-4">
+            <Button asChild variant="outline">
+              <Link href="/">Volver a Home</Link>
+            </Button>
+            <Button variant="destructive" onClick={handleLogout}>
+              Logout
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="testimonials" className="">
