@@ -3,6 +3,8 @@ import path from "path"
 import matter from "gray-matter"
 
 export type Testimonial = {
+  id: string
+  position: number
   name: string
   age: number
   rating: number
@@ -50,17 +52,23 @@ function listMarkdownFiles(dir: string) {
 export function getTestimonials(): Testimonial[] {
   const dir = path.join(CONTENT_DIR, "testimonials")
   const files = listMarkdownFiles(dir)
-  const testimonials: Testimonial[] = files.map((filePath) => {
+  const testimonials: Testimonial[] = files.map((filePath, idx) => {
     const { data, content } = readMarkdownFile(filePath)
+    const base = path.basename(filePath, ".md")
+    const numPrefix = parseInt(base.split("-")[0], 10)
+    const posFm = Number((data as any).position)
+    const position = Number.isFinite(posFm) ? posFm : (!isNaN(numPrefix) ? numPrefix : idx + 1)
     return {
-      name: String(data.name || ""),
-      age: Number(data.age || 0),
-      rating: Number(data.rating || 0),
+      id: base,
+      position,
+      name: String((data as any).name || ""),
+      age: Number((data as any).age || 0),
+      rating: Number((data as any).rating || 0),
       text: content,
-      video: data.video ? String(data.video) : undefined,
-      image: data.image ? String(data.image) : undefined,
+      video: (data as any).video ? String((data as any).video) : undefined,
+      image: (data as any).image ? String((data as any).image) : undefined,
     }
-  })
+  }).sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
   return testimonials
 }
 
@@ -336,4 +344,184 @@ export function deleteFAQItem(id: string) {
     `---\n`
 
   fs.writeFileSync(filePath, frontmatter, "utf8")
+}
+
+// --- CRUD para Testimonials ---
+function normalizeTestimonialPositions(items: Testimonial[]): Testimonial[] {
+  const sorted = [...items].sort((a, b) => {
+    const pa = Number(a.position || 0)
+    const pb = Number(b.position || 0)
+    if (pa !== pb) return pa - pb
+    return String(a.id).localeCompare(String(b.id))
+  })
+  return sorted.map((it, idx) => ({ ...it, position: idx + 1 }))
+}
+
+function writeTestimonialFile(dir: string, t: Testimonial) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+  }
+  const escapeYaml = (s: string) => s.replace(/"/g, '\\"')
+  const frontmatterLines = [
+    `name: "${escapeYaml(String(t.name || ""))}"`,
+    `age: ${Number(t.age || 0)}`,
+    `rating: ${Number(t.rating || 0)}`,
+    ...(t.video ? [`video: "${escapeYaml(String(t.video))}"`] : []),
+    ...(t.image ? [`image: "${escapeYaml(String(t.image))}"`] : []),
+    `position: ${Number(t.position || 0)}`,
+  ]
+  const fm = `---\n${frontmatterLines.join("\n")}\n---\n`
+  const body = `${String(t.text || "").trim()}\n`
+  const filePath = path.join(dir, `${t.id}.md`)
+  fs.writeFileSync(filePath, fm + body, "utf8")
+}
+
+export function addTestimonialItem(input: { id?: string; position?: number; name: string; age: number; rating: number; text: string; video?: string; image?: string }): Testimonial {
+  const dir = path.join(CONTENT_DIR, "testimonials")
+  const files = listMarkdownFiles(dir)
+  // Construimos estado actual
+  const existing: Testimonial[] = files.map((filePath, idx) => {
+    const { data, content } = readMarkdownFile(filePath)
+    const base = path.basename(filePath, ".md")
+    const numPrefix = parseInt(base.split("-")[0], 10)
+    const posFm = Number((data as any).position)
+    const position = Number.isFinite(posFm) ? posFm : (!isNaN(numPrefix) ? numPrefix : idx + 1)
+    return {
+      id: base,
+      position,
+      name: String((data as any).name || ""),
+      age: Number((data as any).age || 0),
+      rating: Number((data as any).rating || 0),
+      text: content,
+      video: (data as any).video ? String((data as any).video) : undefined,
+      image: (data as any).image ? String((data as any).image) : undefined,
+    }
+  })
+
+  const escapeSlug = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+  let id = (input.id || "").trim()
+  if (!id) {
+    id = escapeSlug(String(input.name || "nuevo-testimonio")) || `testimonial-${existing.length + 1}`
+  }
+  if (existing.some((e) => e.id === id)) {
+    throw new Error(`Ya existe un testimonio con id '${id}'`)
+  }
+
+  const desired = Math.max(1, Math.min(Number(input.position || existing.length + 1), existing.length + 1))
+  const newItem: Testimonial = {
+    id,
+    position: desired,
+    name: String(input.name || "").trim(),
+    age: Number(input.age || 0),
+    rating: Math.max(0, Math.min(5, Number(input.rating || 0))),
+    text: String(input.text || "").trim(),
+    video: input.video ? String(input.video).trim() : undefined,
+    image: input.image ? String(input.image).trim() : undefined,
+  }
+
+  if (!newItem.name) throw new Error("El nombre no puede estar vacío")
+  if (!newItem.text) throw new Error("El texto del testimonio no puede estar vacío")
+  if (!Number.isFinite(newItem.age) || newItem.age < 0) throw new Error("La edad debe ser un número válido")
+  if (!Number.isFinite(newItem.rating) || newItem.rating < 0 || newItem.rating > 5) throw new Error("El rating debe estar entre 0 y 5")
+
+  // Insertamos y normalizamos posiciones
+  const inserted = [
+    ...existing.map((it) => ({ ...it, position: it.position >= desired ? it.position + 1 : it.position })),
+    newItem,
+  ]
+  const normalized = normalizeTestimonialPositions(inserted)
+
+  // Escribimos todos los archivos con position actualizada
+  for (const t of normalized) {
+    writeTestimonialFile(dir, t)
+  }
+
+  return normalized.find((t) => t.id === id) as Testimonial
+}
+
+export function setTestimonialItem(updated: Testimonial): Testimonial {
+  const dir = path.join(CONTENT_DIR, "testimonials")
+  const files = listMarkdownFiles(dir)
+  const existing: Testimonial[] = files.map((filePath, idx) => {
+    const { data, content } = readMarkdownFile(filePath)
+    const base = path.basename(filePath, ".md")
+    const numPrefix = parseInt(base.split("-")[0], 10)
+    const posFm = Number((data as any).position)
+    const position = Number.isFinite(posFm) ? posFm : (!isNaN(numPrefix) ? numPrefix : idx + 1)
+    return {
+      id: base,
+      position,
+      name: String((data as any).name || ""),
+      age: Number((data as any).age || 0),
+      rating: Number((data as any).rating || 0),
+      text: content,
+      video: (data as any).video ? String((data as any).video) : undefined,
+      image: (data as any).image ? String((data as any).image) : undefined,
+    }
+  })
+
+  if (!existing.some((e) => e.id === updated.id)) {
+    throw new Error(`No se encontró el testimonio con id '${updated.id}'`)
+  }
+
+  const desired = Math.max(1, Math.min(Number(updated.position || 1), existing.length))
+  const rest = existing.filter((e) => e.id !== updated.id)
+  const inserted = [
+    ...rest.sort((a, b) => a.position - b.position || a.id.localeCompare(b.id)),
+  ]
+  inserted.splice(desired - 1, 0, {
+    ...updated,
+    position: desired,
+    name: String(updated.name || "").trim(),
+    age: Number(updated.age || 0),
+    rating: Math.max(0, Math.min(5, Number(updated.rating || 0))),
+    text: String(updated.text || "").trim(),
+    video: updated.video ? String(updated.video).trim() : undefined,
+    image: updated.image ? String(updated.image).trim() : undefined,
+  })
+
+  const normalized = normalizeTestimonialPositions(inserted)
+  for (const t of normalized) {
+    writeTestimonialFile(dir, t)
+  }
+
+  return normalized.find((t) => t.id === updated.id) as Testimonial
+}
+
+export function deleteTestimonialItem(id: string) {
+  const dir = path.join(CONTENT_DIR, "testimonials")
+  const files = listMarkdownFiles(dir)
+  const existing: Testimonial[] = files.map((filePath, idx) => {
+    const { data, content } = readMarkdownFile(filePath)
+    const base = path.basename(filePath, ".md")
+    const numPrefix = parseInt(base.split("-")[0], 10)
+    const posFm = Number((data as any).position)
+    const position = Number.isFinite(posFm) ? posFm : (!isNaN(numPrefix) ? numPrefix : idx + 1)
+    return {
+      id: base,
+      position,
+      name: String((data as any).name || ""),
+      age: Number((data as any).age || 0),
+      rating: Number((data as any).rating || 0),
+      text: content,
+      video: (data as any).video ? String((data as any).video) : undefined,
+      image: (data as any).image ? String((data as any).image) : undefined,
+    }
+  })
+
+  const nextItems = existing.filter((e) => e.id !== id)
+  if (nextItems.length === existing.length) {
+    throw new Error(`No se encontró el testimonio con id '${id}'`)
+  }
+
+  const normalized = normalizeTestimonialPositions(nextItems)
+
+  // Borra archivo del testimonio y actualiza positions del resto
+  const filePath = path.join(dir, `${id}.md`)
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath)
+  }
+  for (const t of normalized) {
+    writeTestimonialFile(dir, t)
+  }
 }

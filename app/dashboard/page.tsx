@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog"
+import { TestimonialCard } from "@/components/ui/testimonial-card"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -33,6 +34,27 @@ export default function DashboardPage() {
   const [createQuestion, setCreateQuestion] = useState("")
   const [createAnswer, setCreateAnswer] = useState("")
   const [createPosition, setCreatePosition] = useState<number>(1)
+  // --- Testimonials state ---
+  const [testimonials, setTestimonials] = useState<Array<{ id: string; position: number; name: string; age: number; rating: number; text: string; video?: string; image?: string }>>([])
+  const [selectedTestimonialId, setSelectedTestimonialId] = useState<string | null>(null)
+  const [editingTestimonialId, setEditingTestimonialId] = useState<string>("")
+  const [editingTName, setEditingTName] = useState("")
+  const [editingTAge, setEditingTAge] = useState<number>(0)
+  const [editingTRating, setEditingTRating] = useState<number>(5)
+  const [editingTText, setEditingTText] = useState("")
+  const [editingTVideo, setEditingTVideo] = useState("")
+  const [editingTImage, setEditingTImage] = useState("")
+  const [editingTPosition, setEditingTPosition] = useState<number>(1)
+  const [savingTestimonial, setSavingTestimonial] = useState(false)
+  const [creatingTestimonial, setCreatingTestimonial] = useState(false)
+  const [deletingTestimonial, setDeletingTestimonial] = useState(false)
+  const [createTName, setCreateTName] = useState("")
+  const [createTAge, setCreateTAge] = useState<number>(0)
+  const [createTRating, setCreateTRating] = useState<number>(5)
+  const [createTText, setCreateTText] = useState("")
+  const [createTVideo, setCreateTVideo] = useState("")
+  const [createTImage, setCreateTImage] = useState("")
+  const [createTPosition, setCreateTPosition] = useState<number>(1)
 
   useEffect(() => {
     const loadAbout = async () => {
@@ -65,8 +87,21 @@ export default function DashboardPage() {
         toast({ title: "Error", description: "No se pudieron cargar las FAQs" })
       }
     }
+    const loadTestimonials = async () => {
+      try {
+        const res = await fetch("/api/content/testimonials", { cache: "no-store" })
+        if (!res.ok) throw new Error("Failed to load Testimonials")
+        const data = await res.json()
+        const items = Array.isArray(data.items) ? data.items : []
+        setTestimonials(items)
+        // Dejar todo plegado por defecto (sin selección inicial)
+      } catch (e) {
+        toast({ title: "Error", description: "No se pudieron cargar los testimonios" })
+      }
+    }
     loadAbout()
     loadFAQs()
+    loadTestimonials()
   }, [toast])
 
   const handleLogout = async () => {
@@ -134,7 +169,6 @@ export default function DashboardPage() {
       setSavingFaq(false)
     }
   }
-
 
   // Actualiza posición sugerida de la nueva FAQ cuando cambia el listado
   useEffect(() => {
@@ -223,6 +257,146 @@ export default function DashboardPage() {
     }
   }
 
+  // --- Handlers Testimonials ---
+  useEffect(() => {
+    const nextPosT = Math.max(
+      1,
+      testimonials.reduce((max, it) => {
+        const p = Number(it?.position || 0)
+        return Number.isFinite(p) ? Math.max(max, p) : max
+      }, 0) + 1
+    )
+    setCreateTPosition(nextPosT)
+  }, [testimonials])
+
+  const handleSaveTestimonial = async () => {
+    if (!selectedTestimonialId) return
+    const posInUse = testimonials.some((it) => it.id !== (editingTestimonialId || selectedTestimonialId) && Number(it.position) === Number(editingTPosition))
+    if (posInUse) {
+      toast({ title: "Posición en uso", description: "Ya existe un testimonio con esa posición. Elige otra." })
+      return
+    }
+    setSavingTestimonial(true)
+    try {
+      const payload = {
+        id: editingTestimonialId || selectedTestimonialId,
+        name: editingTName,
+        age: editingTAge,
+        rating: editingTRating,
+        text: editingTText,
+        video: editingTVideo || undefined,
+        image: editingTImage || undefined,
+        position: editingTPosition,
+      }
+      const res = await fetch("/api/content/testimonials", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) throw new Error(await res.text())
+      const data = await res.json()
+      const updated = data?.item ?? payload
+      setTestimonials((prev) => prev.map((it) => (it.id === updated.id ? updated : it)))
+      toast({ title: "Guardado", description: "El testimonio se guardó correctamente." })
+    } catch (e) {
+      toast({ title: "Error al guardar", description: "No se pudo guardar el testimonio." })
+    } finally {
+      setSavingTestimonial(false)
+    }
+  }
+
+  const handleCreateTestimonial = async () => {
+    const posInUse = testimonials.some((it) => Number(it.position) === Number(createTPosition))
+    if (posInUse) {
+      toast({ title: "Posición en uso", description: "Ya existe un testimonio con esa posición. Elige otra." })
+      return
+    }
+    setCreatingTestimonial(true)
+    try {
+      const payload = {
+        name: createTName,
+        age: createTAge,
+        rating: createTRating,
+        text: createTText,
+        video: createTVideo || undefined,
+        image: createTImage || undefined,
+        position: createTPosition,
+      }
+      const res = await fetch("/api/content/testimonials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) throw new Error(await res.text())
+      const data = await res.json()
+      const created = data?.item
+      const items = Array.isArray(data?.items) ? data.items : []
+      if (items.length) setTestimonials(items)
+      else if (created) setTestimonials((prev) => [...prev, created])
+      if (created) {
+        setSelectedTestimonialId(created.id)
+        setEditingTestimonialId(created.id)
+        setEditingTName(created.name)
+        setEditingTAge(created.age)
+        setEditingTRating(created.rating)
+        setEditingTText(created.text)
+        setEditingTVideo(created.video || "")
+        setEditingTImage(created.image || "")
+        setEditingTPosition(created.position ?? 1)
+      }
+      setCreateTName("")
+      setCreateTAge(0)
+      setCreateTRating(5)
+      setCreateTText("")
+      setCreateTVideo("")
+      setCreateTImage("")
+      toast({ title: "Creado", description: "El testimonio se ha añadido correctamente." })
+    } catch (e) {
+      toast({ title: "Error al crear", description: "No se pudo crear el testimonio." })
+    } finally {
+      setCreatingTestimonial(false)
+    }
+  }
+
+  const handleDeleteTestimonial = async (id: string) => {
+    if (!id) return
+    setDeletingTestimonial(true)
+    try {
+      const res = await fetch(`/api/content/testimonials?id=${encodeURIComponent(id)}`, { method: "DELETE" })
+      if (!res.ok) throw new Error(await res.text())
+      const data = await res.json()
+      const items = Array.isArray(data?.items) ? data.items : []
+      setTestimonials(items)
+      const next = items[0]
+      if (next) {
+        setSelectedTestimonialId(next.id)
+        setEditingTestimonialId(next.id)
+        setEditingTName(next.name)
+        setEditingTAge(next.age)
+        setEditingTRating(next.rating)
+        setEditingTText(next.text)
+        setEditingTVideo(next.video || "")
+        setEditingTImage(next.image || "")
+        setEditingTPosition(next.position ?? 1)
+      } else {
+        setSelectedTestimonialId(null)
+        setEditingTestimonialId("")
+        setEditingTName("")
+        setEditingTAge(0)
+        setEditingTRating(5)
+        setEditingTText("")
+        setEditingTVideo("")
+        setEditingTImage("")
+        setEditingTPosition(1)
+      }
+      toast({ title: "Eliminado", description: "El testimonio ha sido eliminado." })
+    } catch (e) {
+      toast({ title: "Error al eliminar", description: "No se pudo eliminar el testimonio." })
+    } finally {
+      setDeletingTestimonial(false)
+    }
+  }
+
   return (
     <main className="min-h-screen py-10">
       <div className="container mx-auto px-4">
@@ -250,29 +424,232 @@ export default function DashboardPage() {
           {/* Testimonials Tab */}
           <TabsContent value="testimonials" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Izquierda: Añadir nuevo y edición dentro del mismo contenedor, todo plegable */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Añadir nuevo testimonio</CardTitle>
+                  <CardTitle>Gestionar testimonios</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <Input placeholder="Nombre" />
-                  <Input placeholder="Edad" />
-                  <Textarea placeholder="Texto del testimonio" />
-                  <Input placeholder="URL de imagen o video" />
-                  <Button disabled className="bg-primary text-primary-foreground">Guardar (mock)</Button>
+                <CardContent>
+                  <div className="border rounded-md divide-y">
+                    {/* Añadir nuevo como ítem plegable */}
+                    <details
+                      className="group"
+                      onToggle={(e) => {
+                        const opened = (e.currentTarget as HTMLDetailsElement).open
+                        const NEW_ID = "__new__"
+                        if (opened) {
+                          setSelectedTestimonialId(NEW_ID)
+                        } else if (selectedTestimonialId === NEW_ID) {
+                          setSelectedTestimonialId(null)
+                        }
+                      }}
+                      open={selectedTestimonialId === "__new__"}
+                    >
+                      <summary className={`flex cursor-pointer items-center justify-between p-3 text-left text-sm font-medium hover:bg-accent/5 ${selectedTestimonialId === "__new__" ? "bg-accent/10" : ""}`}>
+                        <span className="text-balance">Añadir nuevo testimonio</span>
+                        <span className="text-muted-foreground"></span>
+                      </summary>
+                      <div className="px-3 pb-3 pt-1 space-y-3">
+                        {/* Formulario de creación */}
+                        <div className="space-y-2">
+                          <Label htmlFor="new-t-name">Nombre</Label>
+                          <Input id="new-t-name" placeholder="Nombre" value={createTName} onChange={(e) => setCreateTName(e.target.value)} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="new-t-age">Edad</Label>
+                            <Input id="new-t-age" type="number" min={0} placeholder="Edad" value={createTAge} onChange={(e) => setCreateTAge(Number(e.target.value) || 0)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="new-t-rating">Rating (0-5)</Label>
+                            <Input id="new-t-rating" type="number" min={0} max={5} placeholder="Rating" value={createTRating} onChange={(e) => setCreateTRating(Number(e.target.value) || 0)} />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="new-t-text">Texto del testimonio</Label>
+                          <Textarea id="new-t-text" placeholder="Texto del testimonio" value={createTText} onChange={(e) => setCreateTText(e.target.value)} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="new-t-video">Video (slug, sin .mp4)</Label>
+                            <Input id="new-t-video" placeholder="p.ej. ferdy-presentation" value={createTVideo} onChange={(e) => setCreateTVideo(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="new-t-image">Imagen (slug, sin .png)</Label>
+                            <Input id="new-t-image" placeholder="p.ej. hero-img-v2" value={createTImage} onChange={(e) => setCreateTImage(e.target.value)} />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="new-t-position">Posición</Label>
+                          <Input id="new-t-position" type="number" min={1} value={createTPosition} onChange={(e) => setCreateTPosition(Number(e.target.value) || 1)} />
+                        </div>
+                        <Button onClick={handleCreateTestimonial} disabled={creatingTestimonial} className="bg-primary text-primary-foreground">
+                          {creatingTestimonial ? "Creando..." : "Crear"}
+                        </Button>
+                      </div>
+                    </details>
+
+                    {/* Listado y edición de testimonios */}
+                    {testimonials.length === 0 ? (
+                      <div className="p-3">
+                        <p className="text-sm text-muted-foreground">No hay testimonios disponibles.</p>
+                      </div>
+                    ) : (
+                      <>
+                        {testimonials.map((t) => (
+                          <details
+                            key={t.id}
+                            className="group"
+                            onToggle={(e) => {
+                              const opened = (e.currentTarget as HTMLDetailsElement).open
+                              if (opened) {
+                                setSelectedTestimonialId(t.id)
+                                setEditingTestimonialId(t.id)
+                                setEditingTName(t.name)
+                                setEditingTAge(t.age)
+                                setEditingTRating(t.rating)
+                                setEditingTText(t.text)
+                                setEditingTVideo(t.video || "")
+                                setEditingTImage(t.image || "")
+                                setEditingTPosition(t.position ?? 1)
+                              } else if (selectedTestimonialId === t.id) {
+                                setSelectedTestimonialId(null)
+                              }
+                            }}
+                            open={selectedTestimonialId === t.id}
+                          >
+                            <summary className={`flex cursor-pointer items-center justify-between p-3 text-left text-sm font-medium hover:bg-accent/5 ${selectedTestimonialId === t.id ? "bg-accent/10" : ""}`}>
+                              <span className="text-balance">{t.name} ({t.age}) — {t.text.slice(0, 40)}...</span>
+                              <span className="text-muted-foreground" />
+                            </summary>
+                            <div className="px-3 pb-3 pt-1 space-y-3">
+                              {/* Formulario de edición */}
+                              <div className="space-y-2">
+                                <Label htmlFor={`t-id-${t.id}`}>ID (no editable)</Label>
+                                <Input id={`t-id-${t.id}`} value={editingTestimonialId} disabled aria-disabled="true" aria-label="ID" />
+                                <p className="text-xs text-muted-foreground">Este campo no se puede editar.</p>
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor={`t-position-${t.id}`}>Posición</Label>
+                                  <Input id={`t-position-${t.id}`} type="number" min={1} value={editingTPosition} onChange={(e) => setEditingTPosition(Number(e.target.value) || 1)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`t-rating-${t.id}`}>Rating (0-5)</Label>
+                                  <Input id={`t-rating-${t.id}`} type="number" min={0} max={5} value={editingTRating} onChange={(e) => setEditingTRating(Number(e.target.value) || 0)} />
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor={`t-name-${t.id}`}>Nombre</Label>
+                                  <Input id={`t-name-${t.id}`} value={editingTName} onChange={(e) => setEditingTName(e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`t-age-${t.id}`}>Edad</Label>
+                                  <Input id={`t-age-${t.id}`} type="number" min={0} value={editingTAge} onChange={(e) => setEditingTAge(Number(e.target.value) || 0)} />
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor={`t-text-${t.id}`}>Texto</Label>
+                                <Textarea id={`t-text-${t.id}`} value={editingTText} onChange={(e) => setEditingTText(e.target.value)} />
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor={`t-video-${t.id}`}>Video (slug)</Label>
+                                  <Input id={`t-video-${t.id}`} value={editingTVideo} onChange={(e) => setEditingTVideo(e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`t-image-${t.id}`}>Imagen (slug)</Label>
+                                  <Input id={`t-image-${t.id}`} value={editingTImage} onChange={(e) => setEditingTImage(e.target.value)} />
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button onClick={handleSaveTestimonial} disabled={savingTestimonial} className="bg-primary text-primary-foreground">{savingTestimonial ? "Guardando..." : "Guardar"}</Button>
+                                <Button variant="outline" onClick={() => {
+                                  const original = testimonials.find((it) => it.id === t.id)
+                                  if (!original) return
+                                  setEditingTName(original.name)
+                                  setEditingTAge(original.age)
+                                  setEditingTRating(original.rating)
+                                  setEditingTText(original.text)
+                                  setEditingTVideo(original.video || "")
+                                  setEditingTImage(original.image || "")
+                                  setEditingTPosition(original.position ?? 1)
+                                }}>Revertir</Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="destructive" disabled={deletingTestimonial}>{deletingTestimonial ? "Eliminando..." : "Eliminar"}</Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Eliminar testimonio</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Esta acción es irreversible. Se eliminará el testimonio del contenido.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => handleDeleteTestimonial(t.id)} disabled={deletingTestimonial} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                        {deletingTestimonial ? "Eliminando..." : "Eliminar"}
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            </div>
+                          </details>
+                        ))}
+                      </>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
 
+              {/* Derecha: Visualización sincronizada, también plegada */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Listado de testimonios</CardTitle>
+                  <CardTitle>Visualización de testimonios</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>• Ana (32) — "Me ayudó a recuperar mi calma"</li>
-                    <li>• Luis (28) — "Volví a dormir bien después de semanas"</li>
-                    <li>• Marta (41) — "Por fin dejé el contacto"</li>
-                  </ul>
+                  <div className="border rounded-md divide-y">
+                    {/* Vista previa del nuevo testimonio (borrador) */}
+                    <details open={selectedTestimonialId === "__new__"} className="group">
+                      <summary className={`flex cursor-pointer items-center justify-between p-3 text-left text-sm font-medium hover:bg-accent/5 ${selectedTestimonialId === "__new__" ? "bg-accent/10" : ""}`}>
+                        <span className="text-balance">{createTName || "(Nuevo)"} {createTAge ? `(${createTAge})` : ""} — {(createTText || "").slice(0, 40)}...</span>
+                        <span className="text-muted-foreground" />
+                      </summary>
+                      <div className="px-3 pb-3 pt-1">
+                        <TestimonialCard
+                          name={createTName || "Nombre"}
+                          age={createTAge || 0}
+                          text={createTText || "Texto del testimonio"}
+                          rating={createTRating || 5}
+                          video={createTVideo || undefined}
+                          image={createTImage || undefined}
+                        />
+                      </div>
+                    </details>
+
+                    {/* Vista previa de cada testimonio existente */}
+                    {testimonials.map((t) => (
+                      <details key={t.id} open={selectedTestimonialId === t.id} className="group">
+                        <summary className={`flex cursor-pointer items-center justify-between p-3 text-left text-sm font-medium hover:bg-accent/5 ${selectedTestimonialId === t.id ? "bg-accent/10" : ""}`}>
+                          <span className="text-balance">{t.name} ({t.age}) — {t.text.slice(0, 40)}...</span>
+                          <span className="text-muted-foreground" />
+                        </summary>
+                        <div className="px-3 pb-3 pt-1">
+                          <TestimonialCard
+                            name={selectedTestimonialId === t.id ? (editingTName || t.name) : t.name}
+                            age={selectedTestimonialId === t.id ? (editingTAge || t.age) : t.age}
+                            text={selectedTestimonialId === t.id ? (editingTText || t.text) : t.text}
+                            rating={selectedTestimonialId === t.id ? (editingTRating || t.rating) : t.rating}
+                            video={selectedTestimonialId === t.id ? ((editingTVideo || t.video) || undefined) : t.video}
+                            image={selectedTestimonialId === t.id ? ((editingTImage || t.image) || undefined) : t.image}
+                          />
+                        </div>
+                      </details>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             </div>
