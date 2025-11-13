@@ -31,11 +31,21 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Contraseña", type: "password" },
       },
       async authorize(credentials) {
+        // Debug temporal para verificar los valores recibidos y variables de entorno
+        console.log("[NextAuth] authorize() called", {
+          credentials,
+          envUsers,
+        })
         if (!credentials?.email || !credentials?.password) return null
         const user = envUsers.find(
           (u) => u.email === credentials.email && u.password === credentials.password
         )
-        if (!user) return null
+        if (!user) {
+          console.warn("[NextAuth] CredentialsSignin: no match for", {
+            email: credentials.email,
+          })
+          return null
+        }
         return {
           id: user.email!,
           email: user.email!,

@@ -3,115 +3,121 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle } from "lucide-react"
-import { siteContent } from "@/data/content"
+import type { SessionProduct } from "@/lib/products-md"
 
-export function SessionsSection() {
-  const { sessions } = siteContent
+
+export function SessionsSection({ sessions }: { sessions: SessionProduct[] }) {
+  const individual = sessions.find((s) => s.subtype === "individual") || sessions[0]
+  const program4 = sessions.find((s) => s.subtype === "program4") || sessions[1]
 
   return (
     <Section id="sesiones" aria-labelledby="sesiones-title" className="bg-secondary">
       <div className="text-center mb-12">
         <h2 id="sesiones-title" className="text-3xl md:text-4xl font-bold mb-6 text-balance">
-          {sessions.title}
+          Sesiones y Programa
         </h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto items-stretch">
         {/* Sesiones 1 a 1 Card */}
-        <Card className="relative group-trigger flex flex-col h-full">
-          <CardHeader>
-            <CardTitle className="text-2xl">{sessions.cards[0].title}</CardTitle>
-            <CardDescription className="text-base">
-              {sessions.cards[0].description}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col space-y-4">
-            {/* What you get section - condensed */}
-            <div>
-              <h4 className="font-semibold mb-2 text-sm">Qué incluye:</h4>
-              <ul className="space-y-1">
-                {sessions.cards[0].whatYouGet.items.slice(0, 3).map((item, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-xs">{item}</span>
-                  </li>
-                ))}
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-xs">+ 2 beneficios adicionales</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Ideal for - condensed */}
-            <div className="bg-blue-50 p-2 rounded text-center">
-              <p className="text-xs text-blue-700"><strong>Ideal para apoyo inmediato tras ruptura</strong></p>
-            </div>
-
-            {/* Pricing - simplified */}
-            <div className="bg-secondary/30 p-3 rounded-lg mt-auto">
-              <div className="text-center mb-2">
-                <span className="text-xl font-bold">{sessions.cards[0].pricing.full}</span>
-                <p className="text-xs text-muted-foreground">{sessions.cards[0].pricing.note}</p>
+        {individual && (
+          <Card className="relative group-trigger flex flex-col h-full">
+            <CardHeader>
+              <CardTitle className="text-2xl">{individual.title}</CardTitle>
+              <CardDescription className="text-base">
+                {individual.description}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col space-y-4">
+              {/* Qué incluye */}
+              <div>
+                <h4 className="font-semibold mb-2 text-sm">Qué incluye:</h4>
+                <ul className="space-y-1">
+                  {(individual.features || []).slice(0, 4).map((item, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-xs">{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
-                {sessions.cards[0].cta}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+
+              {/* Notas importantes */}
+              {individual.notes && (
+                <div className="bg-blue-50 p-2 rounded text-center">
+                  <p className="text-xs text-blue-700"><strong>Notas importantes:</strong> {individual.notes}</p>
+                </div>
+              )}
+
+              {/* Pricing - simplified */}
+              <div className="bg-secondary/30 p-3 rounded-lg mt-auto">
+                <div className="text-center mb-2">
+                  <span className="text-xl font-bold">€{individual.price}</span>
+                  <p className="text-xs text-muted-foreground">Precio por sesión individual</p>
+                </div>
+                <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
+                  Reservar ahora
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Programa 4 Card */}
-        <Card className="relative border-primary group flex flex-col h-full">
-          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-            <Badge className="bg-primary text-primary-foreground relative flex items-center gap-2">
-              <div className="w-2 h-2 bg-red-500 rounded-full red-dot-pulse relative"></div>
-              Más Popular
-            </Badge>
-          </div>
-          <CardHeader>
-            <CardTitle className="text-2xl">{sessions.cards[1].title}</CardTitle>
-            <CardDescription className="text-base">
-              {sessions.cards[1].promise}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col space-y-4">
-            {/* Key Points - condensed */}
-            <div>
-              <h4 className="font-semibold mb-2 text-sm">Programa semanal:</h4>
-              <ul className="space-y-2">
-                {sessions.cards[1].keyPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <span className="text-xs font-medium">{point.title}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+        {program4 && (
+          <Card className="relative border-primary group flex flex-col h-full">
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <Badge className="bg-primary text-primary-foreground relative flex items-center gap-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full red-dot-pulse relative"></div>
+                Más Popular
+              </Badge>
             </div>
-
-            {/* Includes - simplified */}
-            <div className="bg-green-50 p-2 rounded text-center">
-              <p className="text-xs text-green-700"><strong>4 sesiones + material + seguimiento diario</strong></p>
-            </div>
-
-            {/* Bonus - compact */}
-            <div className="bg-yellow-50 p-2 rounded border border-yellow-200">
-              <p className="text-xs"><strong>Bonus:</strong> {sessions.cards[1].bonus}</p>
-            </div>
-
-            {/* Pricing - simplified */}
-            <div className="bg-secondary/30 p-3 rounded-lg mt-auto">
-              <div className="text-center mb-2">
-                <div className="text-xl font-bold">{sessions.cards[1].pricing.full}</div>
+            <CardHeader>
+              <CardTitle className="text-2xl">{program4.title}</CardTitle>
+              <CardDescription className="text-base">
+                {program4.description}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col space-y-4">
+              {/* Puntos clave */}
+              <div>
+                <h4 className="font-semibold mb-2 text-sm">Incluye:</h4>
+                <ul className="space-y-2">
+                  {(program4.features || []).map((point, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="text-xs font-medium">{point}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
-                {sessions.cards[1].cta}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+
+              {/* Addon y notas */}
+              {program4.addon && (
+                <div className="bg-yellow-50 p-2 rounded border border-yellow-200">
+                  <p className="text-xs"><strong>Addon:</strong> {program4.addon}</p>
+                </div>
+              )}
+              {program4.notes && (
+                <div className="bg-blue-50 p-2 rounded text-center">
+                  <p className="text-xs text-blue-700"><strong>Notas importantes:</strong> {program4.notes}</p>
+                </div>
+              )}
+
+              {/* Pricing - simplified */}
+              <div className="bg-secondary/30 p-3 rounded-lg mt-auto">
+                <div className="text-center mb-2">
+                  <div className="text-xl font-bold">€{program4.price}</div>
+                </div>
+                <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
+                  Empezar programa
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Payment Security Seals */}
