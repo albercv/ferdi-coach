@@ -13,13 +13,14 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog"
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card"
 import { TestimonialCard } from "@/components/ui/testimonial-card"
 import { PricingCard } from "@/components/ui/pricing-card"
 import type { GuideProduct, SessionProduct } from "@/lib/products-md"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
-import { CheckCircle } from "lucide-react"
+import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield, Users, ArrowRight, Sparkles, Target, Timer, MessageSquare } from "lucide-react"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -128,6 +129,56 @@ export default function DashboardPage() {
   const [savingSession, setSavingSession] = useState(false)
   const [deletingSession, setDeletingSession] = useState(false)
 
+  // --- Hero state ---
+  const [heroTitle, setHeroTitle] = useState("")
+  const [heroSubtitle, setHeroSubtitle] = useState("")
+  const [heroCtaPrimary, setHeroCtaPrimary] = useState("")
+  const [heroCtaSecondary, setHeroCtaSecondary] = useState("")
+  const [heroBullets, setHeroBullets] = useState<Array<{ id: string; position: number; icon: string; text: string }>>([])
+  const [selectedBulletId, setSelectedBulletId] = useState<string | null>(null)
+  const [ebId, setEbId] = useState("")
+  const [ebIcon, setEbIcon] = useState("check-circle")
+  const [ebText, setEbText] = useState("")
+  const [ebPosition, setEbPosition] = useState<number>(1)
+  const [cbIcon, setCbIcon] = useState("check-circle")
+  const [cbText, setCbText] = useState("")
+  const [cbPosition, setCbPosition] = useState<number>(1)
+  const [creatingBullet, setCreatingBullet] = useState(false)
+  const [deletingBullet, setDeletingBullet] = useState(false)
+  const [savingHero, setSavingHero] = useState(false)
+
+  const heroIconMap = {
+    "check-circle": CheckCircle,
+    wrench: Wrench,
+    handshake: Handshake,
+    "sliders-horizontal": SlidersHorizontal,
+    star: Star,
+    heart: Heart,
+    shield: Shield,
+    users: Users,
+    "arrow-right": ArrowRight,
+    sparkles: Sparkles,
+    target: Target,
+    timer: Timer,
+    "message-square": MessageSquare,
+  } as const
+
+  const HERO_ICON_KEYS = [
+    "check-circle",
+    "wrench",
+    "handshake",
+    "sliders-horizontal",
+    "star",
+    "heart",
+    "shield",
+    "users",
+    "arrow-right",
+    "sparkles",
+    "target",
+    "timer",
+    "message-square",
+  ] as const
+
   useEffect(() => {
     const loadAbout = async () => {
       try {
@@ -171,9 +222,32 @@ export default function DashboardPage() {
         toast({ title: "Error", description: "No se pudieron cargar los testimonios" })
       }
     }
+    const loadHero = async () => {
+      try {
+        const res = await fetch("/api/content/hero", { cache: "no-store" })
+        if (!res.ok) throw new Error("Failed to load Hero")
+        const data = await res.json()
+        setHeroTitle(String(data.title ?? ""))
+        setHeroSubtitle(String(data.subtitle ?? ""))
+        setHeroCtaPrimary(String(data.ctaPrimary ?? ""))
+        setHeroCtaSecondary(data.ctaSecondary ? String(data.ctaSecondary) : "")
+        const bullets = Array.isArray(data.bullets) ? data.bullets : []
+        setHeroBullets(bullets)
+        if (bullets.length > 0) {
+          setSelectedBulletId(bullets[0].id)
+          setEbId(bullets[0].id)
+          setEbIcon(String(bullets[0].icon || "check-circle"))
+          setEbText(String(bullets[0].text || ""))
+          setEbPosition(Number(bullets[0].position || 1))
+        }
+      } catch (e) {
+        toast({ title: "Error", description: "No se pudo cargar el Hero" })
+      }
+    }
     loadAbout()
     loadFAQs()
     loadTestimonials()
+    loadHero()
   }, [toast])
 
   const handleLogout = async () => {
@@ -206,6 +280,113 @@ export default function DashboardPage() {
       toast({ title: "Error al guardar", description: "Revisa los campos e inténtalo de nuevo." })
     } finally {
       setSavingAbout(false)
+    }
+  }
+
+  // --- Hero helpers & handlers ---
+  const normalizeHeroPositions = (
+    items: Array<{ id: string; position: number; icon: string; text: string }>
+  ) => {
+    return items
+      .slice()
+      .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
+      .map((it, idx) => ({ ...it, position: idx + 1 }))
+  }
+
+  const handleSelectBullet = (id: string) => {
+    setSelectedBulletId(id)
+    const b = heroBullets.find((it) => it.id === id)
+    if (b) {
+      setEbId(b.id)
+      setEbIcon(b.icon || "check-circle")
+      setEbText(b.text || "")
+      setEbPosition(Number(b.position || 1))
+    }
+  }
+
+  const handleCreateHeroBullet = () => {
+    if (!cbText.trim()) {
+      toast({ title: "Texto requerido", description: "Introduce el texto del bullet" })
+      return
+    }
+    const id = String(Date.now())
+    const desired = Math.max(1, Math.min(Number(cbPosition || 1), heroBullets.length + 1))
+    const inserted = [
+      ...heroBullets.slice(0, desired - 1),
+      { id, position: desired, icon: cbIcon || "check-circle", text: cbText.trim() },
+      ...heroBullets.slice(desired - 1),
+    ]
+    const next = normalizeHeroPositions(inserted)
+    setHeroBullets(next)
+    setCreatingBullet(false)
+    setCbIcon("check-circle")
+    setCbText("")
+    setCbPosition(next.length + 1)
+    toast({ title: "Añadido", description: "Bullet creado en borrador. Recuerda GUARDAR el Hero para persistir." })
+  }
+
+  const handleSaveHeroBullet = () => {
+    if (!selectedBulletId) return
+    if (!ebText.trim()) {
+      toast({ title: "Texto requerido", description: "Introduce el texto del bullet" })
+      return
+    }
+    const rest = heroBullets.filter((it) => it.id !== selectedBulletId)
+    const desired = Math.max(1, Math.min(Number(ebPosition || 1), rest.length + 1))
+    rest.sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
+    const inserted = [
+      ...rest.slice(0, desired - 1),
+      { id: selectedBulletId, position: desired, icon: ebIcon || "check-circle", text: ebText.trim() },
+      ...rest.slice(desired - 1),
+    ]
+    const next = normalizeHeroPositions(inserted)
+    setHeroBullets(next)
+    toast({ title: "Actualizado", description: "Bullet actualizado en borrador. Recuerda GUARDAR el Hero para persistir." })
+  }
+
+  const handleDeleteHeroBullet = () => {
+    if (!selectedBulletId) return
+    const filtered = heroBullets.filter((it) => it.id !== selectedBulletId)
+    const next = normalizeHeroPositions(filtered)
+    setHeroBullets(next)
+    if (next.length > 0) {
+      handleSelectBullet(next[0].id)
+    } else {
+      setSelectedBulletId(null)
+      setEbId("")
+      setEbIcon("check-circle")
+      setEbText("")
+      setEbPosition(1)
+    }
+    setDeletingBullet(false)
+    toast({ title: "Eliminado", description: "Bullet eliminado en borrador. Recuerda GUARDAR el Hero para persistir." })
+  }
+
+  const handleSaveHero = async () => {
+    if (!heroTitle.trim() || !heroSubtitle.trim() || !heroCtaPrimary.trim()) {
+      toast({ title: "Campos requeridos", description: "Título, subtítulo y CTA principal son obligatorios." })
+      return
+    }
+    setSavingHero(true)
+    try {
+      const body = {
+        title: heroTitle.trim(),
+        subtitle: heroSubtitle.trim(),
+        ctaPrimary: heroCtaPrimary.trim(),
+        ctaSecondary: heroCtaSecondary?.trim() || undefined,
+        bullets: normalizeHeroPositions(heroBullets).filter((b) => b.text && b.text.trim()),
+      }
+      const res = await fetch("/api/content/hero", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) throw new Error(await res.text())
+      toast({ title: "Guardado", description: "Se actualizó el Hero correctamente." })
+    } catch (e) {
+      toast({ title: "Error al guardar", description: "Revisa los campos e inténtalo de nuevo." })
+    } finally {
+      setSavingHero(false)
     }
   }
 
@@ -815,11 +996,246 @@ export default function DashboardPage() {
 
         <Tabs defaultValue="testimonials" className="">
           <TabsList className="bg-card text-foreground shadow-sm border rounded-md">
+            <TabsTrigger value="hero">Hero</TabsTrigger>
             <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="about">Sobre mí</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
           </TabsList>
+
+          {/* Hero Tab */}
+          <TabsContent value="hero" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Izquierda: formulario */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Editar Hero</CardTitle>
+                  <CardDescription>Gestiona el título, subtítulo, CTAs y bullets</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="hero-title">Título</Label>
+                    <Input id="hero-title" value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} placeholder="Título del hero" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="hero-subtitle">Subtítulo</Label>
+                    <Textarea id="hero-subtitle" value={heroSubtitle} onChange={(e) => setHeroSubtitle(e.target.value)} placeholder="Subtítulo del hero" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="hero-cta-primary">CTA principal</Label>
+                      <Input id="hero-cta-primary" value={heroCtaPrimary} onChange={(e)=> setHeroCtaPrimary(e.target.value)} placeholder="Reservar sesión" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="hero-cta-secondary">CTA secundaria (opcional)</Label>
+                      <Input id="hero-cta-secondary" value={heroCtaSecondary} onChange={(e)=> setHeroCtaSecondary(e.target.value)} placeholder="Ver servicios" />
+                    </div>
+                  </div>
+
+                  <div className="border rounded-md">
+                    {/* Crear bullet */}
+                    <details className="group" open={creatingBullet} onToggle={(e)=> setCreatingBullet((e.currentTarget as HTMLDetailsElement).open)}>
+                      <summary className={`flex cursor-pointer items-center justify-between p-3 text-left text-sm font-medium hover:bg-accent/5 ${creatingBullet ? "bg-accent/10": ""}`}>
+                        <span>Añadir bullet</span>
+                        <span className="text-muted-foreground" />
+                      </summary>
+                      <div className="px-3 pb-3 pt-1 space-y-3">
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label>Icono</Label>
+                             <HoverCard openDelay={100} closeDelay={100}>
+                               <HoverCardTrigger asChild>
+                                 <Button type="button" variant="outline" className="justify-start gap-2">
+                                   {(() => {
+                                     const Icon = (heroIconMap[cbIcon as keyof typeof heroIconMap] ?? CheckCircle)
+                                     return <Icon className="h-3 w-3" />
+                                   })()}
+                                   <span className="text-xs">{cbIcon}</span>
+                                 </Button>
+                               </HoverCardTrigger>
+                               <HoverCardContent align="start" className="w-[240px] p-2">
+                                 <div className="grid grid-cols-4 gap-2">
+                                   {HERO_ICON_KEYS.map((key) => {
+                                     const Icon = heroIconMap[key] ?? CheckCircle
+                                     const selected = cbIcon === key
+                                     return (
+                                       <Button
+                                         key={key}
+                                         type="button"
+                                         variant={selected ? "default" : "outline"}
+                                         onClick={() => setCbIcon(key)}
+                                         className="h-8 px-2 justify-center"
+                                         aria-pressed={selected}
+                                       >
+                                         <Icon className="h-3 w-3" />
+                                       </Button>
+                                     )
+                                   })}
+                                 </div>
+                               </HoverCardContent>
+                             </HoverCard>
+                          </div>
+                          <div className="col-span-2 space-y-2">
+                            <Label htmlFor="new-bullet-text">Texto</Label>
+                            <Input id="new-bullet-text" value={cbText} onChange={(e)=> setCbText(e.target.value)} placeholder="Texto del bullet" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="new-bullet-pos">Posición</Label>
+                          <Input id="new-bullet-pos" type="number" min={1} value={cbPosition} onChange={(e)=> setCbPosition(Number(e.target.value) || 1)} />
+                        </div>
+                        <Button onClick={handleCreateHeroBullet} className="bg-primary text-primary-foreground">Crear</Button>
+                      </div>
+                    </details>
+
+                    {/* Listado y edición */}
+                    {heroBullets.length === 0 ? (
+                      <div className="p-3">
+                        <p className="text-sm text-muted-foreground">No hay bullets.</p>
+                      </div>
+                    ) : (
+                      <>
+                        {heroBullets.map((b) => (
+                          <details
+                            key={b.id}
+                            className="group"
+                            onToggle={(e) => {
+                              const opened = (e.currentTarget as HTMLDetailsElement).open
+                              if (opened) {
+                                handleSelectBullet(b.id)
+                              } else if (selectedBulletId === b.id) {
+                                setSelectedBulletId(null)
+                              }
+                            }}
+                            open={selectedBulletId === b.id}
+                          >
+                            <summary className={`flex cursor-pointer items-center justify-between p-3 text-left text-sm font-medium hover:bg-accent/5 ${selectedBulletId === b.id ? "bg-accent/10" : ""}`}>
+                              <span className="text-balance">{b.text.slice(0, 60)}...</span>
+                              <span className="text-muted-foreground" />
+                            </summary>
+                            <div className="px-3 pb-3 pt-1 space-y-3">
+                              <div className="grid grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor={`b-id-${b.id}`}>ID</Label>
+                                  <Input id={`b-id-${b.id}`} value={ebId} disabled aria-disabled="true" />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`b-position-${b.id}`}>Posición</Label>
+                                  <Input id={`b-position-${b.id}`} type="number" min={1} value={ebPosition} onChange={(e)=> setEbPosition(Number(e.target.value) || 1)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Icono</Label>
+                                   <HoverCard openDelay={100} closeDelay={100}>
+                                     <HoverCardTrigger asChild>
+                                       <Button type="button" variant="outline" className="justify-start gap-2">
+                                         {(() => {
+                                           const Icon = (heroIconMap[ebIcon as keyof typeof heroIconMap] ?? CheckCircle)
+                                           return <Icon className="h-3 w-3" />
+                                         })()}
+                                         <span className="text-xs">{ebIcon}</span>
+                                       </Button>
+                                     </HoverCardTrigger>
+                                     <HoverCardContent align="start" className="w-[240px] p-2">
+                                       <div className="grid grid-cols-4 gap-2">
+                                         {HERO_ICON_KEYS.map((key) => {
+                                           const Icon = heroIconMap[key] ?? CheckCircle
+                                           const selected = ebIcon === key
+                                           return (
+                                             <Button
+                                               key={key}
+                                               type="button"
+                                               variant={selected ? "default" : "outline"}
+                                               onClick={() => setEbIcon(key)}
+                                               className="h-8 px-2 justify-center"
+                                               aria-pressed={selected}
+                                             >
+                                               <Icon className="h-3 w-3" />
+                                             </Button>
+                                           )
+                                         })}
+                                       </div>
+                                     </HoverCardContent>
+                                   </HoverCard>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor={`b-text-${b.id}`}>Texto</Label>
+                                <Textarea id={`b-text-${b.id}`} value={ebText} onChange={(e)=> setEbText(e.target.value)} />
+                              </div>
+                              <div className="flex gap-2">
+                                <Button onClick={handleSaveHeroBullet} className="bg-primary text-primary-foreground">Actualizar</Button>
+                                <Button variant="outline" onClick={() => {
+                                  const original = heroBullets.find((it) => it.id === b.id)
+                                  if (!original) return
+                                  setEbId(original.id)
+                                  setEbIcon(original.icon || "check-circle")
+                                  setEbText(original.text || "")
+                                  setEbPosition(original.position || 1)
+                                }}>Revertir</Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="destructive" disabled={deletingBullet}>{deletingBullet ? "Eliminando..." : "Eliminar"}</Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Eliminar bullet</AlertDialogTitle>
+                                      <AlertDialogDescription>Esta acción es irreversible.</AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                      <AlertDialogAction onClick={handleDeleteHeroBullet} disabled={deletingBullet} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                        {deletingBullet ? "Eliminando..." : "Eliminar"}
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            </div>
+                          </details>
+                        ))}
+                      </>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <Button onClick={handleSaveHero} disabled={savingHero} className="bg-primary text-primary-foreground">{savingHero ? "Guardando..." : "Guardar Hero"}</Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Derecha: Vista previa */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vista previa</CardTitle>
+                  <CardDescription>Así se verá en Home</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <h2 className="text-2xl font-bold">{heroTitle || "Título del hero"}</h2>
+                    <p className="text-muted-foreground">{heroSubtitle || "Subtítulo del hero..."}</p>
+                    <div className="space-y-2">
+                      <p className="font-medium">Te ayudo con</p>
+                      <ul className="space-y-2">
+                        {heroBullets.map((b) => {
+                          const Icon = heroIconMap[(b.icon as keyof typeof heroIconMap) ?? "check-circle"] ?? CheckCircle
+                          return (
+                            <li key={b.id} className="flex items-center gap-2">
+                              <Icon className="h-4 w-4 text-accent" />
+                              <span>{b.text}</span>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </div>
+                    <div className="flex gap-3">
+                      <Button>{heroCtaPrimary || "CTA principal"}</Button>
+                      {heroCtaSecondary ? <Button variant="outline">{heroCtaSecondary}</Button> : null}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
           {/* Testimonials Tab */}
           <TabsContent value="testimonials" className="mt-6">

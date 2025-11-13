@@ -26,6 +26,22 @@ export type AboutContent = {
   credentials: string[]
 }
 
+// --- New: Hero content types ---
+export type HeroBullet = {
+  id: string
+  position: number
+  icon: string
+  text: string
+}
+
+export type HeroContent = {
+  title: string
+  subtitle: string
+  ctaPrimary: string
+  ctaSecondary?: string
+  bullets: HeroBullet[]
+}
+
 const CONTENT_DIR = path.join(process.cwd(), "content")
 
 function readMarkdownFile(filePath: string) {
@@ -148,17 +164,13 @@ export function setAbout(about: AboutContent) {
   fs.writeFileSync(filePath, frontmatter + body, "utf8")
 }
 
-// Helper: normaliza posiciones asegurando unicidad y orden estable por position luego id
-function normalizePositions(items: FAQItem[]): FAQItem[] {
-  const sorted = [...items].sort((a, b) => {
-    const pa = Number(a.position || 0)
-    const pb = Number(b.position || 0)
-    if (pa !== pb) return pa - pb
-    return String(a.id).localeCompare(String(b.id))
-  })
-  return sorted.map((it, idx) => ({ ...it, position: idx + 1 }))
+function normalizePositions<T extends { position: number }>(items: T[]): T[] {
+  return items
+    .sort((a, b) => a.position - b.position)
+    .map((it, idx) => ({ ...it, position: idx + 1 }))
 }
 
+// --- FAQ editing helpers ---
 // Función para actualizar una FAQ por id en content/faq.md
 export function setFAQItem(updated: FAQItem) {
   const filePath = path.join(CONTENT_DIR, "faq.md")
@@ -201,94 +213,7 @@ export function setFAQItem(updated: FAQItem) {
     .map((it) => {
       const q = escapeYaml(it.question)
       const a = escapeYaml(it.answer)
-      return `  - id: "${it.id}"\n    position: ${it.position}\n    question: "${q}"\n    answer: >-\n      ${a}`
-    })
-    .join("\n")
-
-  const frontmatter = `---\n` +
-    `title: "${escapeYaml(String(parsed.data.title || "Preguntas frecuentes sobre coaching para superar rupturas"))}"\n` +
-    `subtitle: "${escapeYaml(String(parsed.data.subtitle || "Resuelve tus dudas sobre el proceso de sanación emocional tras una ruptura"))}"\n` +
-    `items:\n${itemsYaml}\n` +
-    `---\n`
-
-  const newContent = frontmatter
-  fs.writeFileSync(filePath, newContent, "utf8")
-}
-
-// Crear una nueva FAQ y guardarla en content/faq.md (genera id si no se pasa)
-export function addFAQItem(input: { id?: string; position?: number; question: string; answer: string }): FAQItem {
-  const filePath = path.join(CONTENT_DIR, "faq.md")
-  const escapeYaml = (s: string) => s.replace(/"/g, '\\"')
-
-  // Si no existe faq.md, creamos una base mínima
-  if (!fs.existsSync(CONTENT_DIR)) {
-    fs.mkdirSync(CONTENT_DIR, { recursive: true })
-  }
-  if (!fs.existsSync(filePath)) {
-    const baseFrontmatter = `---\n` +
-      `title: "Preguntas frecuentes sobre coaching para superar rupturas"\n` +
-      `subtitle: "Resuelve tus dudas sobre el proceso de sanación emocional tras una ruptura"\n` +
-      `items:\n` +
-      `---\n`
-    fs.writeFileSync(filePath, baseFrontmatter, "utf8")
-  }
-
-  const file = fs.readFileSync(filePath, "utf8")
-  const parsed = matter(file)
-  const itemsRaw: any[] = Array.isArray(parsed.data.items) ? parsed.data.items : []
-
-  const existingIds = itemsRaw.map((it: any, idx: number) => String(it?.id ?? String(idx + 1).padStart(3, "0")))
-  let id = (input.id || "").trim()
-  if (!id) {
-    // Generamos id numérico de 3 dígitos (siguiente disponible)
-    const numericIds = existingIds
-      .map((s) => (/^\d+$/.test(s) ? parseInt(s, 10) : NaN))
-      .filter((n) => Number.isFinite(n)) as number[]
-    const next = (numericIds.length ? Math.max(...numericIds) : itemsRaw.length) + 1
-    id = String(next).padStart(3, "0")
-  } else {
-    // Validamos duplicados
-    if (existingIds.includes(id)) {
-      throw new Error(`Ya existe una FAQ con id '${id}'`)
-    }
-  }
-
-  // Construimos estado actual
-  const existing: FAQItem[] = itemsRaw.map((it: any, idx: number) => ({
-    id: String(it?.id ?? String(idx + 1).padStart(3, "0")),
-    position: Number(it?.position ?? idx + 1),
-    question: String(it?.question || ""),
-    answer: String(it?.answer || ""),
-  }))
-
-  const desired = Math.max(1, Math.min(Number(input.position || 0) || existing.length + 1, existing.length + 1))
-  // Ordenamos y hacemos hueco incrementando posiciones >= desired
-  const rest = existing.sort((a, b) => a.position - b.position || a.id.localeCompare(b.id)).map((it) => ({
-    ...it,
-    position: it.position >= desired ? it.position + 1 : it.position,
-  }))
-
-  const newItem: FAQItem = {
-    id,
-    position: desired,
-    question: String(input.question || "").trim(),
-    answer: String(input.answer || "").trim(),
-  }
-
-  if (!newItem.question) throw new Error("La pregunta no puede estar vacía")
-  if (!newItem.answer) throw new Error("La respuesta no puede estar vacía")
-
-  const inserted = [...rest, newItem]
-  const nextItems = normalizePositions(inserted)
-
-  // Reconstruimos frontmatter
-  const itemsYaml = nextItems
-    .map((it, idx) => {
-      const q = escapeYaml(String(it.question || ""))
-      const a = escapeYaml(String(it.answer || ""))
-      const pid = String(it.id || String(idx + 1).padStart(3, "0"))
-      const ppos = Number(it.position ?? idx + 1)
-      return `  - id: "${pid}"\n    position: ${ppos}\n    question: "${q}"\n    answer: >-\n      ${a}`
+      return `  - id: "${it.id}"\n    position: ${it.position}\n    question: "${q}"\n    answer: "${a}"`
     })
     .join("\n")
 
@@ -299,19 +224,65 @@ export function addFAQItem(input: { id?: string; position?: number; question: st
     `---\n`
 
   fs.writeFileSync(filePath, frontmatter, "utf8")
-  return newItem
 }
 
-// Eliminar una FAQ por id en content/faq.md
+export function addFAQItem(newItem: { id?: string; position?: number; question: string; answer: string }) {
+  const filePath = path.join(CONTENT_DIR, "faq.md")
+  if (!fs.existsSync(filePath)) {
+    throw new Error("faq.md no existe. Crea el archivo antes de añadir FAQs.")
+  }
+  const file = fs.readFileSync(filePath, "utf8")
+  const parsed = matter(file)
+  const itemsRaw = Array.isArray(parsed.data.items) ? parsed.data.items : []
+
+  const existing: FAQItem[] = itemsRaw.map((it: any, idx: number) => ({
+    id: String(it?.id ?? String(idx + 1).padStart(3, "0")),
+    position: Number(it?.position ?? idx + 1),
+    question: String(it?.question || ""),
+    answer: String(it?.answer || ""),
+  }))
+
+  const id = newItem.id ? String(newItem.id) : String(Date.now())
+  const desired = newItem.position && Number.isFinite(newItem.position)
+    ? Math.max(1, Math.min(Number(newItem.position), existing.length + 1))
+    : existing.length + 1
+
+  const inserted = [
+    ...existing.slice(0, desired - 1),
+    { id, position: desired, question: newItem.question, answer: newItem.answer },
+    ...existing.slice(desired - 1),
+  ]
+
+  const nextItems = normalizePositions(inserted)
+
+  const escapeYaml = (s: string) => s.replace(/"/g, '\\"')
+  const itemsYaml = nextItems
+    .map((it) => {
+      const q = escapeYaml(it.question)
+      const a = escapeYaml(it.answer)
+      return `  - id: "${it.id}"\n    position: ${it.position}\n    question: "${q}"\n    answer: "${a}"`
+    })
+    .join("\n")
+
+  const frontmatter = `---\n` +
+    `title: "${escapeYaml(String(parsed.data.title || "Preguntas frecuentes sobre coaching para superar rupturas"))}"\n` +
+    `subtitle: "${escapeYaml(String(parsed.data.subtitle || "Resuelve tus dudas sobre el proceso de sanación emocional tras una ruptura"))}"\n` +
+    `items:\n${itemsYaml}\n` +
+    `---\n`
+
+  fs.writeFileSync(filePath, frontmatter, "utf8")
+
+  return nextItems.find((it) => it.id === id) as FAQItem
+}
+
 export function deleteFAQItem(id: string) {
   const filePath = path.join(CONTENT_DIR, "faq.md")
   if (!fs.existsSync(filePath)) {
-    throw new Error("faq.md no existe. Crea el archivo antes de editar FAQs.")
+    throw new Error("faq.md no existe. Crea el archivo antes de eliminar FAQs.")
   }
-  const escapeYaml = (s: string) => s.replace(/"/g, '\\"')
   const file = fs.readFileSync(filePath, "utf8")
   const parsed = matter(file)
-  const itemsRaw: any[] = Array.isArray(parsed.data.items) ? parsed.data.items : []
+  const itemsRaw = Array.isArray(parsed.data.items) ? parsed.data.items : []
 
   const existing: FAQItem[] = itemsRaw.map((it: any, idx: number) => ({
     id: String(it?.id ?? String(idx + 1).padStart(3, "0")),
@@ -320,20 +291,15 @@ export function deleteFAQItem(id: string) {
     answer: String(it?.answer || ""),
   }))
 
-  const nextItems = existing.filter((it) => it.id !== id)
-  if (nextItems.length === existing.length) {
-    throw new Error(`No se encontró la FAQ con id '${id}'`)
-  }
+  const filtered = existing.filter((it) => it.id !== id)
+  const nextItems = normalizePositions(filtered)
 
-  const normalized = normalizePositions(nextItems)
-
-  const itemsYaml = normalized
-    .map((it, idx) => {
-      const q = escapeYaml(String(it.question || ""))
-      const a = escapeYaml(String(it.answer || ""))
-      const pid = String(it.id || String(idx + 1).padStart(3, "0"))
-      const ppos = Number(it.position ?? idx + 1)
-      return `  - id: "${pid}"\n    position: ${ppos}\n    question: "${q}"\n    answer: >-\n      ${a}`
+  const escapeYaml = (s: string) => s.replace(/"/g, '\\"')
+  const itemsYaml = nextItems
+    .map((it) => {
+      const q = escapeYaml(it.question)
+      const a = escapeYaml(it.answer)
+      return `  - id: "${it.id}"\n    position: ${it.position}\n    question: "${q}"\n    answer: "${a}"`
     })
     .join("\n")
 
@@ -346,47 +312,144 @@ export function deleteFAQItem(id: string) {
   fs.writeFileSync(filePath, frontmatter, "utf8")
 }
 
-// --- CRUD para Testimonials ---
+// --- Hero content (CRUD as whole object) ---
+const HERO_FILE = path.join(CONTENT_DIR, "hero.md")
+
+function ensureContentDir() {
+  if (!fs.existsSync(CONTENT_DIR)) fs.mkdirSync(CONTENT_DIR, { recursive: true })
+}
+
+function escapeYaml(s: string) {
+  return s.replace(/"/g, '\\"')
+}
+
+export function getHero(): HeroContent {
+  if (!fs.existsSync(HERO_FILE)) {
+    // Valor por defecto si aún no existe el archivo
+    const defaultHero: HeroContent = {
+      title: "Transformación personal tras una ruptura: empieza a sanar desde dentro",
+      subtitle: "Coach emocional especializado en procesos de duelo amoroso. Te acompaño para recuperar tu bienestar, autoestima y paz mental después de una separación.",
+      ctaPrimary: "Reservar sesión gratuita",
+      ctaSecondary: "Ver servicios",
+      bullets: [
+        { id: "1", position: 1, icon: "wrench", text: "Duelo amoroso y sanación emocional" },
+        { id: "2", position: 2, icon: "handshake", text: "Dependencia emocional y límites sanos" },
+        { id: "3", position: 3, icon: "sliders-horizontal", text: "Autoestima y confianza personal" },
+      ],
+    }
+    // No escribimos automáticamente el archivo para evitar efectos secundarios inesperados
+    return defaultHero
+  }
+
+  const { data } = readMarkdownFile(HERO_FILE)
+  const bulletsRaw = Array.isArray((data as any).bullets) ? (data as any).bullets : []
+  const bullets: HeroBullet[] = bulletsRaw
+    .map((it: any, idx: number) => ({
+      id: String(it?.id ?? String(idx + 1)),
+      position: Number(it?.position ?? idx + 1),
+      icon: String(it?.icon || "check-circle"),
+      text: String(it?.text || ""),
+    }))
+    .filter((b) => b.text)
+    .sort((a, b) => a.position - b.position)
+
+  return {
+    title: String((data as any).title || ""),
+    subtitle: String((data as any).subtitle || ""),
+    ctaPrimary: String((data as any).ctaPrimary || "Reservar"),
+    ctaSecondary: (data as any).ctaSecondary ? String((data as any).ctaSecondary) : undefined,
+    bullets,
+  }
+}
+
+export function setHero(hero: HeroContent) {
+  ensureContentDir()
+  const fmBullets = normalizePositions(hero.bullets || [])
+    .map((it) => `  - id: "${escapeYaml(String(it.id))}"\n    position: ${it.position}\n    icon: "${escapeYaml(String(it.icon || "check-circle"))}"\n    text: "${escapeYaml(String(it.text || ""))}"`)
+    .join("\n")
+  const frontmatter = `---\n` +
+    `title: "${escapeYaml(hero.title)}"\n` +
+    `subtitle: "${escapeYaml(hero.subtitle)}"\n` +
+    `ctaPrimary: "${escapeYaml(hero.ctaPrimary)}"\n` +
+    (hero.ctaSecondary ? `ctaSecondary: "${escapeYaml(hero.ctaSecondary)}"\n` : "") +
+    (fmBullets ? `bullets:\n${fmBullets}\n` : "bullets: []\n") +
+    `---\n`
+
+  fs.writeFileSync(HERO_FILE, frontmatter, "utf8")
+}
+
+export function addHeroBullet(newItem: { id?: string; position?: number; icon?: string; text: string }): HeroBullet {
+  const current = getHero()
+  const id = newItem.id ? String(newItem.id) : String(Date.now())
+  const desired = newItem.position && Number.isFinite(newItem.position!)
+    ? Math.max(1, Math.min(Number(newItem.position), current.bullets.length + 1))
+    : current.bullets.length + 1
+  const inserted = [
+    ...current.bullets.slice(0, desired - 1),
+    { id, position: desired, icon: String(newItem.icon || "check-circle"), text: newItem.text },
+    ...current.bullets.slice(desired - 1),
+  ]
+  const next = { ...current, bullets: normalizePositions(inserted) }
+  setHero(next)
+  return next.bullets.find((b) => b.id === id) as HeroBullet
+}
+
+export function setHeroBulletItem(updated: HeroBullet) {
+  const current = getHero()
+  const rest = current.bullets.filter((b) => b.id !== updated.id)
+  const desired = Math.max(1, Math.min(Number(updated.position || 1), rest.length + 1))
+  rest.sort((a: HeroBullet, b: HeroBullet) => a.position - b.position || a.id.localeCompare(b.id))
+  const inserted = [
+    ...rest.slice(0, desired - 1),
+    { id: updated.id, position: desired, icon: String(updated.icon || "check-circle"), text: String(updated.text || "") },
+    ...rest.slice(desired - 1),
+  ]
+  const next = { ...current, bullets: normalizePositions(inserted) }
+  setHero(next)
+  return next.bullets.find((b) => b.id === updated.id) as HeroBullet
+}
+
+export function deleteHeroBulletItem(id: string) {
+  const current = getHero()
+  const filtered = current.bullets.filter((b) => b.id !== id)
+  const next = { ...current, bullets: normalizePositions(filtered) }
+  setHero(next)
+}
+
+// --- Testimonials helpers (existing) ---
 function normalizeTestimonialPositions(items: Testimonial[]): Testimonial[] {
-  const sorted = [...items].sort((a, b) => {
-    const pa = Number(a.position || 0)
-    const pb = Number(b.position || 0)
-    if (pa !== pb) return pa - pb
-    return String(a.id).localeCompare(String(b.id))
-  })
-  return sorted.map((it, idx) => ({ ...it, position: idx + 1 }))
+  return items
+    .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
+    .map((t, idx) => ({ ...t, position: idx + 1 }))
 }
 
 function writeTestimonialFile(dir: string, t: Testimonial) {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true })
-  }
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
   const escapeYaml = (s: string) => s.replace(/"/g, '\\"')
-  const frontmatterLines = [
-    `name: "${escapeYaml(String(t.name || ""))}"`,
-    `age: ${Number(t.age || 0)}`,
-    `rating: ${Number(t.rating || 0)}`,
-    ...(t.video ? [`video: "${escapeYaml(String(t.video))}"`] : []),
-    ...(t.image ? [`image: "${escapeYaml(String(t.image))}"`] : []),
-    `position: ${Number(t.position || 0)}`,
-  ]
-  const fm = `---\n${frontmatterLines.join("\n")}\n---\n`
-  const body = `${String(t.text || "").trim()}\n`
+  const fm = `---\n` +
+    `name: "${escapeYaml(t.name)}"\n` +
+    `age: ${t.age}\n` +
+    `rating: ${t.rating}\n` +
+    `position: ${t.position}\n` +
+    (t.video ? `video: "${escapeYaml(t.video)}"\n` : "") +
+    (t.image ? `image: "${escapeYaml(t.image)}"\n` : "") +
+    `---\n` +
+    `${t.text.trim()}\n`
   const filePath = path.join(dir, `${t.id}.md`)
-  fs.writeFileSync(filePath, fm + body, "utf8")
+  fs.writeFileSync(filePath, fm, "utf8")
 }
 
-export function addTestimonialItem(input: { id?: string; position?: number; name: string; age: number; rating: number; text: string; video?: string; image?: string }): Testimonial {
+export function addTestimonialItem(newItem: { id?: string; position?: number; name: string; age: number; rating: number; text: string; video?: string; image?: string }) {
   const dir = path.join(CONTENT_DIR, "testimonials")
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
   const files = listMarkdownFiles(dir)
-  // Construimos estado actual
-  const existing: Testimonial[] = files.map((filePath, idx) => {
+  const items: Testimonial[] = files.map((filePath, idx) => {
     const { data, content } = readMarkdownFile(filePath)
     const base = path.basename(filePath, ".md")
     const numPrefix = parseInt(base.split("-")[0], 10)
     const posFm = Number((data as any).position)
     const position = Number.isFinite(posFm) ? posFm : (!isNaN(numPrefix) ? numPrefix : idx + 1)
-    return {
+    const item: Testimonial = {
       id: base,
       position,
       name: String((data as any).name || ""),
@@ -396,42 +459,30 @@ export function addTestimonialItem(input: { id?: string; position?: number; name
       video: (data as any).video ? String((data as any).video) : undefined,
       image: (data as any).image ? String((data as any).image) : undefined,
     }
+    return item
   })
 
-  const escapeSlug = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
-  let id = (input.id || "").trim()
-  if (!id) {
-    id = escapeSlug(String(input.name || "nuevo-testimonio")) || `testimonial-${existing.length + 1}`
-  }
-  if (existing.some((e) => e.id === id)) {
-    throw new Error(`Ya existe un testimonio con id '${id}'`)
-  }
+  const id = newItem.id ? String(newItem.id) : String(Date.now())
+  const desired = newItem.position && Number.isFinite(newItem.position)
+    ? Math.max(1, Math.min(Number(newItem.position), items.length + 1))
+    : items.length + 1
 
-  const desired = Math.max(1, Math.min(Number(input.position || existing.length + 1), existing.length + 1))
-  const newItem: Testimonial = {
-    id,
-    position: desired,
-    name: String(input.name || "").trim(),
-    age: Number(input.age || 0),
-    rating: Math.max(0, Math.min(5, Number(input.rating || 0))),
-    text: String(input.text || "").trim(),
-    video: input.video ? String(input.video).trim() : undefined,
-    image: input.image ? String(input.image).trim() : undefined,
-  }
-
-  if (!newItem.name) throw new Error("El nombre no puede estar vacío")
-  if (!newItem.text) throw new Error("El texto del testimonio no puede estar vacío")
-  if (!Number.isFinite(newItem.age) || newItem.age < 0) throw new Error("La edad debe ser un número válido")
-  if (!Number.isFinite(newItem.rating) || newItem.rating < 0 || newItem.rating > 5) throw new Error("El rating debe estar entre 0 y 5")
-
-  // Insertamos y normalizamos posiciones
   const inserted = [
-    ...existing.map((it) => ({ ...it, position: it.position >= desired ? it.position + 1 : it.position })),
-    newItem,
+    ...items.slice(0, desired - 1),
+    {
+      id,
+      position: desired,
+      name: newItem.name,
+      age: Math.max(0, Number(newItem.age || 0)),
+      rating: Math.max(0, Math.min(5, Number(newItem.rating || 0))),
+      text: newItem.text,
+      video: newItem.video,
+      image: newItem.image,
+    },
+    ...items.slice(desired - 1),
   ]
-  const normalized = normalizeTestimonialPositions(inserted)
 
-  // Escribimos todos los archivos con position actualizada
+  const normalized = normalizeTestimonialPositions(inserted)
   for (const t of normalized) {
     writeTestimonialFile(dir, t)
   }
@@ -439,16 +490,16 @@ export function addTestimonialItem(input: { id?: string; position?: number; name
   return normalized.find((t) => t.id === id) as Testimonial
 }
 
-export function setTestimonialItem(updated: Testimonial): Testimonial {
+export function setTestimonialItem(updated: Testimonial) {
   const dir = path.join(CONTENT_DIR, "testimonials")
   const files = listMarkdownFiles(dir)
-  const existing: Testimonial[] = files.map((filePath, idx) => {
+  const items: Testimonial[] = files.map((filePath, idx) => {
     const { data, content } = readMarkdownFile(filePath)
     const base = path.basename(filePath, ".md")
     const numPrefix = parseInt(base.split("-")[0], 10)
     const posFm = Number((data as any).position)
     const position = Number.isFinite(posFm) ? posFm : (!isNaN(numPrefix) ? numPrefix : idx + 1)
-    return {
+    const item: Testimonial = {
       id: base,
       position,
       name: String((data as any).name || ""),
@@ -458,27 +509,27 @@ export function setTestimonialItem(updated: Testimonial): Testimonial {
       video: (data as any).video ? String((data as any).video) : undefined,
       image: (data as any).image ? String((data as any).image) : undefined,
     }
+    return item
   })
 
-  if (!existing.some((e) => e.id === updated.id)) {
-    throw new Error(`No se encontró el testimonio con id '${updated.id}'`)
-  }
+  const rest = items.filter((t) => t.id !== updated.id)
+  const desired = Math.max(1, Math.min(Number(updated.position || 1), rest.length + 1))
+  rest.sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
 
-  const desired = Math.max(1, Math.min(Number(updated.position || 1), existing.length))
-  const rest = existing.filter((e) => e.id !== updated.id)
   const inserted = [
-    ...rest.sort((a, b) => a.position - b.position || a.id.localeCompare(b.id)),
+    ...rest.slice(0, desired - 1),
+    {
+      id: updated.id,
+      position: desired,
+      name: String(updated.name || ""),
+      age: Math.max(0, Number(updated.age || 0)),
+      rating: Math.max(0, Math.min(5, Number(updated.rating || 0))),
+      text: String(updated.text || "").trim(),
+      video: updated.video ? String(updated.video).trim() : undefined,
+      image: updated.image ? String(updated.image).trim() : undefined,
+    },
+    ...rest.slice(desired - 1),
   ]
-  inserted.splice(desired - 1, 0, {
-    ...updated,
-    position: desired,
-    name: String(updated.name || "").trim(),
-    age: Number(updated.age || 0),
-    rating: Math.max(0, Math.min(5, Number(updated.rating || 0))),
-    text: String(updated.text || "").trim(),
-    video: updated.video ? String(updated.video).trim() : undefined,
-    image: updated.image ? String(updated.image).trim() : undefined,
-  })
 
   const normalized = normalizeTestimonialPositions(inserted)
   for (const t of normalized) {
@@ -491,13 +542,13 @@ export function setTestimonialItem(updated: Testimonial): Testimonial {
 export function deleteTestimonialItem(id: string) {
   const dir = path.join(CONTENT_DIR, "testimonials")
   const files = listMarkdownFiles(dir)
-  const existing: Testimonial[] = files.map((filePath, idx) => {
+  const items: Testimonial[] = files.map((filePath, idx) => {
     const { data, content } = readMarkdownFile(filePath)
     const base = path.basename(filePath, ".md")
     const numPrefix = parseInt(base.split("-")[0], 10)
     const posFm = Number((data as any).position)
     const position = Number.isFinite(posFm) ? posFm : (!isNaN(numPrefix) ? numPrefix : idx + 1)
-    return {
+    const item: Testimonial = {
       id: base,
       position,
       name: String((data as any).name || ""),
@@ -507,21 +558,16 @@ export function deleteTestimonialItem(id: string) {
       video: (data as any).video ? String((data as any).video) : undefined,
       image: (data as any).image ? String((data as any).image) : undefined,
     }
+    return item
   })
 
-  const nextItems = existing.filter((e) => e.id !== id)
-  if (nextItems.length === existing.length) {
-    throw new Error(`No se encontró el testimonio con id '${id}'`)
-  }
-
-  const normalized = normalizeTestimonialPositions(nextItems)
-
-  // Borra archivo del testimonio y actualiza positions del resto
-  const filePath = path.join(dir, `${id}.md`)
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath)
-  }
+  const filtered = items.filter((t) => t.id !== id)
+  const normalized = normalizeTestimonialPositions(filtered)
   for (const t of normalized) {
     writeTestimonialFile(dir, t)
   }
+
+  // Borramos el fichero antiguo si existía
+  const fileToDelete = path.join(dir, `${id}.md`)
+  if (fs.existsSync(fileToDelete)) fs.unlinkSync(fileToDelete)
 }

@@ -11,7 +11,7 @@ import { FAQSection } from "@/components/sections/faq-section"
 import { CTASection } from "@/components/ui/cta-section"
 import { Toggle3D } from "@/components/ui/3d-toggle"
 import { LazyLoad } from "@/components/performance/intersection-observer"
-import { getTestimonials, getFAQ, getAbout } from "@/lib/content-md"
+import { getTestimonials, getFAQ, getAbout, getHero } from "@/lib/content-md"
 import { getProducts } from "@/lib/products-md"
 
 export default function HomePage() {
@@ -19,11 +19,12 @@ export default function HomePage() {
   const about = getAbout()
   const faq = getFAQ()
   const { guides, sessions } = getProducts()
+  const hero = getHero()
   return (
     <>
       <Header />
       <main id="main-content">
-        <HeroSection />
+        <HeroSection hero={hero} />
         <LazyLoad>
           <HowItWorksSectionV2 />
         </LazyLoad>

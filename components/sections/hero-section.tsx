@@ -1,12 +1,25 @@
 import { Button } from "@/components/ui/button"
 import { Section } from "@/components/ui/section"
-import { siteContent } from "@/data/content"
-import { Wrench, Handshake, SlidersHorizontal } from "lucide-react"
+import { HeroContent } from "@/lib/content-md"
+import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield, Users, ArrowRight, Sparkles, Target, Timer, MessageSquare } from "lucide-react"
 
-export function HeroSection() {
-  const { hero } = siteContent
-  const bulletIcons = [Wrench, Handshake, SlidersHorizontal]
+const iconMap = {
+  "check-circle": CheckCircle,
+  wrench: Wrench,
+  handshake: Handshake,
+  "sliders-horizontal": SlidersHorizontal,
+  star: Star,
+  heart: Heart,
+  shield: Shield,
+  users: Users,
+  "arrow-right": ArrowRight,
+  sparkles: Sparkles,
+  target: Target,
+  timer: Timer,
+  "message-square": MessageSquare,
+} as const
 
+export function HeroSection({ hero }: { hero: HeroContent }) {
   return (
     <Section id="hero" aria-labelledby="hero-title" className="pt-8 pb-16 md:pt-16 md:pb-24 relative overflow-hidden min-h-screen flex items-center">
       {/* Imagen de fondo que ocupa todo el ancho */}
@@ -38,12 +51,12 @@ export function HeroSection() {
           <div className="w-full max-w-lg">
             <p className="font-medium mb-3 text-center lg:text-left text-white drop-shadow-md">Te ayudo con</p>
             <ul className="space-y-3">
-              {hero.bullets.map((bullet: string, index: number) => {
-                const Icon = bulletIcons[index % bulletIcons.length]
+              {(hero.bullets || []).map((bullet) => {
+                const Icon = iconMap[(bullet.icon as keyof typeof iconMap) ?? "check-circle"] ?? CheckCircle
                 return (
-                  <li key={index} className="flex items-start gap-3">
+                  <li key={bullet.id} className="flex items-start gap-3">
                     <Icon aria-hidden className="h-5 w-5 text-accent flex-shrink-0 mt-1" />
-                    <span className="text-white/90 drop-shadow-md">{bullet}</span>
+                    <span className="text-white/90 drop-shadow-md">{bullet.text}</span>
                   </li>
                 )
               })}
@@ -58,13 +71,15 @@ export function HeroSection() {
             >
               <a href="#reservar">{hero.ctaPrimary}</a>
             </Button>
-            <Button
-              asChild
-              size="lg"
-              className="text-lg px-8 bg-white text-black border-2 border-white hover:shadow-lg hover:bg-white/90"
-            >
-              <a href="#sesiones">{hero.ctaSecondary}</a>
-            </Button>
+            {hero.ctaSecondary && (
+              <Button
+                asChild
+                size="lg"
+                className="text-lg px-8 bg-white text-black border-2 border-white hover:shadow-lg hover:bg-white/90"
+              >
+                <a href="#sesiones">{hero.ctaSecondary}</a>
+              </Button>
+            )}
             {/* Botón de Sign-In con Google (mock) eliminado del hero */}
           </div>
         </div>
