@@ -1,8 +1,7 @@
 import React from "react"
 import { getProducts, GuideProduct, SessionProduct } from "@/lib/products-md"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { User, CheckCircle, BookOpen } from "lucide-react"
 
 function resolveFeatured() {
   const { guides, sessions } = getProducts()
@@ -41,7 +40,10 @@ function buttonFor(item: GuideProduct | SessionProduct) {
     return { label: "Descargar ahora", href: (item as GuideProduct).fileUrl || "/fake.pdf" }
   } else {
     const s = item as SessionProduct
-    return s.subtype === "program4" ? { label: "Empezar programa", href: "/#programa-4" } : { label: "Reservar ahora", href: "/#sesion-individual" }
+    // Llevamos a secciones existentes de la home
+    return s.subtype === "program4"
+      ? { label: "Empezar programa", href: "#sesiones" }
+      : { label: "Reservar ahora", href: "#reservar" }
   }
 }
 
@@ -55,46 +57,42 @@ export default function HowItWorksSectionV2() {
       <div className="container mx-auto px-6">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Cómo funciona</h2>
-          <p className="mt-4 text-muted-foreground">Elige la opción que mejor se adapta a tu proceso</p>
+          <p className="mt-4 text-muted-foreground">Elige tu servicio y comienza tu transformación</p>
         </div>
 
-        {/* Cards con CTA alineado abajo */}
-        <div className="grid gap-6 md:grid-cols-3 items-stretch">
+        {/* Cards compactas: solo resumen */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {cards.map((item, idx) => {
             const btn = buttonFor(item)
             const isCenter = idx === 1
             const title = item.title
             const price = item.price
-            const features = item.features
-            const description = (item as any).kind === "guide" ? (item as GuideProduct).miniDescription : (item as SessionProduct).description
-            const isPopular = Boolean(item.mostPopular) || isCenter
+            const summary = (item as any).kind === "guide" ? (item as GuideProduct).miniDescription : (item as SessionProduct).description
+            const Icon = ((item as any).kind === "guide") ? BookOpen : ((item as SessionProduct).subtype === "program4" ? CheckCircle : User)
             return (
-              <Card key={item.id} className={`relative ${isCenter ? "border-primary shadow-lg" : ""} flex flex-col h-full`}>
-                <CardHeader>
-                  {isCenter && (
-                    <Badge className="absolute right-4 top-4" variant="default">Más Popular</Badge>
-                  )}
-                  <CardTitle className="text-xl">{title}</CardTitle>
-                  <div className="mt-2 text-muted-foreground">{description}</div>
-                  <div className="mt-4 text-2xl font-bold">€{price}</div>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <ul className="space-y-2">
-                    {features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="mt-1 h-2 w-2 rounded-full bg-primary"></span>
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  {/* Botón abajo siempre */}
-                  <div className="mt-auto pt-6">
-                    <Button asChild className={isPopular ? "w-full" : "w-full"}>
-                      <a href={btn.href}>{btn.label}</a>
-                    </Button>
+              <div
+                key={item.id}
+                className={`bg-card rounded-lg p-4 text-center hover:shadow-md transition-shadow ${isCenter ? "relative border-2" : "border border-border"}`}
+                style={isCenter ? { borderColor: '#517e61' } : undefined}
+              >
+                {isCenter && (
+                  <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                    <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#b5ac69', color: 'white' }}>
+                      Más Popular
+                    </span>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+
+                <div className="w-8 h-8 mx-auto mb-2 rounded-full flex items-center justify-center" style={{ backgroundColor: '#517e61' }}>
+                  <Icon className="w-4 h-4 text-white" />
+                </div>
+                <h3 className="font-semibold text-sm mb-1" style={{ color: '#517e61' }}>{title}</h3>
+                <p className="text-xs text-muted-foreground mb-2 truncate">{summary}</p>
+                <p className="text-lg font-bold mb-3" style={{ color: '#517e61' }}>€{price}</p>
+                <Button asChild size="sm" className="w-full text-xs font-medium bg-[#517e61] hover:bg-[#406e55] text-white">
+                  <a href={btn.href}>{btn.label}</a>
+                </Button>
+              </div>
             )
           })}
         </div>

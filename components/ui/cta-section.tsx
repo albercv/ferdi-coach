@@ -3,6 +3,7 @@ import { Section } from "@/components/ui/section"
 import { TrustSeals } from "@/components/ui/trust-seals"
 
 interface CTASectionProps {
+  id?: string
   title: string
   description: string
   primaryCTA: {
@@ -16,9 +17,9 @@ interface CTASectionProps {
   showTrustSeals?: boolean
 }
 
-export function CTASection({ title, description, primaryCTA, secondaryCTA, showTrustSeals }: CTASectionProps) {
+export function CTASection({ id = "reservar", title, description, primaryCTA, secondaryCTA, showTrustSeals }: CTASectionProps) {
   return (
-    <Section className="bg-accent text-accent-foreground">
+    <Section id={id} className="bg-accent text-accent-foreground">
       <div className="text-center max-w-3xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">{title}</h2>
         <p className="text-xl mb-8 text-accent-foreground/90 text-pretty">{description}</p>
