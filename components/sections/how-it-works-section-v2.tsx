@@ -58,7 +58,8 @@ export default function HowItWorksSectionV2() {
           <p className="mt-4 text-muted-foreground">Elige la opción que mejor se adapta a tu proceso</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        {/* Cards con CTA alineado abajo */}
+        <div className="grid gap-6 md:grid-cols-3 items-stretch">
           {cards.map((item, idx) => {
             const btn = buttonFor(item)
             const isCenter = idx === 1
@@ -68,7 +69,7 @@ export default function HowItWorksSectionV2() {
             const description = (item as any).kind === "guide" ? (item as GuideProduct).miniDescription : (item as SessionProduct).description
             const isPopular = Boolean(item.mostPopular) || isCenter
             return (
-              <Card key={item.id} className={`relative ${isCenter ? "border-primary shadow-lg" : ""}`}>
+              <Card key={item.id} className={`relative ${isCenter ? "border-primary shadow-lg" : ""} flex flex-col h-full`}>
                 <CardHeader>
                   {isCenter && (
                     <Badge className="absolute right-4 top-4" variant="default">Más Popular</Badge>
@@ -77,7 +78,7 @@ export default function HowItWorksSectionV2() {
                   <div className="mt-2 text-muted-foreground">{description}</div>
                   <div className="mt-4 text-2xl font-bold">€{price}</div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-1 flex flex-col">
                   <ul className="space-y-2">
                     {features.map((f, i) => (
                       <li key={i} className="flex items-start gap-2">
@@ -86,8 +87,9 @@ export default function HowItWorksSectionV2() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-6">
-                    <Button asChild className={isCenter ? "w-full" : "w-full"}>
+                  {/* Botón abajo siempre */}
+                  <div className="mt-auto pt-6">
+                    <Button asChild className={isPopular ? "w-full" : "w-full"}>
                       <a href={btn.href}>{btn.label}</a>
                     </Button>
                   </div>
@@ -97,21 +99,47 @@ export default function HowItWorksSectionV2() {
           })}
         </div>
 
-        <div className="mt-16">
-          <h3 className="text-xl font-semibold mb-4">Proceso de Compra</h3>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              { step: 1, title: "Elige tu producto", text: "Selecciona la guía o el programa que mejor se adapte a tu situación." },
-              { step: 2, title: "Completa el pedido", text: "Realiza el pago y obtén acceso inmediato a tu guía o agenda tu sesión." },
-              { step: 3, title: "Sigue el plan", text: "Aplica las estrategias, o trabaja conmigo 1 a 1 si eliges sesiones." },
-              { step: 4, title: "Evoluciona", text: "Te acompaño durante el proceso para que avances con confianza." },
-            ].map((p) => (
-              <div key={p.step} className="rounded-lg border p-4">
-                <div className="text-sm text-muted-foreground">Paso {p.step}</div>
-                <div className="mt-1 font-medium">{p.title}</div>
-                <p className="mt-2 text-muted-foreground">{p.text}</p>
+        {/* Proceso de Compra - estilos restaurados */}
+        <div className="mt-16 bg-muted/30 rounded-lg p-4">
+          <h3 className="text-lg font-semibold text-center mb-4" style={{color: '#517e61'}}>Proceso de Compra</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            {/* Paso 1 */}
+            <div className="bg-card rounded-lg p-3 text-center" style={{border: '1px solid #b5ac69'}}>
+              <div className="w-6 h-6 mx-auto mb-2 rounded-full flex items-center justify-center" style={{backgroundColor: '#b5ac69'}}>
+                <span className="text-xs font-bold text-white">1</span>
               </div>
-            ))}
+              <h4 className="font-medium text-xs mb-1" style={{color: '#b5ac69'}}>Elige tu servicio</h4>
+              <p className="text-xs text-muted-foreground">Selecciona el plan ideal</p>
+            </div>
+            {/* Paso 2 */}
+            <div className="bg-card rounded-lg p-3 text-center" style={{border: '1px solid #a09e5f'}}>
+              <div className="w-6 h-6 mx-auto mb-2 rounded-full flex items-center justify-center" style={{backgroundColor: '#a09e5f'}}>
+                <span className="text-xs font-bold text-white">2</span>
+              </div>
+              <h4 className="font-medium text-xs mb-1" style={{color: '#a09e5f'}}>Pago seguro</h4>
+              <p className="text-xs text-muted-foreground">Proceso 100% seguro</p>
+            </div>
+            {/* Paso 3 */}
+            <div className="bg-card rounded-lg p-3 text-center" style={{border: '1px solid #6b8f5a'}}>
+              <div className="w-6 h-6 mx-auto mb-2 rounded-full flex items-center justify-center" style={{backgroundColor: '#6b8f5a'}}>
+                <span className="text-xs font-bold text-white">3</span>
+              </div>
+              <h4 className="font-medium text-xs mb-1" style={{color: '#6b8f5a'}}>Reserva tu cita</h4>
+              <p className="text-xs text-muted-foreground">Elige fecha y hora</p>
+            </div>
+            {/* Paso 4 */}
+            <div className="bg-card rounded-lg p-3 text-center" style={{border: '1px solid #517e61'}}>
+              <div className="w-6 h-6 mx-auto mb-2 rounded-full flex items-center justify-center" style={{backgroundColor: '#517e61'}}>
+                <span className="text-xs font-bold text-white">4</span>
+              </div>
+              <h4 className="font-medium text-xs mb-1" style={{color: '#517e61'}}>Confirmación</h4>
+              <p className="text-xs text-muted-foreground">Recibe tu confirmación</p>
+            </div>
+          </div>
+
+          <div className="text-center text-xs text-muted-foreground">
+            <p className="mb-1">🔒 Pago 100% seguro con encriptación SSL</p>
+            <p>📅 Política de cambios flexible hasta 24h antes</p>
           </div>
         </div>
       </div>
