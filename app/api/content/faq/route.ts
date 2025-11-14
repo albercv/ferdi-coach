@@ -49,16 +49,28 @@ export async function PUT(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json()
+    const id = body?.id ? String(body.id).trim() : undefined
     const question = String(body?.question || "").trim()
     const answer = String(body?.answer || "").trim()
     const positionRaw = body?.position
     const position = typeof positionRaw === "number" ? positionRaw : Number(positionRaw || 0)
-    const id = body?.id ? String(body.id).trim() : undefined
 
     if (!question) return NextResponse.json({ error: "La pregunta no puede estar vacía" }, { status: 400 })
     if (!answer) return NextResponse.json({ error: "La respuesta no puede estar vacía" }, { status: 400 })
     if (position && (!Number.isFinite(position) || position < 1)) {
       return NextResponse.json({ error: "La posición debe ser un número >= 1" }, { status: 400 })
+    }
+
+    // Fallback de actualización: si viene id, tratamos POST como update
+    if (id) {
+      const pos = position || 1
+      if (!Number.isFinite(pos) || pos < 1) {
+        return NextResponse.json({ error: "La posición debe ser un número >= 1" }, { status: 400 })
+      }
+      setFAQItem({ id, question, answer, position: pos })
+      const faq = getFAQ()
+      const updated = faq.items.find((it) => it.id === id)
+      return NextResponse.json({ ok: true, item: updated, faq })
     }
 
     const created = addFAQItem({ id, question, answer, position: position || undefined })

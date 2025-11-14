@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
+    const id = body?.id ? String(body.id).trim() : undefined
     const name = String(body?.name || "").trim()
     const text = String(body?.text || "").trim()
     const ageRaw = body?.age
@@ -28,7 +29,6 @@ export async function POST(req: Request) {
     const positionRaw = body?.position
     const video = body?.video ? String(body.video).trim() : undefined
     const image = body?.image ? String(body.image).trim() : undefined
-    const id = body?.id ? String(body.id).trim() : undefined
 
     const age = typeof ageRaw === "number" ? ageRaw : Number(ageRaw || 0)
     const rating = typeof ratingRaw === "number" ? ratingRaw : Number(ratingRaw || 0)
@@ -44,6 +44,17 @@ export async function POST(req: Request) {
     }
     if (position && (!Number.isFinite(position) || position < 1)) {
       return NextResponse.json({ error: "La posición debe ser un número >= 1" }, { status: 400 })
+    }
+
+    // Fallback de actualización: si viene id, tratamos POST como update
+    if (id) {
+      const pos = position || 1
+      if (!Number.isFinite(pos) || pos < 1) {
+        return NextResponse.json({ error: "La posición debe ser un número >= 1" }, { status: 400 })
+      }
+      const updated = setTestimonialItem({ id, name, age, rating, text, video, image, position: pos })
+      const items = getTestimonials()
+      return NextResponse.json({ ok: true, item: updated, items })
     }
 
     const created = addTestimonialItem({ id, name, age, rating, text, video, image, position: position || undefined })

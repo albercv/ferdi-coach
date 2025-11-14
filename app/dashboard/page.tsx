@@ -282,7 +282,7 @@ export default function DashboardPage() {
         .filter(Boolean)
 
       const res = await fetch("/api/content/about", {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: aboutTitle,
@@ -395,7 +395,7 @@ export default function DashboardPage() {
         bullets: normalizeHeroPositions(heroBullets).filter((b) => b.text && b.text.trim()),
       }
       const res = await fetch("/api/content/hero", {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       })
@@ -425,7 +425,7 @@ export default function DashboardPage() {
         position: editingPosition,
       }
       const res = await fetch("/api/content/faq", {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
@@ -663,7 +663,7 @@ export default function DashboardPage() {
         mostPopular: Boolean(egMostPopular),
       }
       const res = await fetch("/api/content/products", {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
@@ -808,7 +808,7 @@ export default function DashboardPage() {
         mostPopular: Boolean(esMostPopular),
       }
       const res = await fetch("/api/content/products", {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
@@ -888,7 +888,7 @@ export default function DashboardPage() {
         position: editingTPosition,
       }
       const res = await fetch("/api/content/testimonials", {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })

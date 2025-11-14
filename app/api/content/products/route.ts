@@ -19,6 +19,11 @@ export async function POST(req: Request) {
   }
   try {
     const body = await req.json()
+    // Fallback de actualización: si viene id en el body, tratamos POST como update
+    if (body && body.id) {
+      const updated = setProductItem(body)
+      return NextResponse.json({ success: true, data: updated })
+    }
     const created = addProductItem(body)
     return NextResponse.json({ success: true, data: created })
   } catch (error: any) {
