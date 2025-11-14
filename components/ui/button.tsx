@@ -1,4 +1,4 @@
-import type * as React from "react"
+import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -32,33 +32,34 @@ const buttonVariants = cva(
   },
 )
 
-function Button({
-  className,
-  variant,
-  size,
-  asChild = false,
-  underlineSpeedMs = 300,
-  ...props
-}: React.ComponentProps<"button"> &
+const Button = React.forwardRef<HTMLButtonElement, React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
     underlineSpeedMs?: number
-  }) {
-  const Comp = asChild ? Slot : "button"
+  }>(
+  (
+    { className, variant, size, asChild = false, underlineSpeedMs = 300, ...props },
+    ref,
+  ) => {
+    const Comp = asChild ? Slot : "button"
 
-  const styleWithVar = {
-    ...(props.style ?? {}),
-    ["--btn-underline-duration"]: `${underlineSpeedMs}ms`,
-  } as React.CSSProperties
+    const styleWithVar = {
+      ...(props.style ?? {}),
+      ["--btn-underline-duration"]: `${underlineSpeedMs}ms`,
+    } as React.CSSProperties
 
-  return (
-    <Comp
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      style={styleWithVar}
-      {...props}
-    />
-  )
-}
+    return (
+      <Comp
+        ref={ref as any}
+        data-slot="button"
+        className={cn(buttonVariants({ variant, size, className }))}
+        style={styleWithVar}
+        {...props}
+      />
+    )
+  },
+)
+
+Button.displayName = "Button"
 
 export { Button, buttonVariants }

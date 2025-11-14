@@ -8,6 +8,7 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { SkipLink } from "@/components/ui/skip-link"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { AuthProvider } from "@/components/providers/session-provider"
+import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
 const geistSans = GeistSans
@@ -118,6 +119,7 @@ export default function RootLayout({
           </Suspense>
         </AuthProvider>
         <Analytics />
+        <Toaster />
       </body>
     </html>
   )

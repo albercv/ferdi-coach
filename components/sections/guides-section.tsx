@@ -2,10 +2,10 @@
 
 import { Section } from "@/components/ui/section"
 import { PricingCard } from "@/components/ui/pricing-card"
-import { siteContent } from "@/data/content"
+import type { GuideProduct } from "@/lib/products-md"
 
-export function GuidesSection() {
-  const { guides } = siteContent
+export function GuidesSection({ guides }: { guides: GuideProduct[] }) {
+  // Eliminamos siteContent, usamos los datos dinámicos
 
   const funSynopses: Record<string, string> = {
     "Guía del Contacto Cero":
@@ -30,20 +30,15 @@ export function GuidesSection() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
         {guides.map((guide, index) => (
           <PricingCard
-            key={index}
+            key={guide.id || index}
             title={guide.title}
-            description={guide.description}
-            price={guide.price}
-            features={[
-              "Descarga inmediata",
-              "Formato PDF optimizado",
-              "Ejercicios prácticos",
-              "Acceso de por vida"
-            ]}
-            ctaText="Descargar Gratis"
-            ctaHref="#descargar"
+            description={guide.miniDescription}
+            price={String(guide.price)}
+            features={guide.features}
+            ctaText="Descargar ahora"
+            ctaHref={guide.fileUrl || "/fake.pdf"}
             flipOnHover={true}
-            backSynopsis={funSynopses[guide.title] || guide.description}
+            backSynopsis={guide.synopsis || funSynopses[guide.title] || guide.miniDescription}
             backCoverSrc="/logo2.webp"
           />
         ))}

@@ -4,17 +4,9 @@ import { Button } from "@/components/ui/button"
 
 export function GoogleSignInButton() {
   const handleClick = () => {
-    // Mock: activar dashboard
     try {
-      localStorage.setItem("dashboardEnabled", "true")
-      // Notificar al header que debe mostrar el tab Dashboard
-      window.dispatchEvent(new CustomEvent("dashboard-enabled"))
-      // Redirigir al dashboard
-      window.location.assign("/dashboard")
-    } catch (e) {
-      console.warn("No se pudo activar el dashboard mock", e)
-      alert("Mock: Google Sign-In aún no está implementado.")
-    }
+      window.location.assign("/login")
+    } catch {}
   }
 
   return (
