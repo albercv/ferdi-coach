@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import Link from "next/link"
-import { signOut } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
@@ -25,6 +25,25 @@ import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield,
 export default function DashboardPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const { status } = useSession()
+
+  // Proteger acceso: si no hay sesión, redirige al login
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/login")
+    }
+  }, [status, router])
+
+  // Evitar BFCache al volver atrás tras logout: revalida sesión y redirige si no hay
+  useEffect(() => {
+    const onPageShow = () => {
+      if (status === "unauthenticated") {
+        router.replace("/login")
+      }
+    }
+    window.addEventListener("pageshow", onPageShow)
+    return () => window.removeEventListener("pageshow", onPageShow)
+  }, [status, router])
   const [aboutTitle, setAboutTitle] = useState("")
   const [aboutDescription, setAboutDescription] = useState("")
   const [aboutCredentialsText, setAboutCredentialsText] = useState("")
@@ -251,8 +270,7 @@ export default function DashboardPage() {
   }, [toast])
 
   const handleLogout = async () => {
-    await signOut({ redirect: false })
-    router.push("/")
+    await signOut({ callbackUrl: "/login" })
   }
 
   const handleSaveAbout = async () => {
@@ -982,8 +1000,7 @@ export default function DashboardPage() {
     <main className="min-h-screen py-10">
       <div className="container mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Dashboard (Mock)</h1>
-          <p className="text-muted-foreground">Este panel es un mockup sin funcionalidad real. Más adelante se securizará con Google Sign-In.</p>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
           <div className="flex gap-3 mt-4">
             <Button asChild variant="outline">
               <Link href="/">Volver a Home</Link>
@@ -994,7 +1011,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="testimonials" className="">
+        <Tabs defaultValue="hero" className="">
           <TabsList className="bg-card text-foreground shadow-sm border rounded-md">
             <TabsTrigger value="hero">Hero</TabsTrigger>
             <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
