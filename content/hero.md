@@ -1,5 +1,5 @@
 ---
-title: "Transformación personal tras una ruptura: empieza a sanar desde dentro de ti mismo"
+title: "Transformación personal tras una ruptura: empieza a sanar desde dentro"
 subtitle: "Coach emocional especializado en procesos de duelo amoroso. Te acompaño para recuperar tu bienestar, autoestima y paz mental después de una separación."
 ctaPrimary: "Reservar sesión gratuita"
 ctaSecondary: "Ver servicios"
@@ -16,4 +16,8 @@ bullets:
     position: 3
     icon: "wrench"
     text: "Autoestima y confianza personal"
+  - id: "1763142344992"
+    position: 4
+    icon: "users"
+    text: "Seguimiento personalizado"
 ---
