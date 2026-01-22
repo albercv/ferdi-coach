@@ -1,6 +1,18 @@
 import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 
 export async function GET() {
+  if (process.env.NODE_ENV !== "development") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
+
+  const session = await getServerSession(authOptions)
+  const role = (session?.user as any)?.role
+  if (!session || role !== "admin") {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+  }
+
   return NextResponse.json({
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL || null,

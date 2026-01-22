@@ -166,6 +166,12 @@ export default function DashboardPage() {
   const [deletingBullet, setDeletingBullet] = useState(false)
   const [savingHero, setSavingHero] = useState(false)
 
+  // --- CTA state ---
+  const [ctaTitle, setCtaTitle] = useState("")
+  const [ctaDescription, setCtaDescription] = useState("")
+  const [ctaButtonText, setCtaButtonText] = useState("")
+  const [savingCta, setSavingCta] = useState(false)
+
   const heroIconMap = {
     "check-circle": CheckCircle,
     wrench: Wrench,
@@ -263,10 +269,23 @@ export default function DashboardPage() {
         toast({ title: "Error", description: "No se pudo cargar el Hero" })
       }
     }
+    const loadCta = async () => {
+      try {
+        const res = await fetch("/api/content/cta", { cache: "no-store" })
+        if (!res.ok) throw new Error("Failed to load CTA")
+        const data = await res.json()
+        setCtaTitle(String(data.title ?? ""))
+        setCtaDescription(String(data.description ?? ""))
+        setCtaButtonText(String(data.buttonText ?? ""))
+      } catch (e) {
+        toast({ title: "Error", description: "No se pudo cargar el CTA" })
+      }
+    }
     loadAbout()
     loadFAQs()
     loadTestimonials()
     loadHero()
+    loadCta()
   }, [toast])
 
   const handleLogout = async () => {
@@ -298,6 +317,29 @@ export default function DashboardPage() {
       toast({ title: "Error al guardar", description: "Revisa los campos e inténtalo de nuevo." })
     } finally {
       setSavingAbout(false)
+    }
+  }
+
+  const handleSaveCta = async () => {
+    setSavingCta(true)
+    try {
+      const res = await fetch("/api/content/cta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: ctaTitle,
+          description: ctaDescription,
+          buttonText: ctaButtonText,
+        }),
+      })
+
+      if (!res.ok) throw new Error(await res.text())
+
+      toast({ title: "Guardado", description: "Se actualizó el CTA correctamente." })
+    } catch (e) {
+      toast({ title: "Error al guardar", description: "Revisa los campos e inténtalo de nuevo." })
+    } finally {
+      setSavingCta(false)
     }
   }
 
@@ -1017,6 +1059,7 @@ export default function DashboardPage() {
             <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="about">Sobre mí</TabsTrigger>
+            <TabsTrigger value="cta">CTA</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
           </TabsList>
 
@@ -2143,7 +2186,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Editar "Sobre mí"</CardTitle>
+                  <CardTitle>Editar Sobre mí</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
@@ -2185,6 +2228,51 @@ export default function DashboardPage() {
                       </ul>
                     </div>
                     <p className="text-xs text-muted-foreground">El video y el botón de reserva se muestran en la página principal.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* CTA Tab */}
+          <TabsContent value="cta" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Editar CTA</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cta-title">Título</Label>
+                    <Input id="cta-title" placeholder="Título" value={ctaTitle} onChange={(e) => setCtaTitle(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cta-description">Descripción</Label>
+                    <Textarea id="cta-description" placeholder="Descripción" value={ctaDescription} onChange={(e) => setCtaDescription(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cta-button">Texto del botón</Label>
+                    <Input id="cta-button" placeholder="Reservar sesión" value={ctaButtonText} onChange={(e) => setCtaButtonText(e.target.value)} />
+                  </div>
+                  <Button onClick={handleSaveCta} disabled={savingCta} className="bg-primary text-primary-foreground">
+                    {savingCta ? "Guardando..." : "Guardar"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vista previa</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-balance">{ctaTitle || "(Sin título)"}</h3>
+                    <p className="text-sm text-muted-foreground whitespace-pre-line">{ctaDescription || "(Sin descripción)"}</p>
+                    <div>
+                      <Button className="w-full" size="lg">
+                        {ctaButtonText || "CTA"}
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

@@ -73,6 +73,9 @@ package-lock.json
 .tmp/
 .temp/
 
+cookies.txt
+cookies.*.txt
+
 # logs
 logs
 *.log

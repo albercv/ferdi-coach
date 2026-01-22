@@ -12,7 +12,7 @@ import { FAQSection } from "@/components/sections/faq-section"
 import { CTASection } from "@/components/ui/cta-section"
 import { Toggle3D } from "@/components/ui/3d-toggle"
 import { LazyLoad } from "@/components/performance/intersection-observer"
-import { getTestimonials, getFAQ, getAbout, getHero } from "@/lib/content-md"
+import { getTestimonials, getFAQ, getAbout, getHero, getCTA } from "@/lib/content-md"
 import { getProducts } from "@/lib/products-md"
 
 export default function HomePage() {
@@ -21,6 +21,7 @@ export default function HomePage() {
   const faq = getFAQ()
   const { guides, sessions } = getProducts()
   const hero = getHero()
+  const cta = getCTA()
   return (
     <>
       <Header />
@@ -44,10 +45,10 @@ export default function HomePage() {
           <FAQSection faq={faq} />
         </LazyLoad>
         <CTASection
-          title="No tienes que pasar por esto solo"
-          description="En 60 minutos puedes tener un plan para esta semana y volver a respirar con calma."
+          title={cta.title}
+          description={cta.description}
           primaryCTA={{
-            text: "Reservar sesión",
+            text: cta.buttonText,
             href: "#reservar",
           }}
           showTrustSeals={true}

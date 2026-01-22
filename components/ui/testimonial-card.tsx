@@ -87,9 +87,9 @@ export function TestimonialCard({ name, age, text, rating, video, image }: Testi
           ))}
         </div>
         <blockquote className="text-muted-foreground mb-4 italic pl-4 border-l-2 border-destructive/30">
-          <span className="text-destructive">"</span>
+          <span className="text-destructive">&quot;</span>
           {text}
-          <span className="text-destructive">"</span>
+          <span className="text-destructive">&quot;</span>
         </blockquote>
         <cite className="text-sm font-medium text-foreground not-italic">
           {name}, {age} años

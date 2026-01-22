@@ -42,6 +42,12 @@ export type HeroContent = {
   bullets: HeroBullet[]
 }
 
+export type CTAContent = {
+  title: string
+  description: string
+  buttonText: string
+}
+
 const CONTENT_DIR = path.join(process.cwd(), "content")
 
 function readMarkdownFile(filePath: string) {
@@ -314,6 +320,7 @@ export function deleteFAQItem(id: string) {
 
 // --- Hero content (CRUD as whole object) ---
 const HERO_FILE = path.join(CONTENT_DIR, "hero.md")
+const CTA_FILE = path.join(CONTENT_DIR, "cta.md")
 
 function ensureContentDir() {
   if (!fs.existsSync(CONTENT_DIR)) fs.mkdirSync(CONTENT_DIR, { recursive: true })
@@ -350,8 +357,8 @@ export function getHero(): HeroContent {
       icon: String(it?.icon || "check-circle"),
       text: String(it?.text || ""),
     }))
-    .filter((b) => b.text)
-    .sort((a, b) => a.position - b.position)
+    .filter((b: HeroBullet) => b.text)
+    .sort((a: HeroBullet, b: HeroBullet) => a.position - b.position)
 
   return {
     title: String((data as any).title || ""),
@@ -359,6 +366,25 @@ export function getHero(): HeroContent {
     ctaPrimary: String((data as any).ctaPrimary || "Reservar"),
     ctaSecondary: (data as any).ctaSecondary ? String((data as any).ctaSecondary) : undefined,
     bullets,
+  }
+}
+
+export function getCTA(): CTAContent {
+  const defaults: CTAContent = {
+    title: "No tienes que pasar por esto solo",
+    description: "En 60 minutos puedes tener un plan para esta semana y volver a respirar con calma.",
+    buttonText: "Reservar sesión",
+  }
+
+  if (!fs.existsSync(CTA_FILE)) {
+    return defaults
+  }
+
+  const { data, content } = readMarkdownFile(CTA_FILE)
+  return {
+    title: String((data as any).title || defaults.title),
+    description: content || String((data as any).description || defaults.description),
+    buttonText: String((data as any).buttonText || defaults.buttonText),
   }
 }
 
@@ -376,6 +402,17 @@ export function setHero(hero: HeroContent) {
     `---\n`
 
   fs.writeFileSync(HERO_FILE, frontmatter, "utf8")
+}
+
+export function setCTA(cta: CTAContent) {
+  ensureContentDir()
+  const frontmatter = `---\n` +
+    `title: "${escapeYaml(cta.title)}"\n` +
+    `buttonText: "${escapeYaml(cta.buttonText)}"\n` +
+    `---\n`
+
+  const body = `${(cta.description || "").trim()}\n`
+  fs.writeFileSync(CTA_FILE, frontmatter + body, "utf8")
 }
 
 export function addHeroBullet(newItem: { id?: string; position?: number; icon?: string; text: string }): HeroBullet {
