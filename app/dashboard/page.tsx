@@ -172,6 +172,10 @@ export default function DashboardPage() {
   const [ctaButtonText, setCtaButtonText] = useState("")
   const [savingCta, setSavingCta] = useState(false)
 
+  // --- Breaker state ---
+  const [breakerText, setBreakerText] = useState("")
+  const [savingBreaker, setSavingBreaker] = useState(false)
+
   const heroIconMap = {
     "check-circle": CheckCircle,
     wrench: Wrench,
@@ -281,11 +285,23 @@ export default function DashboardPage() {
         toast({ title: "Error", description: "No se pudo cargar el CTA" })
       }
     }
+
+    const loadBreaker = async () => {
+      try {
+        const res = await fetch("/api/content/breaker", { cache: "no-store" })
+        if (!res.ok) throw new Error("Failed to load breaker")
+        const data = await res.json()
+        setBreakerText(String(data.text ?? ""))
+      } catch (e) {
+        toast({ title: "Error", description: "No se pudo cargar la frase" })
+      }
+    }
     loadAbout()
     loadFAQs()
     loadTestimonials()
     loadHero()
     loadCta()
+    loadBreaker()
   }, [toast])
 
   const handleLogout = async () => {
@@ -340,6 +356,27 @@ export default function DashboardPage() {
       toast({ title: "Error al guardar", description: "Revisa los campos e inténtalo de nuevo." })
     } finally {
       setSavingCta(false)
+    }
+  }
+
+  const handleSaveBreaker = async () => {
+    setSavingBreaker(true)
+    try {
+      const res = await fetch("/api/content/breaker", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: breakerText,
+        }),
+      })
+
+      if (!res.ok) throw new Error(await res.text())
+
+      toast({ title: "Guardado", description: "Se actualizó la frase correctamente." })
+    } catch (e) {
+      toast({ title: "Error al guardar", description: "Revisa el texto e inténtalo de nuevo." })
+    } finally {
+      setSavingBreaker(false)
     }
   }
 
@@ -1056,11 +1093,12 @@ export default function DashboardPage() {
         <Tabs defaultValue="hero" className="">
           <TabsList className="bg-card text-foreground shadow-sm border rounded-md">
             <TabsTrigger value="hero">Hero</TabsTrigger>
+            <TabsTrigger value="breaker">Breaker Quote</TabsTrigger>
+            <TabsTrigger value="products">How It Works</TabsTrigger>
             <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
-            <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="about">Sobre mí</TabsTrigger>
-            <TabsTrigger value="cta">CTA</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
+            <TabsTrigger value="cta">CTA</TabsTrigger>
           </TabsList>
 
           {/* Hero Tab */}
@@ -2228,6 +2266,49 @@ export default function DashboardPage() {
                       </ul>
                     </div>
                     <p className="text-xs text-muted-foreground">El video y el botón de reserva se muestran en la página principal.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Breaker Tab */}
+          <TabsContent value="breaker" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Editar frase</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="breaker-text">Frase</Label>
+                    <Textarea
+                      id="breaker-text"
+                      placeholder="Escribe una frase corta y contundente"
+                      value={breakerText}
+                      onChange={(e) => setBreakerText(e.target.value)}
+                    />
+                  </div>
+                  <Button onClick={handleSaveBreaker} disabled={savingBreaker} className="bg-primary text-primary-foreground">
+                    {savingBreaker ? "Guardando..." : "Guardar"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vista previa</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="rounded-lg overflow-hidden bg-gradient-to-r from-accent to-primary text-white p-6">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/20 bg-white/10">
+                      <span className="text-xs font-medium tracking-wide uppercase text-white/90">Un alto aquí</span>
+                    </div>
+                    <p className="mt-4 text-xl md:text-2xl font-semibold tracking-tight text-balance">
+                      <span className="text-white/70">&ldquo;</span>
+                      <span className="px-1">{breakerText || "(Sin frase)"}</span>
+                      <span className="text-white/70">&rdquo;</span>
+                    </p>
                   </div>
                 </CardContent>
               </Card>

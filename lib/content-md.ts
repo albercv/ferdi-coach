@@ -48,6 +48,10 @@ export type CTAContent = {
   buttonText: string
 }
 
+export type BreakerContent = {
+  text: string
+}
+
 const CONTENT_DIR = path.join(process.cwd(), "content")
 
 function readMarkdownFile(filePath: string) {
@@ -321,6 +325,7 @@ export function deleteFAQItem(id: string) {
 // --- Hero content (CRUD as whole object) ---
 const HERO_FILE = path.join(CONTENT_DIR, "hero.md")
 const CTA_FILE = path.join(CONTENT_DIR, "cta.md")
+const BREAKER_FILE = path.join(CONTENT_DIR, "breaker.md")
 
 function ensureContentDir() {
   if (!fs.existsSync(CONTENT_DIR)) fs.mkdirSync(CONTENT_DIR, { recursive: true })
@@ -388,6 +393,22 @@ export function getCTA(): CTAContent {
   }
 }
 
+export function getBreaker(): BreakerContent {
+  const defaults: BreakerContent = {
+    text: "No estás roto: estás despertando.",
+  }
+
+  if (!fs.existsSync(BREAKER_FILE)) {
+    return defaults
+  }
+
+  const { data, content } = readMarkdownFile(BREAKER_FILE)
+  const text = (content || String((data as any).text || "")).trim()
+  return {
+    text: text || defaults.text,
+  }
+}
+
 export function setHero(hero: HeroContent) {
   ensureContentDir()
   const fmBullets = normalizePositions(hero.bullets || [])
@@ -413,6 +434,13 @@ export function setCTA(cta: CTAContent) {
 
   const body = `${(cta.description || "").trim()}\n`
   fs.writeFileSync(CTA_FILE, frontmatter + body, "utf8")
+}
+
+export function setBreaker(breaker: BreakerContent) {
+  ensureContentDir()
+  const frontmatter = `---\n---\n`
+  const body = `${String(breaker.text || "").trim()}\n`
+  fs.writeFileSync(BREAKER_FILE, frontmatter + body, "utf8")
 }
 
 export function addHeroBullet(newItem: { id?: string; position?: number; icon?: string; text: string }): HeroBullet {
