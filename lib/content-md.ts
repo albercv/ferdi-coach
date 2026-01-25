@@ -9,6 +9,8 @@ export type Testimonial = {
   age: number
   rating: number
   text: string
+  videoUrl?: string
+  imageUrl?: string
   video?: string
   image?: string
 }
@@ -24,9 +26,10 @@ export type AboutContent = {
   title: string
   description: string
   credentials: string[]
+  videoUrl?: string
+  posterImageUrl?: string
 }
 
-// --- New: Hero content types ---
 export type HeroBullet = {
   id: string
   position: number
@@ -40,6 +43,7 @@ export type HeroContent = {
   ctaPrimary: string
   ctaSecondary?: string
   bullets: HeroBullet[]
+  backgroundImageUrl?: string
 }
 
 export type CTAContent = {
@@ -84,6 +88,16 @@ export function getTestimonials(): Testimonial[] {
     const numPrefix = parseInt(base.split("-")[0], 10)
     const posFm = Number((data as any).position)
     const position = Number.isFinite(posFm) ? posFm : (!isNaN(numPrefix) ? numPrefix : idx + 1)
+
+    const videoLegacy = (data as any).video ? String((data as any).video) : undefined
+    const imageLegacy = (data as any).image ? String((data as any).image) : undefined
+
+    const videoUrlRaw = (data as any).videoUrl ? String((data as any).videoUrl) : undefined
+    const imageUrlRaw = (data as any).imageUrl ? String((data as any).imageUrl) : undefined
+
+    const videoUrl = videoUrlRaw ?? (videoLegacy ? `/${videoLegacy}.mp4` : undefined)
+    const imageUrl = imageUrlRaw ?? (imageLegacy ? `/${imageLegacy}.png` : undefined)
+
     return {
       id: base,
       position,
@@ -91,8 +105,10 @@ export function getTestimonials(): Testimonial[] {
       age: Number((data as any).age || 0),
       rating: Number((data as any).rating || 0),
       text: content,
-      video: (data as any).video ? String((data as any).video) : undefined,
-      image: (data as any).image ? String((data as any).image) : undefined,
+      videoUrl,
+      imageUrl,
+      video: videoLegacy,
+      image: imageLegacy,
     }
   }).sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
   return testimonials
@@ -146,10 +162,11 @@ export function getAbout(): AboutContent {
     title: String(data.title || "Sobre mí"),
     description: content,
     credentials: Array.isArray(data.credentials) ? data.credentials.map(String) : [],
+    videoUrl: (data as any).videoUrl ? String((data as any).videoUrl) : undefined,
+    posterImageUrl: (data as any).posterImageUrl ? String((data as any).posterImageUrl) : undefined,
   }
 }
 
-// Añadir función de escritura para 'Sobre mí'
 export function setAbout(about: AboutContent) {
   const filePath = path.join(CONTENT_DIR, "about.md")
 
@@ -165,6 +182,8 @@ export function setAbout(about: AboutContent) {
 
   const frontmatter = `---\n` +
     `title: "${escapeYaml(about.title)}"\n` +
+    (about.videoUrl ? `videoUrl: "${escapeYaml(about.videoUrl)}"\n` : "") +
+    (about.posterImageUrl ? `posterImageUrl: "${escapeYaml(about.posterImageUrl)}"\n` : "") +
     `credentials:\n` +
     (credentialsYaml ? `${credentialsYaml}\n` : "") +
     `---\n`
@@ -180,8 +199,6 @@ function normalizePositions<T extends { position: number }>(items: T[]): T[] {
     .map((it, idx) => ({ ...it, position: idx + 1 }))
 }
 
-// --- FAQ editing helpers ---
-// Función para actualizar una FAQ por id en content/faq.md
 export function setFAQItem(updated: FAQItem) {
   const filePath = path.join(CONTENT_DIR, "faq.md")
 
@@ -322,7 +339,6 @@ export function deleteFAQItem(id: string) {
   fs.writeFileSync(filePath, frontmatter, "utf8")
 }
 
-// --- Hero content (CRUD as whole object) ---
 const HERO_FILE = path.join(CONTENT_DIR, "hero.md")
 const CTA_FILE = path.join(CONTENT_DIR, "cta.md")
 const BREAKER_FILE = path.join(CONTENT_DIR, "breaker.md")
@@ -337,7 +353,6 @@ function escapeYaml(s: string) {
 
 export function getHero(): HeroContent {
   if (!fs.existsSync(HERO_FILE)) {
-    // Valor por defecto si aún no existe el archivo
     const defaultHero: HeroContent = {
       title: "Transformación personal tras una ruptura: empieza a sanar desde dentro",
       subtitle: "Coach emocional especializado en procesos de duelo amoroso. Te acompaño para recuperar tu bienestar, autoestima y paz mental después de una separación.",
@@ -349,7 +364,6 @@ export function getHero(): HeroContent {
         { id: "3", position: 3, icon: "sliders-horizontal", text: "Autoestima y confianza personal" },
       ],
     }
-    // No escribimos automáticamente el archivo para evitar efectos secundarios inesperados
     return defaultHero
   }
 
@@ -371,6 +385,7 @@ export function getHero(): HeroContent {
     ctaPrimary: String((data as any).ctaPrimary || "Reservar"),
     ctaSecondary: (data as any).ctaSecondary ? String((data as any).ctaSecondary) : undefined,
     bullets,
+    backgroundImageUrl: (data as any).backgroundImageUrl ? String((data as any).backgroundImageUrl) : undefined,
   }
 }
 
@@ -417,6 +432,7 @@ export function setHero(hero: HeroContent) {
   const frontmatter = `---\n` +
     `title: "${escapeYaml(hero.title)}"\n` +
     `subtitle: "${escapeYaml(hero.subtitle)}"\n` +
+    (hero.backgroundImageUrl ? `backgroundImageUrl: "${escapeYaml(hero.backgroundImageUrl)}"\n` : "") +
     `ctaPrimary: "${escapeYaml(hero.ctaPrimary)}"\n` +
     (hero.ctaSecondary ? `ctaSecondary: "${escapeYaml(hero.ctaSecondary)}"\n` : "") +
     (fmBullets ? `bullets:\n${fmBullets}\n` : "bullets: []\n") +
@@ -496,6 +512,8 @@ function writeTestimonialFile(dir: string, t: Testimonial) {
     `age: ${t.age}\n` +
     `rating: ${t.rating}\n` +
     `position: ${t.position}\n` +
+    (t.videoUrl ? `videoUrl: "${escapeYaml(t.videoUrl)}"\n` : "") +
+    (t.imageUrl ? `imageUrl: "${escapeYaml(t.imageUrl)}"\n` : "") +
     (t.video ? `video: "${escapeYaml(t.video)}"\n` : "") +
     (t.image ? `image: "${escapeYaml(t.image)}"\n` : "") +
     `---\n` +
@@ -504,7 +522,18 @@ function writeTestimonialFile(dir: string, t: Testimonial) {
   fs.writeFileSync(filePath, fm, "utf8")
 }
 
-export function addTestimonialItem(newItem: { id?: string; position?: number; name: string; age: number; rating: number; text: string; video?: string; image?: string }) {
+export function addTestimonialItem(newItem: {
+  id?: string
+  position?: number
+  name: string
+  age: number
+  rating: number
+  text: string
+  videoUrl?: string
+  imageUrl?: string
+  video?: string
+  image?: string
+}) {
   const dir = path.join(CONTENT_DIR, "testimonials")
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
   const files = listMarkdownFiles(dir)
@@ -521,6 +550,8 @@ export function addTestimonialItem(newItem: { id?: string; position?: number; na
       age: Number((data as any).age || 0),
       rating: Number((data as any).rating || 0),
       text: content,
+      videoUrl: (data as any).videoUrl ? String((data as any).videoUrl) : undefined,
+      imageUrl: (data as any).imageUrl ? String((data as any).imageUrl) : undefined,
       video: (data as any).video ? String((data as any).video) : undefined,
       image: (data as any).image ? String((data as any).image) : undefined,
     }
@@ -541,6 +572,8 @@ export function addTestimonialItem(newItem: { id?: string; position?: number; na
       age: Math.max(0, Number(newItem.age || 0)),
       rating: Math.max(0, Math.min(5, Number(newItem.rating || 0))),
       text: newItem.text,
+      videoUrl: newItem.videoUrl,
+      imageUrl: newItem.imageUrl,
       video: newItem.video,
       image: newItem.image,
     },
@@ -571,6 +604,8 @@ export function setTestimonialItem(updated: Testimonial) {
       age: Number((data as any).age || 0),
       rating: Number((data as any).rating || 0),
       text: content,
+      videoUrl: (data as any).videoUrl ? String((data as any).videoUrl) : undefined,
+      imageUrl: (data as any).imageUrl ? String((data as any).imageUrl) : undefined,
       video: (data as any).video ? String((data as any).video) : undefined,
       image: (data as any).image ? String((data as any).image) : undefined,
     }
@@ -590,6 +625,8 @@ export function setTestimonialItem(updated: Testimonial) {
       age: Math.max(0, Number(updated.age || 0)),
       rating: Math.max(0, Math.min(5, Number(updated.rating || 0))),
       text: String(updated.text || "").trim(),
+      videoUrl: updated.videoUrl ? String(updated.videoUrl).trim() : undefined,
+      imageUrl: updated.imageUrl ? String(updated.imageUrl).trim() : undefined,
       video: updated.video ? String(updated.video).trim() : undefined,
       image: updated.image ? String(updated.image).trim() : undefined,
     },
@@ -620,6 +657,8 @@ export function deleteTestimonialItem(id: string) {
       age: Number((data as any).age || 0),
       rating: Number((data as any).rating || 0),
       text: content,
+      videoUrl: (data as any).videoUrl ? String((data as any).videoUrl) : undefined,
+      imageUrl: (data as any).imageUrl ? String((data as any).imageUrl) : undefined,
       video: (data as any).video ? String((data as any).video) : undefined,
       image: (data as any).image ? String((data as any).image) : undefined,
     }

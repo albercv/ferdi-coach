@@ -10,11 +10,13 @@ interface TestimonialCardProps {
   age: number
   text: string
   rating: number
+  videoUrl?: string
+  imageUrl?: string
   video?: string
   image?: string
 }
 
-export function TestimonialCard({ name, age, text, rating, video, image }: TestimonialCardProps) {
+export function TestimonialCard({ name, age, text, rating, videoUrl, imageUrl, video, image }: TestimonialCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
 
@@ -31,9 +33,42 @@ export function TestimonialCard({ name, age, text, rating, video, image }: Testi
   }
 
   const renderMedia = () => {
+    if (videoUrl) {
+      return (
+        <div
+          className="w-16 h-16 rounded-full overflow-hidden cursor-pointer border-2 border-white shadow-lg hover:scale-105 transition-transform"
+          onClick={handleVideoClick}
+        >
+          <video
+            ref={videoRef}
+            className="w-full h-full object-cover"
+            muted={false}
+            playsInline
+            onEnded={() => setIsPlaying(false)}
+          >
+            <source src={videoUrl} type="video/mp4" />
+          </video>
+        </div>
+      )
+    }
+
+    if (imageUrl) {
+      return (
+        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-lg">
+          <Image
+            src={imageUrl}
+            alt={`Foto de ${name}`}
+            width={64}
+            height={64}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )
+    }
+
     if (video) {
       return (
-        <div 
+        <div
           className="w-16 h-16 rounded-full overflow-hidden cursor-pointer border-2 border-white shadow-lg hover:scale-105 transition-transform"
           onClick={handleVideoClick}
         >

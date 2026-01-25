@@ -30,3 +30,9 @@
 - `pnpm typecheck`
 - `pnpm test`
 - `pnpm build`
+
+## Dashboard Media Library tab smoke
+1. Ir a Dashboard → tab Media
+2. Cambiar prefix y verificar que lista actualiza
+3. Borrar un asset no referenciado → desaparece
+4. Borrar asset referenciado → mensaje de bloqueo, item permanece

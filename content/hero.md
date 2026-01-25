@@ -1,6 +1,7 @@
 ---
 title: "Transformación personal tras una ruptura: empieza a sanar desde dentro"
 subtitle: "Coach emocional especializado en procesos de duelo amoroso. Te acompaño para recuperar tu bienestar, autoestima y paz mental después de una separación."
+backgroundImageUrl: "/uploads/hero/ferdi-japan-v2--bd403061.png"
 ctaPrimary: "Reservar sesión gratuita"
 ctaSecondary: "Ver servicios"
 bullets:

@@ -2,6 +2,21 @@ import { NextResponse } from "next/server"
 import { getTestimonials, addTestimonialItem, setTestimonialItem, deleteTestimonialItem } from "@/lib/content-md"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { MediaService } from "@/lib/media/mediaService"
+
+const media = new MediaService()
+
+async function tryCleanupReplacedUrl(oldUrl: string | undefined, newUrl: string | undefined) {
+  if (!oldUrl) return
+  if (oldUrl === newUrl) return
+  if (!oldUrl.startsWith("/uploads/")) return
+
+  try {
+    await media.tryDeleteIfUnreferenced(oldUrl)
+  } catch (err) {
+    console.warn("testimonials media cleanup failed", { url: oldUrl, err })
+  }
+}
 
 export async function GET() {
   try {
@@ -29,6 +44,12 @@ export async function POST(req: Request) {
     const positionRaw = body?.position
     const video = body?.video ? String(body.video).trim() : undefined
     const image = body?.image ? String(body.image).trim() : undefined
+    const videoUrl = typeof body?.videoUrl === "string" && body.videoUrl.trim()
+      ? String(body.videoUrl).trim()
+      : undefined
+    const imageUrl = typeof body?.imageUrl === "string" && body.imageUrl.trim()
+      ? String(body.imageUrl).trim()
+      : undefined
 
     const age = typeof ageRaw === "number" ? ageRaw : Number(ageRaw || 0)
     const rating = typeof ratingRaw === "number" ? ratingRaw : Number(ratingRaw || 0)
@@ -48,16 +69,19 @@ export async function POST(req: Request) {
 
     // Fallback de actualización: si viene id, tratamos POST como update
     if (id) {
+      const before = getTestimonials().find((t) => t.id === id)
       const pos = position || 1
       if (!Number.isFinite(pos) || pos < 1) {
         return NextResponse.json({ error: "La posición debe ser un número >= 1" }, { status: 400 })
       }
-      const updated = setTestimonialItem({ id, name, age, rating, text, video, image, position: pos })
+      const updated = setTestimonialItem({ id, name, age, rating, text, videoUrl, imageUrl, video, image, position: pos })
+      await tryCleanupReplacedUrl(before?.videoUrl, videoUrl)
+      await tryCleanupReplacedUrl(before?.imageUrl, imageUrl)
       const items = getTestimonials()
       return NextResponse.json({ ok: true, item: updated, items })
     }
 
-    const created = addTestimonialItem({ id, name, age, rating, text, video, image, position: position || undefined })
+    const created = addTestimonialItem({ id, name, age, rating, text, videoUrl, imageUrl, video, image, position: position || undefined })
     const items = getTestimonials()
     return NextResponse.json({ ok: true, item: created, items })
   } catch (e: any) {
@@ -83,6 +107,12 @@ export async function PUT(req: Request) {
     const positionRaw = body?.position
     const video = body?.video ? String(body.video).trim() : undefined
     const image = body?.image ? String(body.image).trim() : undefined
+    const videoUrl = typeof body?.videoUrl === "string" && body.videoUrl.trim()
+      ? String(body.videoUrl).trim()
+      : undefined
+    const imageUrl = typeof body?.imageUrl === "string" && body.imageUrl.trim()
+      ? String(body.imageUrl).trim()
+      : undefined
 
     const age = typeof ageRaw === "number" ? ageRaw : Number(ageRaw || 0)
     const rating = typeof ratingRaw === "number" ? ratingRaw : Number(ratingRaw || 0)
@@ -101,7 +131,10 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "La posición debe ser un número >= 1" }, { status: 400 })
     }
 
-    const updated = setTestimonialItem({ id, name, age, rating, text, video, image, position })
+    const before = getTestimonials().find((t) => t.id === id)
+    const updated = setTestimonialItem({ id, name, age, rating, text, videoUrl, imageUrl, video, image, position })
+    await tryCleanupReplacedUrl(before?.videoUrl, videoUrl)
+    await tryCleanupReplacedUrl(before?.imageUrl, imageUrl)
     const items = getTestimonials()
     return NextResponse.json({ ok: true, item: updated, items })
   } catch (e: any) {
