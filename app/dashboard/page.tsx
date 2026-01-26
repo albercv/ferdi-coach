@@ -74,17 +74,14 @@ export default function DashboardPage() {
   const [createAnswer, setCreateAnswer] = useState("")
   const [createPosition, setCreatePosition] = useState<number>(1)
   // --- Testimonials state ---
-  const [testimonials, setTestimonials] = useState<Array<{ id: string; position: number; name: string; age: number; rating: number; text: string; videoUrl?: string; imageUrl?: string; video?: string; image?: string }>>([])
+  const [testimonials, setTestimonials] = useState<Array<{ id: string; position: number; name: string; age: number; rating: number; text: string; mediaUrl?: string; videoUrl?: string; imageUrl?: string; video?: string; image?: string }>>([])
   const [selectedTestimonialId, setSelectedTestimonialId] = useState<string | null>(null)
   const [editingTestimonialId, setEditingTestimonialId] = useState<string>("")
   const [editingTName, setEditingTName] = useState("")
   const [editingTAge, setEditingTAge] = useState<number>(0)
   const [editingTRating, setEditingTRating] = useState<number>(5)
   const [editingTText, setEditingTText] = useState("")
-  const [editingTVideoUrl, setEditingTVideoUrl] = useState("")
-  const [editingTImageUrl, setEditingTImageUrl] = useState("")
-  const [editingTVideo, setEditingTVideo] = useState("")
-  const [editingTImage, setEditingTImage] = useState("")
+  const [editingTMediaUrl, setEditingTMediaUrl] = useState("")
   const [editingTPosition, setEditingTPosition] = useState<number>(1)
   const [savingTestimonial, setSavingTestimonial] = useState(false)
   const [creatingTestimonial, setCreatingTestimonial] = useState(false)
@@ -93,8 +90,7 @@ export default function DashboardPage() {
   const [createTAge, setCreateTAge] = useState<number>(0)
   const [createTRating, setCreateTRating] = useState<number>(5)
   const [createTText, setCreateTText] = useState("")
-  const [createTVideo, setCreateTVideo] = useState("")
-  const [createTImage, setCreateTImage] = useState("")
+  const [createTMediaUrl, setCreateTMediaUrl] = useState("")
   const [createTPosition, setCreateTPosition] = useState<number>(1)
 
   // --- Products state ---
@@ -997,10 +993,7 @@ export default function DashboardPage() {
         age: editingTAge,
         rating: editingTRating,
         text: editingTText,
-        videoUrl: editingTVideoUrl || undefined,
-        imageUrl: editingTImageUrl || undefined,
-        video: editingTVideo || undefined,
-        image: editingTImage || undefined,
+        mediaUrl: editingTMediaUrl || undefined,
         position: editingTPosition,
       }
       const res = await fetch("/api/content/testimonials", {
@@ -1033,8 +1026,7 @@ export default function DashboardPage() {
         age: createTAge,
         rating: createTRating,
         text: createTText,
-        video: createTVideo || undefined,
-        image: createTImage || undefined,
+        mediaUrl: createTMediaUrl || undefined,
         position: createTPosition,
       }
       const res = await fetch("/api/content/testimonials", {
@@ -1055,18 +1047,14 @@ export default function DashboardPage() {
         setEditingTAge(created.age)
         setEditingTRating(created.rating)
         setEditingTText(created.text)
-        setEditingTVideoUrl(created.videoUrl || "")
-        setEditingTImageUrl(created.imageUrl || "")
-        setEditingTVideo(created.video || "")
-        setEditingTImage(created.image || "")
+        setEditingTMediaUrl(created.mediaUrl || "")
         setEditingTPosition(created.position ?? 1)
       }
       setCreateTName("")
       setCreateTAge(0)
       setCreateTRating(5)
       setCreateTText("")
-      setCreateTVideo("")
-      setCreateTImage("")
+      setCreateTMediaUrl("")
       toast({ title: "Creado", description: "El testimonio se ha añadido correctamente." })
     } catch (e) {
       toast({ title: "Error al crear", description: "No se pudo crear el testimonio." })
@@ -1092,10 +1080,7 @@ export default function DashboardPage() {
         setEditingTAge(next.age)
         setEditingTRating(next.rating)
         setEditingTText(next.text)
-        setEditingTVideoUrl(next.videoUrl || "")
-        setEditingTImageUrl(next.imageUrl || "")
-        setEditingTVideo(next.video || "")
-        setEditingTImage(next.image || "")
+        setEditingTMediaUrl(next.mediaUrl || "")
         setEditingTPosition(next.position ?? 1)
       } else {
         setSelectedTestimonialId(null)
@@ -1104,10 +1089,7 @@ export default function DashboardPage() {
         setEditingTAge(0)
         setEditingTRating(5)
         setEditingTText("")
-        setEditingTVideoUrl("")
-        setEditingTImageUrl("")
-        setEditingTVideo("")
-        setEditingTImage("")
+        setEditingTMediaUrl("")
         setEditingTPosition(1)
       }
       toast({ title: "Eliminado", description: "El testimonio ha sido eliminado." })
@@ -1439,16 +1421,18 @@ export default function DashboardPage() {
                           <Label htmlFor="new-t-text">Texto del testimonio</Label>
                           <Textarea id="new-t-text" placeholder="Texto del testimonio" value={createTText} onChange={(e) => setCreateTText(e.target.value)} />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="new-t-video">Video (slug, sin .mp4)</Label>
-                            <Input id="new-t-video" placeholder="p.ej. ferdy-presentation" value={createTVideo} onChange={(e) => setCreateTVideo(e.target.value)} />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="new-t-image">Imagen (slug, sin .png)</Label>
-                            <Input id="new-t-image" placeholder="p.ej. hero-img-v2" value={createTImage} onChange={(e) => setCreateTImage(e.target.value)} />
-                          </div>
-                        </div>
+                        {createTName.trim() ? (
+                          <MediaPicker
+                            label="Media (imagen o vídeo mp4)"
+                            scope="testimonials"
+                            entitySlug={escapeProductSlug(createTName)}
+                            value={createTMediaUrl}
+                            accept="image/*,video/mp4"
+                            onChange={(url) => setCreateTMediaUrl(url ?? "")}
+                          />
+                        ) : (
+                          <div className="text-xs text-muted-foreground">Escribe un nombre para habilitar la subida de archivos.</div>
+                        )}
                         <div className="space-y-2">
                           <Label htmlFor="new-t-position">Posición</Label>
                           <Input id="new-t-position" type="number" min={1} value={createTPosition} onChange={(e) => setCreateTPosition(Number(e.target.value) || 1)} />
@@ -1479,10 +1463,7 @@ export default function DashboardPage() {
                                 setEditingTAge(t.age)
                                 setEditingTRating(t.rating)
                                 setEditingTText(t.text)
-                                setEditingTVideoUrl(t.videoUrl || "")
-                                setEditingTImageUrl(t.imageUrl || "")
-                                setEditingTVideo(t.video || "")
-                                setEditingTImage(t.image || "")
+                                setEditingTMediaUrl(t.mediaUrl || "")
                                 setEditingTPosition(t.position ?? 1)
                               } else if (selectedTestimonialId === t.id) {
                                 setSelectedTestimonialId(null)
@@ -1527,31 +1508,13 @@ export default function DashboardPage() {
                               </div>
                               <div className="grid grid-cols-2 gap-4">
                                 <MediaPicker
-                                  label="Imagen"
+                                  label="Media (imagen o vídeo mp4)"
                                   scope="testimonials"
                                   entitySlug={t.id}
-                                  value={editingTImageUrl}
-                                  accept="image/*"
-                                  onChange={(url) => setEditingTImageUrl(url ?? "")}
+                                  value={editingTMediaUrl}
+                                  accept="image/*,video/mp4"
+                                  onChange={(url) => setEditingTMediaUrl(url ?? "")}
                                 />
-                                <MediaPicker
-                                  label="Vídeo (mp4)"
-                                  scope="testimonials"
-                                  entitySlug={t.id}
-                                  value={editingTVideoUrl}
-                                  accept="video/mp4"
-                                  onChange={(url) => setEditingTVideoUrl(url ?? "")}
-                                />
-                              </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor={`t-video-${t.id}`}>Video (legacy slug)</Label>
-                                  <Input id={`t-video-${t.id}`} value={editingTVideo} onChange={(e) => setEditingTVideo(e.target.value)} />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor={`t-image-${t.id}`}>Imagen (legacy slug)</Label>
-                                  <Input id={`t-image-${t.id}`} value={editingTImage} onChange={(e) => setEditingTImage(e.target.value)} />
-                                </div>
                               </div>
                               <div className="flex gap-2">
                                 <Button onClick={handleSaveTestimonial} disabled={savingTestimonial} className="bg-primary text-primary-foreground">{savingTestimonial ? "Guardando..." : "Guardar"}</Button>
@@ -1562,10 +1525,7 @@ export default function DashboardPage() {
                                   setEditingTAge(original.age)
                                   setEditingTRating(original.rating)
                                   setEditingTText(original.text)
-                                  setEditingTVideoUrl(original.videoUrl || "")
-                                  setEditingTImageUrl(original.imageUrl || "")
-                                  setEditingTVideo(original.video || "")
-                                  setEditingTImage(original.image || "")
+                                  setEditingTMediaUrl(original.mediaUrl || "")
                                   setEditingTPosition(original.position ?? 1)
                                 }}>Revertir</Button>
                                 <AlertDialog>
@@ -1616,10 +1576,7 @@ export default function DashboardPage() {
                           age={createTAge || 0}
                           text={createTText || "Texto del testimonio"}
                           rating={createTRating || 5}
-                          videoUrl={undefined}
-                          imageUrl={undefined}
-                          video={createTVideo || undefined}
-                          image={createTImage || undefined}
+                          mediaUrl={createTMediaUrl || undefined}
                         />
                       </div>
                     </details>
@@ -1637,10 +1594,7 @@ export default function DashboardPage() {
                             age={selectedTestimonialId === t.id ? (editingTAge || t.age) : t.age}
                             text={selectedTestimonialId === t.id ? (editingTText || t.text) : t.text}
                             rating={selectedTestimonialId === t.id ? (editingTRating || t.rating) : t.rating}
-                            videoUrl={selectedTestimonialId === t.id ? ((editingTVideoUrl || t.videoUrl) || undefined) : t.videoUrl}
-                            imageUrl={selectedTestimonialId === t.id ? ((editingTImageUrl || t.imageUrl) || undefined) : t.imageUrl}
-                            video={selectedTestimonialId === t.id ? ((editingTVideo || t.video) || undefined) : t.video}
-                            image={selectedTestimonialId === t.id ? ((editingTImage || t.image) || undefined) : t.image}
+                            mediaUrl={selectedTestimonialId === t.id ? ((editingTMediaUrl || t.mediaUrl) || undefined) : t.mediaUrl}
                           />
                         </div>
                       </details>

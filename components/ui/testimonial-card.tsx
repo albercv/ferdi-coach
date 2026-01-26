@@ -10,13 +10,14 @@ interface TestimonialCardProps {
   age: number
   text: string
   rating: number
+  mediaUrl?: string
   videoUrl?: string
   imageUrl?: string
   video?: string
   image?: string
 }
 
-export function TestimonialCard({ name, age, text, rating, videoUrl, imageUrl, video, image }: TestimonialCardProps) {
+export function TestimonialCard({ name, age, text, rating, mediaUrl }: TestimonialCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
 
@@ -33,7 +34,10 @@ export function TestimonialCard({ name, age, text, rating, videoUrl, imageUrl, v
   }
 
   const renderMedia = () => {
-    if (videoUrl) {
+    const resolvedMediaUrl = mediaUrl?.trim() || undefined
+    const isVideo = Boolean(resolvedMediaUrl && resolvedMediaUrl.toLowerCase().endsWith(".mp4"))
+
+    if (resolvedMediaUrl && isVideo) {
       return (
         <div
           className="w-16 h-16 rounded-full overflow-hidden cursor-pointer border-2 border-white shadow-lg hover:scale-105 transition-transform"
@@ -46,50 +50,17 @@ export function TestimonialCard({ name, age, text, rating, videoUrl, imageUrl, v
             playsInline
             onEnded={() => setIsPlaying(false)}
           >
-            <source src={videoUrl} type="video/mp4" />
+            <source src={resolvedMediaUrl} type="video/mp4" />
           </video>
         </div>
       )
     }
 
-    if (imageUrl) {
+    if (resolvedMediaUrl) {
       return (
         <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-lg">
           <Image
-            src={imageUrl}
-            alt={`Foto de ${name}`}
-            width={64}
-            height={64}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )
-    }
-
-    if (video) {
-      return (
-        <div
-          className="w-16 h-16 rounded-full overflow-hidden cursor-pointer border-2 border-white shadow-lg hover:scale-105 transition-transform"
-          onClick={handleVideoClick}
-        >
-          <video
-            ref={videoRef}
-            className="w-full h-full object-cover"
-            muted={false}
-            playsInline
-            onEnded={() => setIsPlaying(false)}
-          >
-            <source src={`/${video}.mp4`} type="video/mp4" />
-          </video>
-        </div>
-      )
-    }
-
-    if (image) {
-      return (
-        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-lg">
-          <Image
-            src={`/${image}.png`}
+            src={resolvedMediaUrl}
             alt={`Foto de ${name}`}
             width={64}
             height={64}

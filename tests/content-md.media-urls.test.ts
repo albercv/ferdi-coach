@@ -137,6 +137,120 @@ text
     expect(t.image).toBe("legacy-image")
   })
 
+  it("prefers testimonial mediaUrl over videoUrl/imageUrl/legacy", async () => {
+    const dir = path.join(tmpDir, "content", "testimonials")
+    fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(
+      path.join(dir, "001-a.md"),
+      `---
+name: "A"
+age: 30
+rating: 5
+position: 1
+mediaUrl: "/uploads/testimonials/a/m--x.webp"
+videoUrl: "/uploads/testimonials/a/v--x.mp4"
+imageUrl: "/uploads/testimonials/a/i--x.webp"
+video: "legacy-video"
+image: "legacy-image"
+---
+text
+`,
+      "utf8",
+    )
+
+    const { getTestimonials } = await import("../lib/content-md")
+    const [t] = getTestimonials()
+    expect(t.mediaUrl).toBe("/uploads/testimonials/a/m--x.webp")
+  })
+
+  it("prefers testimonial videoUrl over imageUrl when mediaUrl missing", async () => {
+    const dir = path.join(tmpDir, "content", "testimonials")
+    fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(
+      path.join(dir, "001-a.md"),
+      `---
+name: "A"
+age: 30
+rating: 5
+position: 1
+videoUrl: "/uploads/testimonials/a/v--x.mp4"
+imageUrl: "/uploads/testimonials/a/i--x.webp"
+---
+text
+`,
+      "utf8",
+    )
+
+    const { getTestimonials } = await import("../lib/content-md")
+    const [t] = getTestimonials()
+    expect(t.mediaUrl).toBe("/uploads/testimonials/a/v--x.mp4")
+  })
+
+  it("resolves testimonial mediaUrl from legacy video slug", async () => {
+    const dir = path.join(tmpDir, "content", "testimonials")
+    fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(
+      path.join(dir, "001-a.md"),
+      `---
+name: "A"
+age: 30
+rating: 5
+position: 1
+video: "abc"
+---
+text
+`,
+      "utf8",
+    )
+
+    const { getTestimonials } = await import("../lib/content-md")
+    const [t] = getTestimonials()
+    expect(t.mediaUrl).toBe("/abc.mp4")
+  })
+
+  it("resolves testimonial mediaUrl from legacy image slug when no video", async () => {
+    const dir = path.join(tmpDir, "content", "testimonials")
+    fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(
+      path.join(dir, "001-a.md"),
+      `---
+name: "A"
+age: 30
+rating: 5
+position: 1
+image: "img1"
+---
+text
+`,
+      "utf8",
+    )
+
+    const { getTestimonials } = await import("../lib/content-md")
+    const [t] = getTestimonials()
+    expect(t.mediaUrl).toBe("/img1.png")
+  })
+
+  it("returns testimonial mediaUrl undefined when no media fields exist", async () => {
+    const dir = path.join(tmpDir, "content", "testimonials")
+    fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(
+      path.join(dir, "001-a.md"),
+      `---
+name: "A"
+age: 30
+rating: 5
+position: 1
+---
+text
+`,
+      "utf8",
+    )
+
+    const { getTestimonials } = await import("../lib/content-md")
+    const [t] = getTestimonials()
+    expect(t.mediaUrl).toBeUndefined()
+  })
+
   it("writes testimonial videoUrl/imageUrl as-is", async () => {
     const { addTestimonialItem } = await import("../lib/content-md")
     const created = addTestimonialItem({
@@ -157,5 +271,31 @@ text
     expect(raw).toContain('videoUrl: "/uploads/testimonials/a/v--x.mp4"')
     expect(raw).toContain('imageUrl: "/uploads/testimonials/a/i--x.webp"')
   })
-})
 
+  it("writes testimonial mediaUrl and omits legacy fields", async () => {
+    const { addTestimonialItem } = await import("../lib/content-md")
+    const created = addTestimonialItem({
+      name: "A",
+      age: 30,
+      rating: 5,
+      text: "text",
+      position: 1,
+      mediaUrl: "/uploads/testimonials/a/m--x.mp4",
+      videoUrl: "/uploads/testimonials/a/v--x.mp4",
+      imageUrl: "/uploads/testimonials/a/i--x.webp",
+      video: "legacy-video",
+      image: "legacy-image",
+    })
+
+    const raw = fs.readFileSync(
+      path.join(tmpDir, "content", "testimonials", `${created.id}.md`),
+      "utf8",
+    )
+
+    expect(raw).toContain('mediaUrl: "/uploads/testimonials/a/m--x.mp4"')
+    expect(raw).not.toContain("videoUrl:")
+    expect(raw).not.toContain("imageUrl:")
+    expect(raw).not.toContain("video:")
+    expect(raw).not.toContain("image:")
+  })
+})

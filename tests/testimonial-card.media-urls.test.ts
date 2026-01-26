@@ -9,7 +9,7 @@ vi.mock("next/image", () => {
 })
 
 describe("testimonial-card media urls", () => {
-  it("renders video when videoUrl is provided", async () => {
+  it("renders video when mediaUrl is mp4", async () => {
     const { TestimonialCard } = await import("../components/ui/testimonial-card")
     const html = renderToStaticMarkup(
       React.createElement(TestimonialCard, {
@@ -17,7 +17,7 @@ describe("testimonial-card media urls", () => {
         age: 30,
         text: "t",
         rating: 5,
-        videoUrl: "/uploads/testimonials/a/v--x.mp4",
+        mediaUrl: "/uploads/testimonials/a/v--x.mp4",
       }),
     )
 
@@ -25,7 +25,7 @@ describe("testimonial-card media urls", () => {
     expect(html).toContain('src="/uploads/testimonials/a/v--x.mp4"')
   })
 
-  it("renders image when imageUrl is provided", async () => {
+  it("renders image when mediaUrl is non-mp4", async () => {
     const { TestimonialCard } = await import("../components/ui/testimonial-card")
     const html = renderToStaticMarkup(
       React.createElement(TestimonialCard, {
@@ -33,12 +33,25 @@ describe("testimonial-card media urls", () => {
         age: 30,
         text: "t",
         rating: 5,
-        imageUrl: "/uploads/testimonials/a/i--x.webp",
+        mediaUrl: "/uploads/testimonials/a/i--x.webp",
       }),
     )
 
     expect(html).toContain("<img")
     expect(html).toContain('src="/uploads/testimonials/a/i--x.webp"')
   })
-})
 
+  it("renders fallback when mediaUrl is missing", async () => {
+    const { TestimonialCard } = await import("../components/ui/testimonial-card")
+    const html = renderToStaticMarkup(
+      React.createElement(TestimonialCard, {
+        name: "A",
+        age: 30,
+        text: "t",
+        rating: 5,
+      }),
+    )
+
+    expect(html).toContain('src="/logo2.webp"')
+  })
+})

@@ -42,6 +42,9 @@ export async function POST(req: Request) {
     const ageRaw = body?.age
     const ratingRaw = body?.rating
     const positionRaw = body?.position
+    const mediaUrl = typeof body?.mediaUrl === "string" && body.mediaUrl.trim()
+      ? String(body.mediaUrl).trim()
+      : undefined
     const video = body?.video ? String(body.video).trim() : undefined
     const image = body?.image ? String(body.image).trim() : undefined
     const videoUrl = typeof body?.videoUrl === "string" && body.videoUrl.trim()
@@ -74,14 +77,15 @@ export async function POST(req: Request) {
       if (!Number.isFinite(pos) || pos < 1) {
         return NextResponse.json({ error: "La posición debe ser un número >= 1" }, { status: 400 })
       }
-      const updated = setTestimonialItem({ id, name, age, rating, text, videoUrl, imageUrl, video, image, position: pos })
+      const updated = setTestimonialItem({ id, name, age, rating, text, mediaUrl, videoUrl, imageUrl, video, image, position: pos })
+      await tryCleanupReplacedUrl(before?.mediaUrl, mediaUrl)
       await tryCleanupReplacedUrl(before?.videoUrl, videoUrl)
       await tryCleanupReplacedUrl(before?.imageUrl, imageUrl)
       const items = getTestimonials()
       return NextResponse.json({ ok: true, item: updated, items })
     }
 
-    const created = addTestimonialItem({ id, name, age, rating, text, videoUrl, imageUrl, video, image, position: position || undefined })
+    const created = addTestimonialItem({ id, name, age, rating, text, mediaUrl, videoUrl, imageUrl, video, image, position: position || undefined })
     const items = getTestimonials()
     return NextResponse.json({ ok: true, item: created, items })
   } catch (e: any) {
@@ -105,6 +109,9 @@ export async function PUT(req: Request) {
     const ageRaw = body?.age
     const ratingRaw = body?.rating
     const positionRaw = body?.position
+    const mediaUrl = typeof body?.mediaUrl === "string" && body.mediaUrl.trim()
+      ? String(body.mediaUrl).trim()
+      : undefined
     const video = body?.video ? String(body.video).trim() : undefined
     const image = body?.image ? String(body.image).trim() : undefined
     const videoUrl = typeof body?.videoUrl === "string" && body.videoUrl.trim()
@@ -132,7 +139,8 @@ export async function PUT(req: Request) {
     }
 
     const before = getTestimonials().find((t) => t.id === id)
-    const updated = setTestimonialItem({ id, name, age, rating, text, videoUrl, imageUrl, video, image, position })
+    const updated = setTestimonialItem({ id, name, age, rating, text, mediaUrl, videoUrl, imageUrl, video, image, position })
+    await tryCleanupReplacedUrl(before?.mediaUrl, mediaUrl)
     await tryCleanupReplacedUrl(before?.videoUrl, videoUrl)
     await tryCleanupReplacedUrl(before?.imageUrl, imageUrl)
     const items = getTestimonials()

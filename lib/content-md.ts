@@ -9,6 +9,7 @@ export type Testimonial = {
   age: number
   rating: number
   text: string
+  mediaUrl?: string
   videoUrl?: string
   imageUrl?: string
   video?: string
@@ -89,6 +90,8 @@ export function getTestimonials(): Testimonial[] {
     const posFm = Number((data as any).position)
     const position = Number.isFinite(posFm) ? posFm : (!isNaN(numPrefix) ? numPrefix : idx + 1)
 
+    const mediaUrlRaw = (data as any).mediaUrl ? String((data as any).mediaUrl) : undefined
+
     const videoLegacy = (data as any).video ? String((data as any).video) : undefined
     const imageLegacy = (data as any).image ? String((data as any).image) : undefined
 
@@ -98,6 +101,13 @@ export function getTestimonials(): Testimonial[] {
     const videoUrl = videoUrlRaw ?? (videoLegacy ? `/${videoLegacy}.mp4` : undefined)
     const imageUrl = imageUrlRaw ?? (imageLegacy ? `/${imageLegacy}.png` : undefined)
 
+    const mediaUrl =
+      mediaUrlRaw ??
+      videoUrlRaw ??
+      imageUrlRaw ??
+      (videoLegacy ? `/${videoLegacy}.mp4` : undefined) ??
+      (imageLegacy ? `/${imageLegacy}.png` : undefined)
+
     return {
       id: base,
       position,
@@ -105,6 +115,7 @@ export function getTestimonials(): Testimonial[] {
       age: Number((data as any).age || 0),
       rating: Number((data as any).rating || 0),
       text: content,
+      mediaUrl,
       videoUrl,
       imageUrl,
       video: videoLegacy,
@@ -512,10 +523,11 @@ function writeTestimonialFile(dir: string, t: Testimonial) {
     `age: ${t.age}\n` +
     `rating: ${t.rating}\n` +
     `position: ${t.position}\n` +
-    (t.videoUrl ? `videoUrl: "${escapeYaml(t.videoUrl)}"\n` : "") +
-    (t.imageUrl ? `imageUrl: "${escapeYaml(t.imageUrl)}"\n` : "") +
-    (t.video ? `video: "${escapeYaml(t.video)}"\n` : "") +
-    (t.image ? `image: "${escapeYaml(t.image)}"\n` : "") +
+    (t.mediaUrl ? `mediaUrl: "${escapeYaml(t.mediaUrl)}"\n` : "") +
+    (!t.mediaUrl && t.videoUrl ? `videoUrl: "${escapeYaml(t.videoUrl)}"\n` : "") +
+    (!t.mediaUrl && t.imageUrl ? `imageUrl: "${escapeYaml(t.imageUrl)}"\n` : "") +
+    (!t.mediaUrl && t.video ? `video: "${escapeYaml(t.video)}"\n` : "") +
+    (!t.mediaUrl && t.image ? `image: "${escapeYaml(t.image)}"\n` : "") +
     `---\n` +
     `${t.text.trim()}\n`
   const filePath = path.join(dir, `${t.id}.md`)
@@ -529,6 +541,7 @@ export function addTestimonialItem(newItem: {
   age: number
   rating: number
   text: string
+  mediaUrl?: string
   videoUrl?: string
   imageUrl?: string
   video?: string
@@ -550,6 +563,7 @@ export function addTestimonialItem(newItem: {
       age: Number((data as any).age || 0),
       rating: Number((data as any).rating || 0),
       text: content,
+      mediaUrl: (data as any).mediaUrl ? String((data as any).mediaUrl) : undefined,
       videoUrl: (data as any).videoUrl ? String((data as any).videoUrl) : undefined,
       imageUrl: (data as any).imageUrl ? String((data as any).imageUrl) : undefined,
       video: (data as any).video ? String((data as any).video) : undefined,
@@ -557,6 +571,8 @@ export function addTestimonialItem(newItem: {
     }
     return item
   })
+
+  const normalizedMediaUrl = newItem.mediaUrl ? String(newItem.mediaUrl).trim() : undefined
 
   const id = newItem.id ? String(newItem.id) : String(Date.now())
   const desired = newItem.position && Number.isFinite(newItem.position)
@@ -572,10 +588,11 @@ export function addTestimonialItem(newItem: {
       age: Math.max(0, Number(newItem.age || 0)),
       rating: Math.max(0, Math.min(5, Number(newItem.rating || 0))),
       text: newItem.text,
-      videoUrl: newItem.videoUrl,
-      imageUrl: newItem.imageUrl,
-      video: newItem.video,
-      image: newItem.image,
+      mediaUrl: normalizedMediaUrl,
+      videoUrl: normalizedMediaUrl ? undefined : newItem.videoUrl,
+      imageUrl: normalizedMediaUrl ? undefined : newItem.imageUrl,
+      video: normalizedMediaUrl ? undefined : newItem.video,
+      image: normalizedMediaUrl ? undefined : newItem.image,
     },
     ...items.slice(desired - 1),
   ]
@@ -604,6 +621,7 @@ export function setTestimonialItem(updated: Testimonial) {
       age: Number((data as any).age || 0),
       rating: Number((data as any).rating || 0),
       text: content,
+      mediaUrl: (data as any).mediaUrl ? String((data as any).mediaUrl) : undefined,
       videoUrl: (data as any).videoUrl ? String((data as any).videoUrl) : undefined,
       imageUrl: (data as any).imageUrl ? String((data as any).imageUrl) : undefined,
       video: (data as any).video ? String((data as any).video) : undefined,
@@ -611,6 +629,8 @@ export function setTestimonialItem(updated: Testimonial) {
     }
     return item
   })
+
+  const normalizedMediaUrl = updated.mediaUrl ? String(updated.mediaUrl).trim() : undefined
 
   const rest = items.filter((t) => t.id !== updated.id)
   const desired = Math.max(1, Math.min(Number(updated.position || 1), rest.length + 1))
@@ -625,10 +645,11 @@ export function setTestimonialItem(updated: Testimonial) {
       age: Math.max(0, Number(updated.age || 0)),
       rating: Math.max(0, Math.min(5, Number(updated.rating || 0))),
       text: String(updated.text || "").trim(),
-      videoUrl: updated.videoUrl ? String(updated.videoUrl).trim() : undefined,
-      imageUrl: updated.imageUrl ? String(updated.imageUrl).trim() : undefined,
-      video: updated.video ? String(updated.video).trim() : undefined,
-      image: updated.image ? String(updated.image).trim() : undefined,
+      mediaUrl: normalizedMediaUrl,
+      videoUrl: normalizedMediaUrl ? undefined : (updated.videoUrl ? String(updated.videoUrl).trim() : undefined),
+      imageUrl: normalizedMediaUrl ? undefined : (updated.imageUrl ? String(updated.imageUrl).trim() : undefined),
+      video: normalizedMediaUrl ? undefined : (updated.video ? String(updated.video).trim() : undefined),
+      image: normalizedMediaUrl ? undefined : (updated.image ? String(updated.image).trim() : undefined),
     },
     ...rest.slice(desired - 1),
   ]
@@ -657,6 +678,7 @@ export function deleteTestimonialItem(id: string) {
       age: Number((data as any).age || 0),
       rating: Number((data as any).rating || 0),
       text: content,
+      mediaUrl: (data as any).mediaUrl ? String((data as any).mediaUrl) : undefined,
       videoUrl: (data as any).videoUrl ? String((data as any).videoUrl) : undefined,
       imageUrl: (data as any).imageUrl ? String((data as any).imageUrl) : undefined,
       video: (data as any).video ? String((data as any).video) : undefined,

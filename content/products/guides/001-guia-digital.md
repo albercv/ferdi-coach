@@ -8,8 +8,8 @@ features:
   - "Checklist imprimible"
   - "Acceso inmediato"
 fileUrl: "/uploads/products/guides/001-guia-digital/lorem-ipsum--65b09f5f.pdf"
-coverImageUrl: "/uploads/products/guides/001-guia-digital/pdf--ab285a6f.webp"
+coverImageUrl: "/uploads/products/guides/001-guia-digital/pdf--a0f1c362.webp"
 position: 1
-featuredSpot: 3
+featuredSpot: 1
 ---
 Una guía directa y accionable para ayudarte a ordenar la semana. Incluye ejercicios simples y un checklist para que avances sin abrumarte.
