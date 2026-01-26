@@ -7,8 +7,7 @@ features:
   - "Ejercicios sencillos"
   - "Checklist imprimible"
   - "Acceso inmediato"
-fileUrl: "/uploads/products/guides/001-guia-digital/lorem-ipsum--65b09f5f.pdf"
-coverImageUrl: "/uploads/products/guides/001-guia-digital/pdf--a0f1c362.webp"
+fileUrl: "/fake.pdf"
 position: 1
 featuredSpot: 1
 mostPopular: true

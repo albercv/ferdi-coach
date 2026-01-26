@@ -55,6 +55,7 @@ export type CTAContent = {
 
 export type BreakerContent = {
   text: string
+  kicker?: string
 }
 
 const CONTENT_DIR = path.join(process.cwd(), "content")
@@ -422,6 +423,7 @@ export function getCTA(): CTAContent {
 export function getBreaker(): BreakerContent {
   const defaults: BreakerContent = {
     text: "No estás roto: estás despertando.",
+    kicker: "Un alto aquí",
   }
 
   if (!fs.existsSync(BREAKER_FILE)) {
@@ -430,8 +432,10 @@ export function getBreaker(): BreakerContent {
 
   const { data, content } = readMarkdownFile(BREAKER_FILE)
   const text = (content || String((data as any).text || "")).trim()
+  const kicker = String((data as any).kicker || "").trim()
   return {
     text: text || defaults.text,
+    kicker: kicker || defaults.kicker,
   }
 }
 
@@ -465,7 +469,10 @@ export function setCTA(cta: CTAContent) {
 
 export function setBreaker(breaker: BreakerContent) {
   ensureContentDir()
-  const frontmatter = `---\n---\n`
+  const kicker = String(breaker.kicker || "").trim()
+  const frontmatter = `---\n` +
+    (kicker ? `kicker: "${escapeYaml(kicker)}"\n` : "") +
+    `---\n`
   const body = `${String(breaker.text || "").trim()}\n`
   fs.writeFileSync(BREAKER_FILE, frontmatter + body, "utf8")
 }

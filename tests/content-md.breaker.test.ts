@@ -22,6 +22,7 @@ describe("content-md breaker", () => {
     const { getBreaker } = await import("../lib/content-md")
     const breaker = getBreaker()
     expect(breaker.text).toBeTruthy()
+    expect(breaker.kicker).toBe("Un alto aquí")
   })
 
   it("writes and reads breaker text", async () => {
@@ -30,7 +31,16 @@ describe("content-md breaker", () => {
     setBreaker({ text: "No es amor si te apaga." })
     const breaker = getBreaker()
 
-    expect(breaker).toEqual({ text: "No es amor si te apaga." })
+    expect(breaker).toEqual({ text: "No es amor si te apaga.", kicker: "Un alto aquí" })
+  })
+
+  it("writes and reads breaker kicker", async () => {
+    const { getBreaker, setBreaker } = await import("../lib/content-md")
+
+    setBreaker({ text: "X", kicker: "Pausa" })
+    const breaker = getBreaker()
+
+    expect(breaker).toEqual({ text: "X", kicker: "Pausa" })
   })
 
   it("trims breaker text on save", async () => {
@@ -40,6 +50,6 @@ describe("content-md breaker", () => {
     const breaker = getBreaker()
 
     expect(breaker.text).toBe("Respira. Vuelve a ti.")
+    expect(breaker.kicker).toBe("Un alto aquí")
   })
 })
-

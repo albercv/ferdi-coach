@@ -23,7 +23,10 @@ export async function PUT(req: Request) {
     const text = String(body?.text || "").trim()
     if (!text) return NextResponse.json({ error: "text es requerido" }, { status: 400 })
 
-    const next: BreakerContent = { text }
+    const kickerRaw = body?.kicker
+    const kicker = typeof kickerRaw === "string" ? kickerRaw.trim() : ""
+
+    const next: BreakerContent = { text, kicker: kicker || undefined }
     setBreaker(next)
     return NextResponse.json({ ok: true })
   } catch (err: any) {
@@ -42,7 +45,10 @@ export async function POST(req: Request) {
     const text = String(body?.text || "").trim()
     if (!text) return NextResponse.json({ error: "text es requerido" }, { status: 400 })
 
-    const next: BreakerContent = { text }
+    const kickerRaw = body?.kicker
+    const kicker = typeof kickerRaw === "string" ? kickerRaw.trim() : ""
+
+    const next: BreakerContent = { text, kicker: kicker || undefined }
     setBreaker(next)
     return NextResponse.json({ ok: true })
   } catch (err: any) {

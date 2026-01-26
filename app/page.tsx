@@ -29,7 +29,7 @@ export default function HomePage() {
       <Header />
       <main id="main-content">
         <HeroSection hero={hero} />
-        <BreakerBanner text={breaker.text} />
+        <BreakerBanner text={breaker.text} kicker={breaker.kicker} />
         <LazyLoad>
           <HowItWorksSectionV2 />
         </LazyLoad>

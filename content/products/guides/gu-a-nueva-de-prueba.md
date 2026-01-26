@@ -7,7 +7,6 @@ features:
   - "Estrategias de mejora."
   - "Estrategias de adaptación"
 fileUrl: "/fake.pdf"
-coverImageUrl: "/uploads/products/guides/gu-a-nueva-de-prueba/pdf--8cee693c.webp"
 position: 2
 featuredSpot: 3
 ---

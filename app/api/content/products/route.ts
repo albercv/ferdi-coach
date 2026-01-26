@@ -6,6 +6,21 @@ import { MediaService } from "@/lib/media/mediaService"
 
 const media = new MediaService()
 
+function isAllowedHowItWorksUrl(url: string) {
+  const value = String(url || "").trim()
+  return value.startsWith("/") || value.startsWith("https://")
+}
+
+function assertValidUrlField(fieldName: string, value: unknown) {
+  if (value === undefined || value === null) return
+  if (typeof value !== "string") throw new Error(`'${fieldName}' debe ser string`)
+  const normalized = value.trim()
+  if (!normalized) return
+  if (!isAllowedHowItWorksUrl(normalized)) {
+    throw new Error(`URL inválida en '${fieldName}': debe empezar por / o por https://`)
+  }
+}
+
 async function tryCleanupReplacedUrl(oldUrl: string | undefined, newUrl: string | undefined) {
   if (!oldUrl) return
   if (oldUrl === newUrl) return
@@ -56,10 +71,28 @@ export async function POST(req: Request) {
     if (body && body.id) {
       const productsBefore = getProducts()
       const before = (productsBefore.guides.find((g) => g.id === body.id) || productsBefore.sessions.find((s) => s.id === body.id))
+
+      const kind = (body?.kind || before?.kind || "guide") as "guide" | "session"
+      if (kind === "guide") {
+        assertValidUrlField("fileUrl", body?.fileUrl)
+        assertValidUrlField("coverImageUrl", body?.coverImageUrl)
+      } else {
+        assertValidUrlField("imageUrl", body?.imageUrl)
+      }
+
       const updated = setProductItem(body)
       await tryCleanupProductMedia({ before, after: updated })
       return NextResponse.json({ success: true, data: updated })
     }
+
+    const kind = (body?.kind === "session" ? "session" : "guide") as "guide" | "session"
+    if (kind === "guide") {
+      assertValidUrlField("fileUrl", body?.fileUrl)
+      assertValidUrlField("coverImageUrl", body?.coverImageUrl)
+    } else {
+      assertValidUrlField("imageUrl", body?.imageUrl)
+    }
+
     const created = addProductItem(body)
     return NextResponse.json({ success: true, data: created })
   } catch (error: any) {
@@ -77,6 +110,15 @@ export async function PUT(req: Request) {
 
     const productsBefore = getProducts()
     const before = (productsBefore.guides.find((g) => g.id === body?.id) || productsBefore.sessions.find((s) => s.id === body?.id))
+
+    const kind = (body?.kind || before?.kind || "guide") as "guide" | "session"
+    if (kind === "guide") {
+      assertValidUrlField("fileUrl", body?.fileUrl)
+      assertValidUrlField("coverImageUrl", body?.coverImageUrl)
+    } else {
+      assertValidUrlField("imageUrl", body?.imageUrl)
+    }
+
     const updated = setProductItem(body)
     await tryCleanupProductMedia({ before, after: updated })
     return NextResponse.json({ success: true, data: updated })

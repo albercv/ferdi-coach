@@ -22,6 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import { MediaPicker } from "@/components/dashboard/MediaPicker"
 import { MediaLibraryTab } from "@/components/dashboard/MediaLibraryTab"
+import { MediaSectionCard } from "@/components/dashboard/MediaSectionCard"
 import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield, Users, ArrowRight, Sparkles, Target, Timer, MessageSquare } from "lucide-react"
 
 function escapeProductSlug(input: string) {
@@ -101,6 +102,7 @@ export default function DashboardPage() {
   const [openGuidesDraftPreview, setOpenGuidesDraftPreview] = useState(false)
   const [openSessionsDraftPreview, setOpenSessionsDraftPreview] = useState(false)
   const [showGuidesBack, setShowGuidesBack] = useState(false)
+  const [howItWorksUrlAdvanced, setHowItWorksUrlAdvanced] = useState(false)
 
   // Crear Guía
   const [cgTitle, setCgTitle] = useState("")
@@ -168,6 +170,7 @@ export default function DashboardPage() {
   const [heroCtaPrimary, setHeroCtaPrimary] = useState("")
   const [heroCtaSecondary, setHeroCtaSecondary] = useState("")
   const [heroBackgroundImageUrl, setHeroBackgroundImageUrl] = useState("")
+  const [heroBackgroundImageUrlFromServer, setHeroBackgroundImageUrlFromServer] = useState("")
   const [heroBullets, setHeroBullets] = useState<Array<{ id: string; position: number; icon: string; text: string }>>([])
   const [selectedBulletId, setSelectedBulletId] = useState<string | null>(null)
   const [ebId, setEbId] = useState("")
@@ -188,6 +191,7 @@ export default function DashboardPage() {
   const [savingCta, setSavingCta] = useState(false)
 
   // --- Breaker state ---
+  const [breakerKicker, setBreakerKicker] = useState("Un alto aquí")
   const [breakerText, setBreakerText] = useState("")
   const [savingBreaker, setSavingBreaker] = useState(false)
 
@@ -278,6 +282,7 @@ export default function DashboardPage() {
         setHeroCtaPrimary(String(data.ctaPrimary ?? ""))
         setHeroCtaSecondary(data.ctaSecondary ? String(data.ctaSecondary) : "")
         setHeroBackgroundImageUrl(data.backgroundImageUrl ? String(data.backgroundImageUrl) : "")
+        setHeroBackgroundImageUrlFromServer(data.backgroundImageUrl ? String(data.backgroundImageUrl) : "")
         const bullets = Array.isArray(data.bullets) ? data.bullets : []
         setHeroBullets(bullets)
         if (bullets.length > 0) {
@@ -309,6 +314,7 @@ export default function DashboardPage() {
         const res = await fetch("/api/content/breaker", { cache: "no-store" })
         if (!res.ok) throw new Error("Failed to load breaker")
         const data = await res.json()
+        setBreakerKicker(String(data.kicker ?? "Un alto aquí"))
         setBreakerText(String(data.text ?? ""))
       } catch (e) {
         toast({ title: "Error", description: "No se pudo cargar la frase" })
@@ -386,6 +392,7 @@ export default function DashboardPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          kicker: breakerKicker,
           text: breakerText,
         }),
       })
@@ -670,12 +677,27 @@ export default function DashboardPage() {
     setCsPosition(nextS)
   }, [sessions])
 
+  const isAllowedHowItWorksUrl = (url: string) => {
+    const value = String(url || "").trim()
+    return value.startsWith("/") || value.startsWith("https://")
+  }
+
+  const cgFileUrlInvalid = Boolean(String(cgFileUrl || "").trim()) && !isAllowedHowItWorksUrl(String(cgFileUrl || "").trim())
+  const egFileUrlInvalid = Boolean(String(egFileUrl || "").trim()) && !isAllowedHowItWorksUrl(String(egFileUrl || "").trim())
+
   const handleCreateGuide = async () => {
     // Validación
     if (!cgTitle.trim()) {
       toast({ title: "Falta título", description: "La guía necesita un título." })
       return
     }
+
+    const normalizedFileUrl = String(cgFileUrl || "/fake.pdf").trim() || "/fake.pdf"
+    if (!isAllowedHowItWorksUrl(normalizedFileUrl)) {
+      toast({ title: "URL inválida", description: "La URL debe empezar por / o por https://" })
+      return
+    }
+
     const features = cgFeaturesText.split(/\n|,/).map((s) => s.trim()).filter(Boolean)
     const posInUse = guides.some((it) => Number(it.position) === Number(cgPosition))
     if (posInUse) {
@@ -690,7 +712,7 @@ export default function DashboardPage() {
         miniDescription: cgMini,
         price: Number(cgPrice || 0),
         features,
-        fileUrl: cgFileUrl || "/fake.pdf",
+        fileUrl: normalizedFileUrl,
         coverImageUrl: cgCoverImageUrl || undefined,
         synopsis: cgSynopsis,
         position: Number(cgPosition || 1),
@@ -744,6 +766,13 @@ export default function DashboardPage() {
   const handleSaveGuide = async () => {
     const id = egId || selectedGuideId
     if (!id) return
+
+    const normalizedFileUrl = String(egFileUrl || "/fake.pdf").trim() || "/fake.pdf"
+    if (!isAllowedHowItWorksUrl(normalizedFileUrl)) {
+      toast({ title: "URL inválida", description: "La URL debe empezar por / o por https://" })
+      return
+    }
+
     const features = egFeaturesText.split(/\n|,/).map((s) => s.trim()).filter(Boolean)
     const posInUse = guides.some((it) => it.id !== id && Number(it.position) === Number(egPosition))
     if (posInUse) {
@@ -759,7 +788,7 @@ export default function DashboardPage() {
         miniDescription: egMini,
         price: Number(egPrice || 0),
         features,
-        fileUrl: egFileUrl || "/fake.pdf",
+        fileUrl: normalizedFileUrl,
         coverImageUrl: egCoverImageUrl || undefined,
         synopsis: egSynopsis,
         position: Number(egPosition || 1),
@@ -1118,9 +1147,9 @@ export default function DashboardPage() {
         <Tabs defaultValue="hero" className="">
           <TabsList className="bg-card text-foreground shadow-sm border rounded-md">
             <TabsTrigger value="hero">Hero</TabsTrigger>
-            <TabsTrigger value="breaker">Breaker Quote</TabsTrigger>
-            <TabsTrigger value="products">How It Works</TabsTrigger>
-            <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
+            <TabsTrigger value="breaker">Frase destacada</TabsTrigger>
+            <TabsTrigger value="products">Cómo funciona</TabsTrigger>
+            <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
             <TabsTrigger value="about">Sobre mí</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
             <TabsTrigger value="cta">CTA</TabsTrigger>
@@ -1151,22 +1180,24 @@ export default function DashboardPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="hero-cta-primary">CTA principal</Label>
+                      <Label htmlFor="hero-cta-primary">Botón principal</Label>
                       <Input id="hero-cta-primary" value={heroCtaPrimary} onChange={(e)=> setHeroCtaPrimary(e.target.value)} placeholder="Reservar sesión" />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="hero-cta-secondary">CTA secundaria (opcional)</Label>
+                      <Label htmlFor="hero-cta-secondary">Botón secundario (opcional)</Label>
                       <Input id="hero-cta-secondary" value={heroCtaSecondary} onChange={(e)=> setHeroCtaSecondary(e.target.value)} placeholder="Ver servicios" />
                     </div>
                   </div>
 
-                  <MediaPicker
-                    label="Imagen de fondo"
-                    scope="hero"
-                    value={heroBackgroundImageUrl}
-                    accept="image/*"
-                    onChange={(url) => setHeroBackgroundImageUrl(url ?? "")}
-                  />
+                  <MediaSectionCard title="Imagen de fondo" compact>
+                    <MediaPicker
+                      label="Imagen de fondo"
+                      scope="hero"
+                      value={heroBackgroundImageUrl}
+                      accept="image/*"
+                      onChange={(url) => setHeroBackgroundImageUrl(url ?? "")}
+                    />
+                  </MediaSectionCard>
 
                   <div className="border rounded-md">
                     {/* Crear bullet */}
@@ -1346,6 +1377,17 @@ export default function DashboardPage() {
                   <CardDescription>Así se verá en Home</CardDescription>
                 </CardHeader>
                 <CardContent>
+                  <div className="mb-4 rounded-md border overflow-hidden">
+                    <img
+                      className="h-40 w-full object-cover"
+                      src={
+                        (heroBackgroundImageUrl?.trim() || undefined) ??
+                        (heroBackgroundImageUrlFromServer?.trim() || undefined) ??
+                        "/hero-img-v1.png"
+                      }
+                      alt="Imagen de fondo del Hero"
+                    />
+                  </div>
                   <div className="space-y-4">
                     <h2 className="text-2xl font-bold">{heroTitle || "Título del hero"}</h2>
                     <p className="text-muted-foreground">{heroSubtitle || "Subtítulo del hero..."}</p>
@@ -1421,18 +1463,22 @@ export default function DashboardPage() {
                           <Label htmlFor="new-t-text">Texto del testimonio</Label>
                           <Textarea id="new-t-text" placeholder="Texto del testimonio" value={createTText} onChange={(e) => setCreateTText(e.target.value)} />
                         </div>
-                        {createTName.trim() ? (
-                          <MediaPicker
-                            label="Media (imagen o vídeo mp4)"
-                            scope="testimonials"
-                            entitySlug={escapeProductSlug(createTName)}
-                            value={createTMediaUrl}
-                            accept="image/*,video/mp4"
-                            onChange={(url) => setCreateTMediaUrl(url ?? "")}
-                          />
-                        ) : (
-                          <div className="text-xs text-muted-foreground">Escribe un nombre para habilitar la subida de archivos.</div>
-                        )}
+                        <MediaSectionCard title="Media" description="Imagen o vídeo del testimonio" compact>
+                          <div className="w-full max-w-2xl">
+                            {createTName.trim() ? (
+                              <MediaPicker
+                                label="Media (imagen o vídeo mp4)"
+                                scope="testimonials"
+                                entitySlug={escapeProductSlug(createTName)}
+                                value={createTMediaUrl}
+                                accept="image/*,video/mp4"
+                                onChange={(url) => setCreateTMediaUrl(url ?? "")}
+                              />
+                            ) : (
+                              <div className="text-xs text-muted-foreground">Escribe un nombre para habilitar la subida de archivos.</div>
+                            )}
+                          </div>
+                        </MediaSectionCard>
                         <div className="space-y-2">
                           <Label htmlFor="new-t-position">Posición</Label>
                           <Input id="new-t-position" type="number" min={1} value={createTPosition} onChange={(e) => setCreateTPosition(Number(e.target.value) || 1)} />
@@ -1506,16 +1552,18 @@ export default function DashboardPage() {
                                 <Label htmlFor={`t-text-${t.id}`}>Texto</Label>
                                 <Textarea id={`t-text-${t.id}`} value={editingTText} onChange={(e) => setEditingTText(e.target.value)} />
                               </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                <MediaPicker
-                                  label="Media (imagen o vídeo mp4)"
-                                  scope="testimonials"
-                                  entitySlug={t.id}
-                                  value={editingTMediaUrl}
-                                  accept="image/*,video/mp4"
-                                  onChange={(url) => setEditingTMediaUrl(url ?? "")}
-                                />
-                              </div>
+                              <MediaSectionCard title="Media" description="Imagen o vídeo del testimonio" compact>
+                                <div className="w-full max-w-2xl">
+                                  <MediaPicker
+                                    label="Media (imagen o vídeo mp4)"
+                                    scope="testimonials"
+                                    entitySlug={t.id}
+                                    value={editingTMediaUrl}
+                                    accept="image/*,video/mp4"
+                                    onChange={(url) => setEditingTMediaUrl(url ?? "")}
+                                  />
+                                </div>
+                              </MediaSectionCard>
                               <div className="flex gap-2">
                                 <Button onClick={handleSaveTestimonial} disabled={savingTestimonial} className="bg-primary text-primary-foreground">{savingTestimonial ? "Guardando..." : "Guardar"}</Button>
                                 <Button variant="outline" onClick={() => {
@@ -1636,30 +1684,57 @@ export default function DashboardPage() {
                           <Label htmlFor="new-guide-features">Características (una por línea o separadas por coma)</Label>
                           <Textarea id="new-guide-features" value={cgFeaturesText} onChange={(e) => setCgFeaturesText(e.target.value)} placeholder={"Ej.: • PDF descargable\n• Ejercicios prácticos\n• Consejos expertos"} />
                         </div>
-                        {cgTitle.trim() ? (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <MediaPicker
-                              label="Portada (imagen)"
-                              scope="products"
-                              productSubscope="guides"
-                              entitySlug={escapeProductSlug(cgTitle)}
-                              value={cgCoverImageUrl}
-                              accept="image/*"
-                              onChange={(url) => setCgCoverImageUrl(url ?? "")}
-                            />
-                            <MediaPicker
-                              label="Archivo (PDF)"
-                              scope="products"
-                              productSubscope="guides"
-                              entitySlug={escapeProductSlug(cgTitle)}
-                              value={cgFileUrl}
-                              accept="application/pdf"
-                              onChange={(url) => setCgFileUrl(url ?? "")}
+                      <MediaSectionCard title="Media / Archivos" compact>
+                        <div className="w-full max-w-2xl space-y-4">
+                          {cgTitle.trim() ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <MediaPicker
+                                label="Portada (imagen)"
+                                scope="products"
+                                productSubscope="guides"
+                                entitySlug={escapeProductSlug(cgTitle)}
+                                value={cgCoverImageUrl}
+                                accept="image/*"
+                                onChange={(url) => setCgCoverImageUrl(url ?? "")}
+                              />
+                              <MediaPicker
+                                label="Archivo (PDF)"
+                                scope="products"
+                                productSubscope="guides"
+                                entitySlug={escapeProductSlug(cgTitle)}
+                                value={cgFileUrl}
+                                accept="application/pdf"
+                                onChange={(url) => setCgFileUrl(url ?? "")}
+                              />
+                            </div>
+                          ) : (
+                            <div className="text-xs text-muted-foreground">Escribe un título para habilitar la subida de archivos.</div>
+                          )}
+
+                          <div className="flex items-center justify-between gap-3">
+                            <Label htmlFor="how-it-works-url-advanced-create" className="text-sm">Avanzado</Label>
+                            <Switch
+                              id="how-it-works-url-advanced-create"
+                              checked={howItWorksUrlAdvanced}
+                              onCheckedChange={(v) => setHowItWorksUrlAdvanced(Boolean(v))}
                             />
                           </div>
-                        ) : (
-                          <div className="text-xs text-muted-foreground">Escribe un título para habilitar la subida de archivos.</div>
-                        )}
+
+                          <div className="space-y-2">
+                            <Label htmlFor="new-guide-file">URL del archivo (PDF)</Label>
+                            <Input
+                              id="new-guide-file"
+                              value={cgFileUrl}
+                              onChange={(e) => setCgFileUrl(e.target.value)}
+                              placeholder="/fake.pdf"
+                              readOnly={!howItWorksUrlAdvanced}
+                            />
+                            {cgFileUrlInvalid ? (
+                              <p className="text-xs text-destructive">La URL debe empezar por / o por https://</p>
+                            ) : null}
+                          </div>
+                        </div>
+                      </MediaSectionCard>
                         <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-2">
                             <Label htmlFor="new-guide-price">Precio (€)</Label>
@@ -1670,10 +1745,6 @@ export default function DashboardPage() {
                             <Input id="new-guide-position" type="number" min={1} value={cgPosition} onChange={(e) => setCgPosition(Number(e.target.value) || 1)} />
                             <p className="text-[11px] text-muted-foreground">Se normaliza automáticamente al guardar.</p>
                           </div>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="new-guide-file">URL del archivo (PDF)</Label>
-                          <Input id="new-guide-file" value={cgFileUrl} onChange={(e) => setCgFileUrl(e.target.value)} placeholder="/fake.pdf" />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="new-guide-synopsis">Sinopsis (cara trasera)</Label>
@@ -1699,7 +1770,7 @@ export default function DashboardPage() {
                             <Label htmlFor="new-guide-pop">Más popular</Label>
                           </div>
                         </div>
-                        <Button onClick={handleCreateGuide} disabled={creatingGuide} className="bg-primary text-primary-foreground">{creatingGuide ? "Creando..." : "Crear guía"}</Button>
+                      <Button onClick={handleCreateGuide} disabled={creatingGuide || cgFileUrlInvalid} className="bg-primary text-primary-foreground">{creatingGuide ? "Creando..." : "Crear guía"}</Button>
                       </div>
                     </details>
 
@@ -1766,30 +1837,51 @@ export default function DashboardPage() {
                                     <Label>Características</Label>
                                     <Textarea value={egFeaturesText} onChange={(e) => setEgFeaturesText(e.target.value)} />
                                   </div>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <MediaPicker
-                                      label="Portada (imagen)"
-                                      scope="products"
-                                      productSubscope="guides"
-                                      entitySlug={egId || g.id}
-                                      value={egCoverImageUrl}
-                                      accept="image/*"
-                                      onChange={(url) => setEgCoverImageUrl(url ?? "")}
-                                    />
-                                    <MediaPicker
-                                      label="Archivo (PDF)"
-                                      scope="products"
-                                      productSubscope="guides"
-                                      entitySlug={egId || g.id}
-                                      value={egFileUrl}
-                                      accept="application/pdf"
-                                      onChange={(url) => setEgFileUrl(url ?? "")}
-                                    />
-                                  </div>
-                                  <div className="space-y-2">
-                                    <Label>URL archivo</Label>
-                                    <Input value={egFileUrl} onChange={(e) => setEgFileUrl(e.target.value)} />
-                                  </div>
+                                  <MediaSectionCard title="Media / Archivos" compact>
+                                    <div className="w-full max-w-2xl space-y-4">
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <MediaPicker
+                                          label="Portada (imagen)"
+                                          scope="products"
+                                          productSubscope="guides"
+                                          entitySlug={egId || g.id}
+                                          value={egCoverImageUrl}
+                                          accept="image/*"
+                                          onChange={(url) => setEgCoverImageUrl(url ?? "")}
+                                        />
+                                        <MediaPicker
+                                          label="Archivo (PDF)"
+                                          scope="products"
+                                          productSubscope="guides"
+                                          entitySlug={egId || g.id}
+                                          value={egFileUrl}
+                                          accept="application/pdf"
+                                          onChange={(url) => setEgFileUrl(url ?? "")}
+                                        />
+                                      </div>
+
+                                      <div className="flex items-center justify-between gap-3">
+                                        <Label htmlFor="how-it-works-url-advanced-edit" className="text-sm">Avanzado</Label>
+                                        <Switch
+                                          id="how-it-works-url-advanced-edit"
+                                          checked={howItWorksUrlAdvanced}
+                                          onCheckedChange={(v) => setHowItWorksUrlAdvanced(Boolean(v))}
+                                        />
+                                      </div>
+
+                                      <div className="space-y-2">
+                                        <Label>URL del archivo (PDF)</Label>
+                                        <Input
+                                          value={egFileUrl}
+                                          onChange={(e) => setEgFileUrl(e.target.value)}
+                                          readOnly={!howItWorksUrlAdvanced}
+                                        />
+                                        {egFileUrlInvalid ? (
+                                          <p className="text-xs text-destructive">La URL debe empezar por / o por https://</p>
+                                        ) : null}
+                                      </div>
+                                    </div>
+                                  </MediaSectionCard>
                                   <div className="space-y-2">
                                     <Label>Sinopsis</Label>
                                     <Textarea value={egSynopsis} onChange={(e) => setEgSynopsis(e.target.value)} />
@@ -1815,7 +1907,7 @@ export default function DashboardPage() {
                                     </div>
                                   </div>
                                   <div className="flex gap-2 flex-wrap">
-                                    <Button onClick={handleSaveGuide} disabled={savingGuide} className="bg-primary text-primary-foreground">{savingGuide ? "Guardando..." : "Guardar"}</Button>
+                                    <Button onClick={handleSaveGuide} disabled={savingGuide || egFileUrlInvalid} className="bg-primary text-primary-foreground">{savingGuide ? "Guardando..." : "Guardar"}</Button>
                                     <Button variant="outline" onClick={() => {
                                       const original = guides.find((it) => it.id === g.id)
                                       if (!original) return
@@ -1965,19 +2057,23 @@ export default function DashboardPage() {
                           <Label htmlFor="new-session-desc">Descripción</Label>
                           <Textarea id="new-session-desc" value={csDesc} onChange={(e) => setCsDesc(e.target.value)} placeholder="Descripción (texto principal)" />
                         </div>
-                        {csTitle.trim() ? (
-                          <MediaPicker
-                            label="Imagen"
-                            scope="products"
-                            productSubscope="sessions"
-                            entitySlug={escapeProductSlug(csTitle)}
-                            value={csImageUrl}
-                            accept="image/*"
-                            onChange={(url) => setCsImageUrl(url ?? "")}
-                          />
-                        ) : (
-                          <div className="text-xs text-muted-foreground">Escribe un título para habilitar la subida de imagen.</div>
-                        )}
+                        <MediaSectionCard title="Media / Archivos" compact>
+                          <div className="w-full max-w-2xl">
+                            {csTitle.trim() ? (
+                              <MediaPicker
+                                label="Imagen"
+                                scope="products"
+                                productSubscope="sessions"
+                                entitySlug={escapeProductSlug(csTitle)}
+                                value={csImageUrl}
+                                accept="image/*"
+                                onChange={(url) => setCsImageUrl(url ?? "")}
+                              />
+                            ) : (
+                              <div className="text-xs text-muted-foreground">Escribe un título para habilitar la subida de imagen.</div>
+                            )}
+                          </div>
+                        </MediaSectionCard>
                         <div className="space-y-2">
                           <Label htmlFor="new-session-features">Características (una por línea o separadas por coma)</Label>
                           <Textarea id="new-session-features" value={csFeaturesText} onChange={(e) => setCsFeaturesText(e.target.value)} placeholder={"Ej.: • 60 minutos\n• Soporte por email\n• Material de trabajo"} />
@@ -2093,15 +2189,19 @@ export default function DashboardPage() {
                                     <Label>Descripción</Label>
                                     <Textarea value={esDesc} onChange={(e) => setEsDesc(e.target.value)} />
                                   </div>
-                                  <MediaPicker
-                                    label="Imagen"
-                                    scope="products"
-                                    productSubscope="sessions"
-                                    entitySlug={esId || s.id}
-                                    value={esImageUrl}
-                                    accept="image/*"
-                                    onChange={(url) => setEsImageUrl(url ?? "")}
-                                  />
+                                  <MediaSectionCard title="Media / Archivos" compact>
+                                    <div className="w-full max-w-2xl">
+                                      <MediaPicker
+                                        label="Imagen"
+                                        scope="products"
+                                        productSubscope="sessions"
+                                        entitySlug={esId || s.id}
+                                        value={esImageUrl}
+                                        accept="image/*"
+                                        onChange={(url) => setEsImageUrl(url ?? "")}
+                                      />
+                                    </div>
+                                  </MediaSectionCard>
                                   <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-2">
                                       <Label>Precio (€)</Label>
@@ -2349,20 +2449,26 @@ export default function DashboardPage() {
                     <Label htmlFor="about-credentials">Credenciales (una por línea)</Label>
                     <Textarea id="about-credentials" placeholder={"Credenciales (una por línea)"} value={aboutCredentialsText} onChange={(e) => setAboutCredentialsText(e.target.value)} />
                   </div>
-                  <MediaPicker
-                    label="Video (mp4)"
-                    scope="about"
-                    value={aboutVideoUrl}
-                    accept="video/mp4"
-                    onChange={(url) => setAboutVideoUrl(url ?? "")}
-                  />
-                  <MediaPicker
-                    label="Poster (imagen)"
-                    scope="about"
-                    value={aboutPosterImageUrl}
-                    accept="image/*"
-                    onChange={(url) => setAboutPosterImageUrl(url ?? "")}
-                  />
+                  <MediaSectionCard title="Media" description="Vídeo y póster de la sección" compact>
+                    <div className="w-full max-w-2xl overflow-hidden [&_video]:max-h-48 [&_video]:w-full [&_video]:object-contain">
+                      <MediaPicker
+                        label="Video (mp4)"
+                        scope="about"
+                        value={aboutVideoUrl}
+                        accept="video/mp4"
+                        onChange={(url) => setAboutVideoUrl(url ?? "")}
+                      />
+                    </div>
+                    <div className="w-full max-w-2xl overflow-hidden [&_img]:max-h-48">
+                      <MediaPicker
+                        label="Poster (imagen)"
+                        scope="about"
+                        value={aboutPosterImageUrl}
+                        accept="image/*"
+                        onChange={(url) => setAboutPosterImageUrl(url ?? "")}
+                      />
+                    </div>
+                  </MediaSectionCard>
                   <Button onClick={handleSaveAbout} disabled={savingAbout} className="bg-primary text-primary-foreground">
                     {savingAbout ? "Guardando..." : "Guardar"}
                   </Button>
@@ -2375,6 +2481,20 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
+                    {aboutVideoUrl ? (
+                      <div className="rounded-md border overflow-hidden">
+                        <video
+                          className="w-full max-h-64 object-contain"
+                          controls
+                          src={aboutVideoUrl}
+                          poster={aboutPosterImageUrl || undefined}
+                        />
+                      </div>
+                    ) : aboutPosterImageUrl ? (
+                      <div className="rounded-md border overflow-hidden">
+                        <img className="w-full max-h-64 object-contain" src={aboutPosterImageUrl} alt="Media Sobre mí" />
+                      </div>
+                    ) : null}
                     <h3 className="text-xl font-semibold">{aboutTitle || "(Sin título)"}</h3>
                     <p className="text-sm text-muted-foreground whitespace-pre-line">{aboutDescription || "(Sin descripción)"}</p>
                     <div>
@@ -2405,6 +2525,15 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
+                    <Label htmlFor="breaker-kicker">Kicker</Label>
+                    <Input
+                      id="breaker-kicker"
+                      placeholder="Un alto aquí"
+                      value={breakerKicker}
+                      onChange={(e) => setBreakerKicker(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="breaker-text">Frase</Label>
                     <Textarea
                       id="breaker-text"
@@ -2424,15 +2553,24 @@ export default function DashboardPage() {
                   <CardTitle>Vista previa</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="rounded-lg overflow-hidden bg-gradient-to-r from-accent to-primary text-white p-6">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/20 bg-white/10">
-                      <span className="text-xs font-medium tracking-wide uppercase text-white/90">Un alto aquí</span>
+                  <div className="mx-auto max-w-4xl">
+                    <div className="relative rounded-2xl bg-background border border-border shadow-lg px-5 py-6 md:px-10 md:py-8 text-center">
+                      <div aria-hidden className="absolute -top-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-background border border-border border-b-0 border-r-0" />
+
+                      <div className="inline-flex items-center gap-2 rounded-full bg-accent/15 px-3 py-1">
+                        <span className="text-xs md:text-sm font-medium tracking-wide uppercase text-accent">{breakerKicker?.trim() || "Un alto aquí"}</span>
+                      </div>
+
+                      <p className="mt-4 text-xl md:text-3xl font-semibold tracking-tight text-balance text-foreground">
+                        <span className="text-muted-foreground">&ldquo;</span>
+                        <span className="px-1">{breakerText || "(Sin frase)"}</span>
+                        <span className="text-muted-foreground">&rdquo;</span>
+                      </p>
+
+                      <div className="mt-5 flex justify-center">
+                        <div className="h-px w-20 bg-border" />
+                      </div>
                     </div>
-                    <p className="mt-4 text-xl md:text-2xl font-semibold tracking-tight text-balance">
-                      <span className="text-white/70">&ldquo;</span>
-                      <span className="px-1">{breakerText || "(Sin frase)"}</span>
-                      <span className="text-white/70">&rdquo;</span>
-                    </p>
                   </div>
                 </CardContent>
               </Card>
