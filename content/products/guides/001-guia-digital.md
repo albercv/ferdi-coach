@@ -11,5 +11,6 @@ fileUrl: "/uploads/products/guides/001-guia-digital/lorem-ipsum--65b09f5f.pdf"
 coverImageUrl: "/uploads/products/guides/001-guia-digital/pdf--a0f1c362.webp"
 position: 1
 featuredSpot: 1
+mostPopular: true
 ---
 Una guía directa y accionable para ayudarte a ordenar la semana. Incluye ejercicios simples y un checklist para que avances sin abrumarte.

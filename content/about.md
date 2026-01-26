@@ -1,5 +1,6 @@
 ---
 title: "(Ferdy) desde detro"
+videoUrl: "/uploads/about/ferdy-presentation--e999965e.mp4"
 credentials:
   - "Formación en coaching transpersonal para superar rupturas de pareja"
   - "Enfoque integral: combinación de introspección, fuerza interior y acompañamiento emocional"
