@@ -58,7 +58,19 @@ export type BreakerContent = {
   kicker?: string
 }
 
-const CONTENT_DIR = path.join(process.cwd(), "content")
+function resolveContentDir(): string {
+  const fromEnv = process.env.CONTENT_DIR?.trim()
+  if (fromEnv) {
+    return path.isAbsolute(fromEnv) ? fromEnv : path.join(process.cwd(), fromEnv)
+  }
+
+  const localOverride = path.join(process.cwd(), "content.local")
+  if (fs.existsSync(localOverride)) return localOverride
+
+  return path.join(process.cwd(), "content")
+}
+
+const CONTENT_DIR = resolveContentDir()
 
 function readMarkdownFile(filePath: string) {
   const file = fs.readFileSync(filePath, "utf8")

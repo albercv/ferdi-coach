@@ -8,16 +8,83 @@ const originalCwd = process.cwd()
 
 beforeEach(() => {
   vi.resetModules()
+  delete process.env.CONTENT_DIR
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ferdy-coach-"))
   process.chdir(tmpDir)
 })
 
 afterEach(() => {
+  delete process.env.CONTENT_DIR
   process.chdir(originalCwd)
   fs.rmSync(tmpDir, { recursive: true, force: true })
 })
 
 describe("content-md media urls", () => {
+  it("prefers content.local over content", async () => {
+    fs.mkdirSync(path.join(tmpDir, "content"), { recursive: true })
+    fs.mkdirSync(path.join(tmpDir, "content.local"), { recursive: true })
+
+    fs.writeFileSync(
+      path.join(tmpDir, "content", "hero.md"),
+      `---
+title: "FROM_CONTENT"
+subtitle: "S"
+ctaPrimary: "C"
+bullets: []
+---
+`,
+      "utf8",
+    )
+
+    fs.writeFileSync(
+      path.join(tmpDir, "content.local", "hero.md"),
+      `---
+title: "FROM_LOCAL"
+subtitle: "S"
+ctaPrimary: "C"
+bullets: []
+---
+`,
+      "utf8",
+    )
+
+    const { getHero } = await import("../lib/content-md")
+    expect(getHero().title).toBe("FROM_LOCAL")
+  })
+
+  it("uses CONTENT_DIR env var over content.local", async () => {
+    process.env.CONTENT_DIR = "custom-content"
+    fs.mkdirSync(path.join(tmpDir, "custom-content"), { recursive: true })
+    fs.mkdirSync(path.join(tmpDir, "content.local"), { recursive: true })
+
+    fs.writeFileSync(
+      path.join(tmpDir, "custom-content", "hero.md"),
+      `---
+title: "FROM_ENV"
+subtitle: "S"
+ctaPrimary: "C"
+bullets: []
+---
+`,
+      "utf8",
+    )
+
+    fs.writeFileSync(
+      path.join(tmpDir, "content.local", "hero.md"),
+      `---
+title: "FROM_LOCAL"
+subtitle: "S"
+ctaPrimary: "C"
+bullets: []
+---
+`,
+      "utf8",
+    )
+
+    const { getHero } = await import("../lib/content-md")
+    expect(getHero().title).toBe("FROM_ENV")
+  })
+
   it("parses hero backgroundImageUrl", async () => {
     fs.mkdirSync(path.join(tmpDir, "content"), { recursive: true })
     fs.writeFileSync(

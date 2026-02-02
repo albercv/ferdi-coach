@@ -1,23 +1,23 @@
 ---
-title: "Transformación personal tras una ruptura: empieza a sanar desde dentro"
-subtitle: "Coach emocional especializado en procesos de duelo amoroso. Te acompaño para recuperar tu bienestar, autoestima y paz mental después de una separación."
+title: "EL REGALO DEL DESAMOR, RENACE"
+subtitle: "Acompaño a sanar rupturas y reconstruirte desde la conciencia."
 ctaPrimary: "Reservar sesión gratuita"
 ctaSecondary: "Ver servicios"
 bullets:
   - id: "1"
     position: 1
-    icon: "heart"
-    text: "Duelo amoroso y sanación emocional"
+    icon: "target"
+    text: "Entrena tu mente : Claridad, enfoque y resiliencia."
   - id: "2"
     position: 2
-    icon: "handshake"
-    text: "Dependencia emocional y límites sanos"
+    icon: "heart"
+    text: "Amor propio: Despierta tu valor, honra tus necesidades."
   - id: "3"
     position: 3
-    icon: "wrench"
-    text: "Autoestima y confianza personal"
+    icon: "sparkles"
+    text: "Conecta con tu esencia: Vuelve a tu centro."
   - id: "1763142344992"
     position: 4
-    icon: "users"
-    text: "Seguimiento personalizado"
+    icon: "wrench"
+    text: "Desprográmate: Libera patrones, avanza hacia tu mejor versión."
 ---

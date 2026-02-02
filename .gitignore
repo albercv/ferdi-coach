@@ -24,6 +24,9 @@
 .vscode/
 .idea/
 
+/content.local
+/content/*
+
 # debug
 npm-debug.log*
 yarn-debug.log*
