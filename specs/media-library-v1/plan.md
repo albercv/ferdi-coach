@@ -90,8 +90,3 @@ En los handlers de `app/api/content/*`:
 - Dashboard: reemplazar inputs separados por un MediaPicker único (accept image/*,video/mp4) y guardar `mediaUrl`.
 - En el writer del testimonial, al persistir: set `mediaUrl` y eliminar claves legacy (`videoUrl`,`imageUrl`,`video`,`image`) para normalizar.
 
-## Plan
-1. Modificar `guides-section.tsx` para pasar `backCoverSrc={guide.coverImageUrl ?? "/logo2.webp"}` al componente que renderiza la tarjeta (PricingCard).
-2. Mantener el fallback existente en `pricing-card.tsx` (no romper).
-3. Añadir test SSR (renderToStaticMarkup) para verificar `src` del reverso con y sin `coverImageUrl`.
-4. Ejecutar verificación completa.
