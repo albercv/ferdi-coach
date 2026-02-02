@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getTestimonials, addTestimonialItem, setTestimonialItem, deleteTestimonialItem } from "@/lib/content-md"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { assertAdmin } from "@/lib/auth/assertAdmin"
 import { MediaService } from "@/lib/media/mediaService"
 
 const media = new MediaService()
@@ -33,6 +34,12 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions)
     if (!session) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    }
+
+    try {
+      assertAdmin(session)
+    } catch {
+      return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
     }
 
     const body = await req.json()
@@ -102,6 +109,12 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 })
     }
 
+    try {
+      assertAdmin(session)
+    } catch {
+      return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
+    }
+
     const body = await req.json()
     const id = String(body?.id || "").trim()
     const name = String(body?.name || "").trim()
@@ -157,6 +170,12 @@ export async function DELETE(req: Request) {
     const session = await getServerSession(authOptions)
     if (!session) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    }
+
+    try {
+      assertAdmin(session)
+    } catch {
+      return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
     }
 
     const { searchParams } = new URL(req.url)

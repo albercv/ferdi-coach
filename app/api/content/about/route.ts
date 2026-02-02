@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { assertAdmin } from "@/lib/auth/assertAdmin"
 import { getAbout, setAbout } from "@/lib/content-md"
 import { MediaService } from "@/lib/media/mediaService"
 
@@ -27,6 +30,17 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 })
+  }
+
+  try {
+    assertAdmin(session)
+  } catch {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
+  }
+
   try {
     const before = getAbout()
     const body = await req.json()
@@ -61,6 +75,17 @@ export async function PUT(req: Request) {
 
 // POST fallback para entornos que bloquean PUT (WAF/CDN/Proxy)
 export async function POST(req: Request) {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 })
+  }
+
+  try {
+    assertAdmin(session)
+  } catch {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
+  }
+
   try {
     const before = getAbout()
     const body = await req.json()

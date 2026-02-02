@@ -1,5 +1,10 @@
 import type { NextAuthOptions } from "next-auth"
+import fs from "node:fs"
+import path from "node:path"
 import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google"
+
+import { getAdminEmails } from "@/lib/auth/assertAdmin"
 
 // En desarrollo, los usuarios se leen de variables de entorno
 // Nunca usar contraseñas en claro en producción.
@@ -9,6 +14,17 @@ type EnvUser = {
   password?: string | undefined
   role: "admin" | "user"
   name?: string | undefined
+}
+
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase()
+}
+
+function isAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false
+  const allowlist = getAdminEmails()
+  if (allowlist.length === 0) return false
+  return allowlist.includes(normalizeEmail(email))
 }
 
 function parseAdminsFromEnv(): EnvUser[] {
@@ -61,11 +77,62 @@ function buildEnvUsers(): EnvUser[] {
 
 const envUsers = buildEnvUsers()
 
+type GoogleCredentials = { clientId: string; clientSecret: string }
+
+function loadGoogleCredentialsFromEnv(): GoogleCredentials | null {
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+  if (!clientId || !clientSecret) return null
+  return { clientId, clientSecret }
+}
+
+function loadGoogleCredentialsFromJsonFile(): GoogleCredentials | null {
+  if (process.env.NODE_ENV === "production") return null
+
+  try {
+    const files = fs
+      .readdirSync(process.cwd())
+      .filter((name) => /^client_secret_.*\.json$/i.test(name))
+      .sort((a, b) => a.localeCompare(b))
+
+    for (const file of files) {
+      const raw = fs.readFileSync(path.join(process.cwd(), file), "utf8")
+      const parsed = JSON.parse(raw)
+      const web = parsed?.web
+      const clientId = typeof web?.client_id === "string" ? web.client_id : null
+      const clientSecret = typeof web?.client_secret === "string" ? web.client_secret : null
+      if (clientId && clientSecret) return { clientId, clientSecret }
+    }
+  } catch {
+    return null
+  }
+
+  return null
+}
+
+function resolveGoogleCredentials(): GoogleCredentials | null {
+  return loadGoogleCredentialsFromEnv() ?? loadGoogleCredentialsFromJsonFile()
+}
+
+const providers = [] as NextAuthOptions["providers"]
+
+const googleCredentials = resolveGoogleCredentials()
+
+if (googleCredentials) {
+  providers.push(
+    GoogleProvider({
+      clientId: googleCredentials.clientId,
+      clientSecret: googleCredentials.clientSecret,
+    }),
+  )
+}
+
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
   providers: [
+    ...providers,
     CredentialsProvider({
       name: "Credenciales",
       credentials: {
@@ -73,6 +140,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Contraseña", type: "password" },
       },
       async authorize(credentials) {
+        if (process.env.NODE_ENV === "production") return null
         if (!credentials?.email || !credentials?.password) return null
         const user = envUsers.find(
           (u) => u.email === credentials.email && u.password === credentials.password
@@ -93,10 +161,20 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider !== "google") return true
+      return isAdminEmail(user?.email)
+    },
     async jwt({ token, user }) {
       if (user) {
+        if ((user as any).email) token.email = (user as any).email
         token.role = (user as any).role
       }
+
+      if (!token.role && typeof token.email === "string") {
+        token.role = isAdminEmail(token.email) ? "admin" : "user"
+      }
+
       return token
     },
     async session({ session, token }) {

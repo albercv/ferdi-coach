@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { assertAdmin } from "@/lib/auth/assertAdmin"
 import { getCTA, setCTA, CTAContent } from "@/lib/content-md"
 
 export async function GET() {
@@ -16,6 +17,12 @@ export async function PUT(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+  }
+
+  try {
+    assertAdmin(session)
+  } catch {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
   }
 
   try {
@@ -45,6 +52,12 @@ export async function POST(req: Request) {
   }
 
   try {
+    assertAdmin(session)
+  } catch {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
+  }
+
+  try {
     const body = await req.json()
 
     const title = String(body?.title || "").trim()
@@ -63,4 +76,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err?.message || "Error guardando cta" }, { status: 500 })
   }
 }
-

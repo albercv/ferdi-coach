@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { assertAdmin } from "@/lib/auth/assertAdmin"
 import { addProductItem, deleteProductItem, getProducts, setProductItem } from "@/lib/products-md"
 import { MediaService } from "@/lib/media/mediaService"
 
@@ -65,6 +66,12 @@ export async function POST(req: Request) {
   if (!session) {
     return NextResponse.json({ success: false, error: "Unauthenticated" }, { status: 401 })
   }
+
+  try {
+    assertAdmin(session)
+  } catch {
+    return NextResponse.json({ success: false, error: "FORBIDDEN" }, { status: 403 })
+  }
   try {
     const body = await req.json()
     // Fallback de actualización: si viene id en el body, tratamos POST como update
@@ -105,6 +112,12 @@ export async function PUT(req: Request) {
   if (!session) {
     return NextResponse.json({ success: false, error: "Unauthenticated" }, { status: 401 })
   }
+
+  try {
+    assertAdmin(session)
+  } catch {
+    return NextResponse.json({ success: false, error: "FORBIDDEN" }, { status: 403 })
+  }
   try {
     const body = await req.json()
 
@@ -131,6 +144,12 @@ export async function DELETE(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session) {
     return NextResponse.json({ success: false, error: "Unauthenticated" }, { status: 401 })
+  }
+
+  try {
+    assertAdmin(session)
+  } catch {
+    return NextResponse.json({ success: false, error: "FORBIDDEN" }, { status: 403 })
   }
   try {
     const { searchParams } = new URL(req.url)
