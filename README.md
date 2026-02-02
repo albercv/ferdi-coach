@@ -29,14 +29,32 @@ git clone [repository-url]
 cd ferdy-coach
 
 # Instalar dependencias
-npm install
+pnpm install
 
 # Ejecutar en desarrollo
-npm run dev
+pnpm dev
 
 # Build para producción
-npm run build
-npm start
+pnpm build
+pnpm start
+\`\`\`
+## 🔐 Variables de entorno
+
+Copiar el fichero de ejemplo y completar valores:
+
+```bash
+cp .env.example .env.local
+```
+
+Variables principales:
+- NEXTAUTH_URL
+- NEXTAUTH_SECRET
+- AUTH_ADMIN_EMAIL, AUTH_ADMIN_PASSWORD, AUTH_ADMIN_NAME
+- AUTH_USER_EMAIL, AUTH_USER_PASSWORD, AUTH_USER_NAME
+
+Notas:
+- No subir `.env.local` al repositorio.
+- `/api/debug-env` responde solo en development y requiere admin.
 \`\`\`
 
 ## 🎨 Personalización de colores

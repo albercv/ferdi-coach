@@ -18,6 +18,7 @@ export type GuideProduct = ProductBase & {
   price: number
   features: string[]
   fileUrl: string
+  coverImageUrl?: string
   synopsis: string
 }
 
@@ -30,8 +31,9 @@ export type SessionProduct = ProductBase & {
   description: string
   price: number
   features: string[]
-  notes?: string // "clarificación": elegimos el nombre "Notas importantes"
-  addon?: string // solo para program4
+  imageUrl?: string
+  notes?: string
+  addon?: string
 }
 
 export type ProductItem = GuideProduct | SessionProduct
@@ -92,6 +94,7 @@ export function getGuides(): GuideProduct[] {
       price: Number((data as any).price || 0),
       features: Array.isArray((data as any).features) ? (data as any).features.map(String) : [],
       fileUrl: String((data as any).fileUrl || "/fake.pdf"),
+      coverImageUrl: (data as any).coverImageUrl ? String((data as any).coverImageUrl) : undefined,
       synopsis: content,
       featuredSpot: (data as any).featuredSpot ? Number((data as any).featuredSpot) as 1|2|3 : undefined,
       mostPopular: Boolean((data as any).mostPopular || false),
@@ -118,6 +121,7 @@ export function getSessions(): SessionProduct[] {
       description: content || String((data as any).description || ""),
       price: Number((data as any).price || 0),
       features: Array.isArray((data as any).features) ? (data as any).features.map(String) : [],
+      imageUrl: (data as any).imageUrl ? String((data as any).imageUrl) : undefined,
       notes: (data as any).notes ? String((data as any).notes) : undefined,
       addon: (data as any).addon ? String((data as any).addon) : undefined,
       featuredSpot: (data as any).featuredSpot ? Number((data as any).featuredSpot) as 1|2|3 : undefined,
@@ -145,6 +149,7 @@ function writeGuideFile(t: GuideProduct) {
     `features:`,
     ...(t.features || []).map((f) => `  - "${escapeYaml(String(f))}"`),
     `fileUrl: "${escapeYaml(t.fileUrl || "/fake.pdf")}"`,
+    ...(t.coverImageUrl ? [`coverImageUrl: "${escapeYaml(t.coverImageUrl)}"`] : []),
     `position: ${Number(t.position || 0)}`,
     ...(t.featuredSpot ? [`featuredSpot: ${Number(t.featuredSpot)}`] : []),
     ...(t.mostPopular ? [`mostPopular: true`] : []),
@@ -164,6 +169,7 @@ function writeSessionFile(t: SessionProduct) {
     `price: ${Number(t.price || 0)}`,
     `features:`,
     ...(t.features || []).map((f) => `  - "${escapeYaml(String(f))}"`),
+    ...(t.imageUrl ? [`imageUrl: "${escapeYaml(t.imageUrl)}"`] : []),
     ...(t.notes ? [`notes: "${escapeYaml(t.notes)}"`] : []),
     ...(t.addon ? [`addon: "${escapeYaml(t.addon)}"`] : []),
     `position: ${Number(t.position || 0)}`,
@@ -199,6 +205,7 @@ export function addProductItem(input: any): ProductItem {
       price: Number(input?.price || 0),
       features: Array.isArray(input?.features) ? input.features.map(String) : [],
       fileUrl: String(input?.fileUrl || "/fake.pdf").trim(),
+      coverImageUrl: input?.coverImageUrl ? String(input.coverImageUrl).trim() : undefined,
       synopsis: String(input?.synopsis || "").trim(),
       featuredSpot: input?.featuredSpot ? Number(input.featuredSpot) as 1|2|3 : undefined,
       mostPopular: Boolean(input?.mostPopular || false),
@@ -231,6 +238,7 @@ export function addProductItem(input: any): ProductItem {
       description: String(input?.description || "").trim(),
       price: Number(input?.price || 0),
       features: Array.isArray(input?.features) ? input.features.map(String) : [],
+      imageUrl: input?.imageUrl ? String(input.imageUrl).trim() : undefined,
       notes: input?.notes ? String(input.notes).trim() : undefined,
       addon: input?.addon ? String(input.addon).trim() : undefined,
       featuredSpot: input?.featuredSpot ? Number(input.featuredSpot) as 1|2|3 : undefined,
@@ -276,6 +284,7 @@ export function setProductItem(updated: any): ProductItem {
       price: Number(updated?.price || 0),
       features: Array.isArray(updated?.features) ? updated.features.map(String) : [],
       fileUrl: String(updated?.fileUrl || "/fake.pdf").trim(),
+      coverImageUrl: updated?.coverImageUrl ? String(updated.coverImageUrl).trim() : undefined,
       synopsis: String(updated?.synopsis || "").trim(),
       featuredSpot: updated?.featuredSpot ? Number(updated.featuredSpot) as 1|2|3 : undefined,
       mostPopular: Boolean(updated?.mostPopular || false),
@@ -299,6 +308,7 @@ export function setProductItem(updated: any): ProductItem {
       description: String(updated?.description || "").trim(),
       price: Number(updated?.price || 0),
       features: Array.isArray(updated?.features) ? updated.features.map(String) : [],
+      imageUrl: updated?.imageUrl ? String(updated.imageUrl).trim() : undefined,
       notes: updated?.notes ? String(updated.notes).trim() : undefined,
       addon: updated?.addon ? String(updated.addon).trim() : undefined,
       featuredSpot: updated?.featuredSpot ? Number(updated.featuredSpot) as 1|2|3 : undefined,

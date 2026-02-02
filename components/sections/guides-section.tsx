@@ -39,7 +39,7 @@ export function GuidesSection({ guides }: { guides: GuideProduct[] }) {
             ctaHref={guide.fileUrl || "/fake.pdf"}
             flipOnHover={true}
             backSynopsis={guide.synopsis || funSynopses[guide.title] || guide.miniDescription}
-            backCoverSrc="/logo2.webp"
+            backCoverSrc={guide.coverImageUrl ?? "/logo2.webp"}
           />
         ))}
       </div>

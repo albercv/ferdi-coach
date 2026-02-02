@@ -20,7 +20,18 @@ import type { GuideProduct, SessionProduct } from "@/lib/products-md"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
+import { MediaPicker } from "@/components/dashboard/MediaPicker"
+import { MediaLibraryTab } from "@/components/dashboard/MediaLibraryTab"
+import { MediaSectionCard } from "@/components/dashboard/MediaSectionCard"
 import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield, Users, ArrowRight, Sparkles, Target, Timer, MessageSquare } from "lucide-react"
+
+function escapeProductSlug(input: string) {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+}
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -48,6 +59,8 @@ export default function DashboardPage() {
   const [aboutDescription, setAboutDescription] = useState("")
   const [aboutCredentialsText, setAboutCredentialsText] = useState("")
   const [savingAbout, setSavingAbout] = useState(false)
+  const [aboutVideoUrl, setAboutVideoUrl] = useState("")
+  const [aboutPosterImageUrl, setAboutPosterImageUrl] = useState("")
   const [savingFaq, setSavingFaq] = useState(false)
   const [faqItems, setFaqItems] = useState<Array<{ id: string; position: number; question: string; answer: string }>>([])
   const [selectedFaqId, setSelectedFaqId] = useState<string | null>(null)
@@ -62,15 +75,14 @@ export default function DashboardPage() {
   const [createAnswer, setCreateAnswer] = useState("")
   const [createPosition, setCreatePosition] = useState<number>(1)
   // --- Testimonials state ---
-  const [testimonials, setTestimonials] = useState<Array<{ id: string; position: number; name: string; age: number; rating: number; text: string; video?: string; image?: string }>>([])
+  const [testimonials, setTestimonials] = useState<Array<{ id: string; position: number; name: string; age: number; rating: number; text: string; mediaUrl?: string; videoUrl?: string; imageUrl?: string; video?: string; image?: string }>>([])
   const [selectedTestimonialId, setSelectedTestimonialId] = useState<string | null>(null)
   const [editingTestimonialId, setEditingTestimonialId] = useState<string>("")
   const [editingTName, setEditingTName] = useState("")
   const [editingTAge, setEditingTAge] = useState<number>(0)
   const [editingTRating, setEditingTRating] = useState<number>(5)
   const [editingTText, setEditingTText] = useState("")
-  const [editingTVideo, setEditingTVideo] = useState("")
-  const [editingTImage, setEditingTImage] = useState("")
+  const [editingTMediaUrl, setEditingTMediaUrl] = useState("")
   const [editingTPosition, setEditingTPosition] = useState<number>(1)
   const [savingTestimonial, setSavingTestimonial] = useState(false)
   const [creatingTestimonial, setCreatingTestimonial] = useState(false)
@@ -79,8 +91,7 @@ export default function DashboardPage() {
   const [createTAge, setCreateTAge] = useState<number>(0)
   const [createTRating, setCreateTRating] = useState<number>(5)
   const [createTText, setCreateTText] = useState("")
-  const [createTVideo, setCreateTVideo] = useState("")
-  const [createTImage, setCreateTImage] = useState("")
+  const [createTMediaUrl, setCreateTMediaUrl] = useState("")
   const [createTPosition, setCreateTPosition] = useState<number>(1)
 
   // --- Products state ---
@@ -91,6 +102,7 @@ export default function DashboardPage() {
   const [openGuidesDraftPreview, setOpenGuidesDraftPreview] = useState(false)
   const [openSessionsDraftPreview, setOpenSessionsDraftPreview] = useState(false)
   const [showGuidesBack, setShowGuidesBack] = useState(false)
+  const [howItWorksUrlAdvanced, setHowItWorksUrlAdvanced] = useState(false)
 
   // Crear Guía
   const [cgTitle, setCgTitle] = useState("")
@@ -98,6 +110,7 @@ export default function DashboardPage() {
   const [cgPrice, setCgPrice] = useState<number>(0)
   const [cgFeaturesText, setCgFeaturesText] = useState("")
   const [cgFileUrl, setCgFileUrl] = useState("/fake.pdf")
+  const [cgCoverImageUrl, setCgCoverImageUrl] = useState("")
   const [cgSynopsis, setCgSynopsis] = useState("")
   const [cgPosition, setCgPosition] = useState<number>(1)
   const [cgFeaturedSpot, setCgFeaturedSpot] = useState<number | undefined>(undefined)
@@ -112,6 +125,7 @@ export default function DashboardPage() {
   const [egPrice, setEgPrice] = useState<number>(0)
   const [egFeaturesText, setEgFeaturesText] = useState("")
   const [egFileUrl, setEgFileUrl] = useState("/fake.pdf")
+  const [egCoverImageUrl, setEgCoverImageUrl] = useState("")
   const [egSynopsis, setEgSynopsis] = useState("")
   const [egPosition, setEgPosition] = useState<number>(1)
   const [egFeaturedSpot, setEgFeaturedSpot] = useState<number | undefined>(undefined)
@@ -125,6 +139,7 @@ export default function DashboardPage() {
   const [csDesc, setCsDesc] = useState("")
   const [csPrice, setCsPrice] = useState<number>(0)
   const [csFeaturesText, setCsFeaturesText] = useState("")
+  const [csImageUrl, setCsImageUrl] = useState("")
   const [csNotes, setCsNotes] = useState("")
   const [csAddon, setCsAddon] = useState("")
   const [csPosition, setCsPosition] = useState<number>(1)
@@ -140,6 +155,7 @@ export default function DashboardPage() {
   const [esDesc, setEsDesc] = useState("")
   const [esPrice, setEsPrice] = useState<number>(0)
   const [esFeaturesText, setEsFeaturesText] = useState("")
+  const [esImageUrl, setEsImageUrl] = useState("")
   const [esNotes, setEsNotes] = useState("")
   const [esAddon, setEsAddon] = useState("")
   const [esPosition, setEsPosition] = useState<number>(1)
@@ -153,6 +169,8 @@ export default function DashboardPage() {
   const [heroSubtitle, setHeroSubtitle] = useState("")
   const [heroCtaPrimary, setHeroCtaPrimary] = useState("")
   const [heroCtaSecondary, setHeroCtaSecondary] = useState("")
+  const [heroBackgroundImageUrl, setHeroBackgroundImageUrl] = useState("")
+  const [heroBackgroundImageUrlFromServer, setHeroBackgroundImageUrlFromServer] = useState("")
   const [heroBullets, setHeroBullets] = useState<Array<{ id: string; position: number; icon: string; text: string }>>([])
   const [selectedBulletId, setSelectedBulletId] = useState<string | null>(null)
   const [ebId, setEbId] = useState("")
@@ -165,6 +183,17 @@ export default function DashboardPage() {
   const [creatingBullet, setCreatingBullet] = useState(false)
   const [deletingBullet, setDeletingBullet] = useState(false)
   const [savingHero, setSavingHero] = useState(false)
+
+  // --- CTA state ---
+  const [ctaTitle, setCtaTitle] = useState("")
+  const [ctaDescription, setCtaDescription] = useState("")
+  const [ctaButtonText, setCtaButtonText] = useState("")
+  const [savingCta, setSavingCta] = useState(false)
+
+  // --- Breaker state ---
+  const [breakerKicker, setBreakerKicker] = useState("Un alto aquí")
+  const [breakerText, setBreakerText] = useState("")
+  const [savingBreaker, setSavingBreaker] = useState(false)
 
   const heroIconMap = {
     "check-circle": CheckCircle,
@@ -207,6 +236,8 @@ export default function DashboardPage() {
         setAboutTitle(data.title ?? "")
         setAboutDescription(data.description ?? "")
         setAboutCredentialsText(Array.isArray(data.credentials) ? data.credentials.join("\n") : "")
+        setAboutVideoUrl(typeof data.videoUrl === "string" ? data.videoUrl : "")
+        setAboutPosterImageUrl(typeof data.posterImageUrl === "string" ? data.posterImageUrl : "")
       } catch (e) {
         toast({ title: "Error", description: "No se pudo cargar 'Sobre mí'" })
       }
@@ -250,6 +281,8 @@ export default function DashboardPage() {
         setHeroSubtitle(String(data.subtitle ?? ""))
         setHeroCtaPrimary(String(data.ctaPrimary ?? ""))
         setHeroCtaSecondary(data.ctaSecondary ? String(data.ctaSecondary) : "")
+        setHeroBackgroundImageUrl(data.backgroundImageUrl ? String(data.backgroundImageUrl) : "")
+        setHeroBackgroundImageUrlFromServer(data.backgroundImageUrl ? String(data.backgroundImageUrl) : "")
         const bullets = Array.isArray(data.bullets) ? data.bullets : []
         setHeroBullets(bullets)
         if (bullets.length > 0) {
@@ -263,10 +296,36 @@ export default function DashboardPage() {
         toast({ title: "Error", description: "No se pudo cargar el Hero" })
       }
     }
+    const loadCta = async () => {
+      try {
+        const res = await fetch("/api/content/cta", { cache: "no-store" })
+        if (!res.ok) throw new Error("Failed to load CTA")
+        const data = await res.json()
+        setCtaTitle(String(data.title ?? ""))
+        setCtaDescription(String(data.description ?? ""))
+        setCtaButtonText(String(data.buttonText ?? ""))
+      } catch (e) {
+        toast({ title: "Error", description: "No se pudo cargar el CTA" })
+      }
+    }
+
+    const loadBreaker = async () => {
+      try {
+        const res = await fetch("/api/content/breaker", { cache: "no-store" })
+        if (!res.ok) throw new Error("Failed to load breaker")
+        const data = await res.json()
+        setBreakerKicker(String(data.kicker ?? "Un alto aquí"))
+        setBreakerText(String(data.text ?? ""))
+      } catch (e) {
+        toast({ title: "Error", description: "No se pudo cargar la frase" })
+      }
+    }
     loadAbout()
     loadFAQs()
     loadTestimonials()
     loadHero()
+    loadCta()
+    loadBreaker()
   }, [toast])
 
   const handleLogout = async () => {
@@ -288,6 +347,8 @@ export default function DashboardPage() {
           title: aboutTitle,
           description: aboutDescription,
           credentials,
+          videoUrl: aboutVideoUrl?.trim() || undefined,
+          posterImageUrl: aboutPosterImageUrl?.trim() || undefined,
         }),
       })
 
@@ -298,6 +359,51 @@ export default function DashboardPage() {
       toast({ title: "Error al guardar", description: "Revisa los campos e inténtalo de nuevo." })
     } finally {
       setSavingAbout(false)
+    }
+  }
+
+  const handleSaveCta = async () => {
+    setSavingCta(true)
+    try {
+      const res = await fetch("/api/content/cta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: ctaTitle,
+          description: ctaDescription,
+          buttonText: ctaButtonText,
+        }),
+      })
+
+      if (!res.ok) throw new Error(await res.text())
+
+      toast({ title: "Guardado", description: "Se actualizó el CTA correctamente." })
+    } catch (e) {
+      toast({ title: "Error al guardar", description: "Revisa los campos e inténtalo de nuevo." })
+    } finally {
+      setSavingCta(false)
+    }
+  }
+
+  const handleSaveBreaker = async () => {
+    setSavingBreaker(true)
+    try {
+      const res = await fetch("/api/content/breaker", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kicker: breakerKicker,
+          text: breakerText,
+        }),
+      })
+
+      if (!res.ok) throw new Error(await res.text())
+
+      toast({ title: "Guardado", description: "Se actualizó la frase correctamente." })
+    } catch (e) {
+      toast({ title: "Error al guardar", description: "Revisa el texto e inténtalo de nuevo." })
+    } finally {
+      setSavingBreaker(false)
     }
   }
 
@@ -390,6 +496,7 @@ export default function DashboardPage() {
       const body = {
         title: heroTitle.trim(),
         subtitle: heroSubtitle.trim(),
+        backgroundImageUrl: heroBackgroundImageUrl?.trim() || undefined,
         ctaPrimary: heroCtaPrimary.trim(),
         ctaSecondary: heroCtaSecondary?.trim() || undefined,
         bullets: normalizeHeroPositions(heroBullets).filter((b) => b.text && b.text.trim()),
@@ -570,12 +677,27 @@ export default function DashboardPage() {
     setCsPosition(nextS)
   }, [sessions])
 
+  const isAllowedHowItWorksUrl = (url: string) => {
+    const value = String(url || "").trim()
+    return value.startsWith("/") || value.startsWith("https://")
+  }
+
+  const cgFileUrlInvalid = Boolean(String(cgFileUrl || "").trim()) && !isAllowedHowItWorksUrl(String(cgFileUrl || "").trim())
+  const egFileUrlInvalid = Boolean(String(egFileUrl || "").trim()) && !isAllowedHowItWorksUrl(String(egFileUrl || "").trim())
+
   const handleCreateGuide = async () => {
     // Validación
     if (!cgTitle.trim()) {
       toast({ title: "Falta título", description: "La guía necesita un título." })
       return
     }
+
+    const normalizedFileUrl = String(cgFileUrl || "/fake.pdf").trim() || "/fake.pdf"
+    if (!isAllowedHowItWorksUrl(normalizedFileUrl)) {
+      toast({ title: "URL inválida", description: "La URL debe empezar por / o por https://" })
+      return
+    }
+
     const features = cgFeaturesText.split(/\n|,/).map((s) => s.trim()).filter(Boolean)
     const posInUse = guides.some((it) => Number(it.position) === Number(cgPosition))
     if (posInUse) {
@@ -590,7 +712,8 @@ export default function DashboardPage() {
         miniDescription: cgMini,
         price: Number(cgPrice || 0),
         features,
-        fileUrl: cgFileUrl || "/fake.pdf",
+        fileUrl: normalizedFileUrl,
+        coverImageUrl: cgCoverImageUrl || undefined,
         synopsis: cgSynopsis,
         position: Number(cgPosition || 1),
         featuredSpot: cgFeaturedSpot ? Number(cgFeaturedSpot) : undefined,
@@ -616,6 +739,7 @@ export default function DashboardPage() {
         setEgPrice(created.price)
         setEgFeaturesText(created.features.join("\n"))
         setEgFileUrl(created.fileUrl)
+        setEgCoverImageUrl(created.coverImageUrl || "")
         setEgSynopsis(created.synopsis)
         setEgPosition(created.position)
         setEgFeaturedSpot(created.featuredSpot)
@@ -627,6 +751,7 @@ export default function DashboardPage() {
       setCgPrice(0)
       setCgFeaturesText("")
       setCgFileUrl("/fake.pdf")
+      setCgCoverImageUrl("")
       setCgSynopsis("")
       setCgFeaturedSpot(undefined)
       setCgMostPopular(false)
@@ -641,6 +766,13 @@ export default function DashboardPage() {
   const handleSaveGuide = async () => {
     const id = egId || selectedGuideId
     if (!id) return
+
+    const normalizedFileUrl = String(egFileUrl || "/fake.pdf").trim() || "/fake.pdf"
+    if (!isAllowedHowItWorksUrl(normalizedFileUrl)) {
+      toast({ title: "URL inválida", description: "La URL debe empezar por / o por https://" })
+      return
+    }
+
     const features = egFeaturesText.split(/\n|,/).map((s) => s.trim()).filter(Boolean)
     const posInUse = guides.some((it) => it.id !== id && Number(it.position) === Number(egPosition))
     if (posInUse) {
@@ -656,7 +788,8 @@ export default function DashboardPage() {
         miniDescription: egMini,
         price: Number(egPrice || 0),
         features,
-        fileUrl: egFileUrl || "/fake.pdf",
+        fileUrl: normalizedFileUrl,
+        coverImageUrl: egCoverImageUrl || undefined,
         synopsis: egSynopsis,
         position: Number(egPosition || 1),
         featuredSpot: egFeaturedSpot ? Number(egFeaturedSpot) : undefined,
@@ -699,6 +832,7 @@ export default function DashboardPage() {
         setEgPrice(0)
         setEgFeaturesText("")
         setEgFileUrl("/fake.pdf")
+        setEgCoverImageUrl("")
         setEgSynopsis("")
         setEgPosition(1)
         setEgFeaturedSpot(undefined)
@@ -732,6 +866,7 @@ export default function DashboardPage() {
         description: csDesc,
         price: Number(csPrice || 0),
         features,
+        imageUrl: csImageUrl || undefined,
         notes: csNotes || undefined,
         addon: csSubtype === "program4" ? (csAddon || undefined) : undefined,
         position: Number(csPosition || 1),
@@ -758,6 +893,7 @@ export default function DashboardPage() {
         setEsDesc(created.description)
         setEsPrice(created.price)
         setEsFeaturesText(created.features.join("\n"))
+        setEsImageUrl(created.imageUrl || "")
         setEsNotes(created.notes || "")
         setEsAddon(created.addon || "")
         setEsPosition(created.position)
@@ -770,6 +906,7 @@ export default function DashboardPage() {
       setCsDesc("")
       setCsPrice(0)
       setCsFeaturesText("")
+      setCsImageUrl("")
       setCsNotes("")
       setCsAddon("")
       setCsFeaturedSpot(undefined)
@@ -801,6 +938,7 @@ export default function DashboardPage() {
         description: esDesc,
         price: Number(esPrice || 0),
         features,
+        imageUrl: esImageUrl || undefined,
         notes: esNotes || undefined,
         addon: esSubtype === "program4" ? (esAddon || undefined) : undefined,
         position: Number(esPosition || 1),
@@ -842,6 +980,7 @@ export default function DashboardPage() {
         setEsDesc("")
         setEsPrice(0)
         setEsFeaturesText("")
+        setEsImageUrl("")
         setEsNotes("")
         setEsAddon("")
         setEsPosition(1)
@@ -883,8 +1022,7 @@ export default function DashboardPage() {
         age: editingTAge,
         rating: editingTRating,
         text: editingTText,
-        video: editingTVideo || undefined,
-        image: editingTImage || undefined,
+        mediaUrl: editingTMediaUrl || undefined,
         position: editingTPosition,
       }
       const res = await fetch("/api/content/testimonials", {
@@ -917,8 +1055,7 @@ export default function DashboardPage() {
         age: createTAge,
         rating: createTRating,
         text: createTText,
-        video: createTVideo || undefined,
-        image: createTImage || undefined,
+        mediaUrl: createTMediaUrl || undefined,
         position: createTPosition,
       }
       const res = await fetch("/api/content/testimonials", {
@@ -939,16 +1076,14 @@ export default function DashboardPage() {
         setEditingTAge(created.age)
         setEditingTRating(created.rating)
         setEditingTText(created.text)
-        setEditingTVideo(created.video || "")
-        setEditingTImage(created.image || "")
+        setEditingTMediaUrl(created.mediaUrl || "")
         setEditingTPosition(created.position ?? 1)
       }
       setCreateTName("")
       setCreateTAge(0)
       setCreateTRating(5)
       setCreateTText("")
-      setCreateTVideo("")
-      setCreateTImage("")
+      setCreateTMediaUrl("")
       toast({ title: "Creado", description: "El testimonio se ha añadido correctamente." })
     } catch (e) {
       toast({ title: "Error al crear", description: "No se pudo crear el testimonio." })
@@ -974,8 +1109,7 @@ export default function DashboardPage() {
         setEditingTAge(next.age)
         setEditingTRating(next.rating)
         setEditingTText(next.text)
-        setEditingTVideo(next.video || "")
-        setEditingTImage(next.image || "")
+        setEditingTMediaUrl(next.mediaUrl || "")
         setEditingTPosition(next.position ?? 1)
       } else {
         setSelectedTestimonialId(null)
@@ -984,8 +1118,7 @@ export default function DashboardPage() {
         setEditingTAge(0)
         setEditingTRating(5)
         setEditingTText("")
-        setEditingTVideo("")
-        setEditingTImage("")
+        setEditingTMediaUrl("")
         setEditingTPosition(1)
       }
       toast({ title: "Eliminado", description: "El testimonio ha sido eliminado." })
@@ -1014,11 +1147,18 @@ export default function DashboardPage() {
         <Tabs defaultValue="hero" className="">
           <TabsList className="bg-card text-foreground shadow-sm border rounded-md">
             <TabsTrigger value="hero">Hero</TabsTrigger>
-            <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
-            <TabsTrigger value="products">Products</TabsTrigger>
+            <TabsTrigger value="breaker">Frase destacada</TabsTrigger>
+            <TabsTrigger value="products">Cómo funciona</TabsTrigger>
+            <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
             <TabsTrigger value="about">Sobre mí</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
+            <TabsTrigger value="cta">CTA</TabsTrigger>
+            <TabsTrigger value="media">Media</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="media" className="mt-6">
+            <MediaLibraryTab />
+          </TabsContent>
 
           {/* Hero Tab */}
           <TabsContent value="hero" className="mt-6">
@@ -1040,14 +1180,24 @@ export default function DashboardPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="hero-cta-primary">CTA principal</Label>
+                      <Label htmlFor="hero-cta-primary">Botón principal</Label>
                       <Input id="hero-cta-primary" value={heroCtaPrimary} onChange={(e)=> setHeroCtaPrimary(e.target.value)} placeholder="Reservar sesión" />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="hero-cta-secondary">CTA secundaria (opcional)</Label>
+                      <Label htmlFor="hero-cta-secondary">Botón secundario (opcional)</Label>
                       <Input id="hero-cta-secondary" value={heroCtaSecondary} onChange={(e)=> setHeroCtaSecondary(e.target.value)} placeholder="Ver servicios" />
                     </div>
                   </div>
+
+                  <MediaSectionCard title="Imagen de fondo" compact>
+                    <MediaPicker
+                      label="Imagen de fondo"
+                      scope="hero"
+                      value={heroBackgroundImageUrl}
+                      accept="image/*"
+                      onChange={(url) => setHeroBackgroundImageUrl(url ?? "")}
+                    />
+                  </MediaSectionCard>
 
                   <div className="border rounded-md">
                     {/* Crear bullet */}
@@ -1227,6 +1377,17 @@ export default function DashboardPage() {
                   <CardDescription>Así se verá en Home</CardDescription>
                 </CardHeader>
                 <CardContent>
+                  <div className="mb-4 rounded-md border overflow-hidden">
+                    <img
+                      className="h-40 w-full object-cover"
+                      src={
+                        (heroBackgroundImageUrl?.trim() || undefined) ??
+                        (heroBackgroundImageUrlFromServer?.trim() || undefined) ??
+                        "/hero-img-v1.png"
+                      }
+                      alt="Imagen de fondo del Hero"
+                    />
+                  </div>
                   <div className="space-y-4">
                     <h2 className="text-2xl font-bold">{heroTitle || "Título del hero"}</h2>
                     <p className="text-muted-foreground">{heroSubtitle || "Subtítulo del hero..."}</p>
@@ -1302,16 +1463,22 @@ export default function DashboardPage() {
                           <Label htmlFor="new-t-text">Texto del testimonio</Label>
                           <Textarea id="new-t-text" placeholder="Texto del testimonio" value={createTText} onChange={(e) => setCreateTText(e.target.value)} />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="new-t-video">Video (slug, sin .mp4)</Label>
-                            <Input id="new-t-video" placeholder="p.ej. ferdy-presentation" value={createTVideo} onChange={(e) => setCreateTVideo(e.target.value)} />
+                        <MediaSectionCard title="Media" description="Imagen o vídeo del testimonio" compact>
+                          <div className="w-full max-w-2xl">
+                            {createTName.trim() ? (
+                              <MediaPicker
+                                label="Media (imagen o vídeo mp4)"
+                                scope="testimonials"
+                                entitySlug={escapeProductSlug(createTName)}
+                                value={createTMediaUrl}
+                                accept="image/*,video/mp4"
+                                onChange={(url) => setCreateTMediaUrl(url ?? "")}
+                              />
+                            ) : (
+                              <div className="text-xs text-muted-foreground">Escribe un nombre para habilitar la subida de archivos.</div>
+                            )}
                           </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="new-t-image">Imagen (slug, sin .png)</Label>
-                            <Input id="new-t-image" placeholder="p.ej. hero-img-v2" value={createTImage} onChange={(e) => setCreateTImage(e.target.value)} />
-                          </div>
-                        </div>
+                        </MediaSectionCard>
                         <div className="space-y-2">
                           <Label htmlFor="new-t-position">Posición</Label>
                           <Input id="new-t-position" type="number" min={1} value={createTPosition} onChange={(e) => setCreateTPosition(Number(e.target.value) || 1)} />
@@ -1342,8 +1509,7 @@ export default function DashboardPage() {
                                 setEditingTAge(t.age)
                                 setEditingTRating(t.rating)
                                 setEditingTText(t.text)
-                                setEditingTVideo(t.video || "")
-                                setEditingTImage(t.image || "")
+                                setEditingTMediaUrl(t.mediaUrl || "")
                                 setEditingTPosition(t.position ?? 1)
                               } else if (selectedTestimonialId === t.id) {
                                 setSelectedTestimonialId(null)
@@ -1386,16 +1552,18 @@ export default function DashboardPage() {
                                 <Label htmlFor={`t-text-${t.id}`}>Texto</Label>
                                 <Textarea id={`t-text-${t.id}`} value={editingTText} onChange={(e) => setEditingTText(e.target.value)} />
                               </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor={`t-video-${t.id}`}>Video (slug)</Label>
-                                  <Input id={`t-video-${t.id}`} value={editingTVideo} onChange={(e) => setEditingTVideo(e.target.value)} />
+                              <MediaSectionCard title="Media" description="Imagen o vídeo del testimonio" compact>
+                                <div className="w-full max-w-2xl">
+                                  <MediaPicker
+                                    label="Media (imagen o vídeo mp4)"
+                                    scope="testimonials"
+                                    entitySlug={t.id}
+                                    value={editingTMediaUrl}
+                                    accept="image/*,video/mp4"
+                                    onChange={(url) => setEditingTMediaUrl(url ?? "")}
+                                  />
                                 </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor={`t-image-${t.id}`}>Imagen (slug)</Label>
-                                  <Input id={`t-image-${t.id}`} value={editingTImage} onChange={(e) => setEditingTImage(e.target.value)} />
-                                </div>
-                              </div>
+                              </MediaSectionCard>
                               <div className="flex gap-2">
                                 <Button onClick={handleSaveTestimonial} disabled={savingTestimonial} className="bg-primary text-primary-foreground">{savingTestimonial ? "Guardando..." : "Guardar"}</Button>
                                 <Button variant="outline" onClick={() => {
@@ -1405,8 +1573,7 @@ export default function DashboardPage() {
                                   setEditingTAge(original.age)
                                   setEditingTRating(original.rating)
                                   setEditingTText(original.text)
-                                  setEditingTVideo(original.video || "")
-                                  setEditingTImage(original.image || "")
+                                  setEditingTMediaUrl(original.mediaUrl || "")
                                   setEditingTPosition(original.position ?? 1)
                                 }}>Revertir</Button>
                                 <AlertDialog>
@@ -1457,8 +1624,7 @@ export default function DashboardPage() {
                           age={createTAge || 0}
                           text={createTText || "Texto del testimonio"}
                           rating={createTRating || 5}
-                          video={createTVideo || undefined}
-                          image={createTImage || undefined}
+                          mediaUrl={createTMediaUrl || undefined}
                         />
                       </div>
                     </details>
@@ -1476,8 +1642,7 @@ export default function DashboardPage() {
                             age={selectedTestimonialId === t.id ? (editingTAge || t.age) : t.age}
                             text={selectedTestimonialId === t.id ? (editingTText || t.text) : t.text}
                             rating={selectedTestimonialId === t.id ? (editingTRating || t.rating) : t.rating}
-                            video={selectedTestimonialId === t.id ? ((editingTVideo || t.video) || undefined) : t.video}
-                            image={selectedTestimonialId === t.id ? ((editingTImage || t.image) || undefined) : t.image}
+                            mediaUrl={selectedTestimonialId === t.id ? ((editingTMediaUrl || t.mediaUrl) || undefined) : t.mediaUrl}
                           />
                         </div>
                       </details>
@@ -1519,6 +1684,57 @@ export default function DashboardPage() {
                           <Label htmlFor="new-guide-features">Características (una por línea o separadas por coma)</Label>
                           <Textarea id="new-guide-features" value={cgFeaturesText} onChange={(e) => setCgFeaturesText(e.target.value)} placeholder={"Ej.: • PDF descargable\n• Ejercicios prácticos\n• Consejos expertos"} />
                         </div>
+                      <MediaSectionCard title="Media / Archivos" compact>
+                        <div className="w-full max-w-2xl space-y-4">
+                          {cgTitle.trim() ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <MediaPicker
+                                label="Portada (imagen)"
+                                scope="products"
+                                productSubscope="guides"
+                                entitySlug={escapeProductSlug(cgTitle)}
+                                value={cgCoverImageUrl}
+                                accept="image/*"
+                                onChange={(url) => setCgCoverImageUrl(url ?? "")}
+                              />
+                              <MediaPicker
+                                label="Archivo (PDF)"
+                                scope="products"
+                                productSubscope="guides"
+                                entitySlug={escapeProductSlug(cgTitle)}
+                                value={cgFileUrl}
+                                accept="application/pdf"
+                                onChange={(url) => setCgFileUrl(url ?? "")}
+                              />
+                            </div>
+                          ) : (
+                            <div className="text-xs text-muted-foreground">Escribe un título para habilitar la subida de archivos.</div>
+                          )}
+
+                          <div className="flex items-center justify-between gap-3">
+                            <Label htmlFor="how-it-works-url-advanced-create" className="text-sm">Avanzado</Label>
+                            <Switch
+                              id="how-it-works-url-advanced-create"
+                              checked={howItWorksUrlAdvanced}
+                              onCheckedChange={(v) => setHowItWorksUrlAdvanced(Boolean(v))}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="new-guide-file">URL del archivo (PDF)</Label>
+                            <Input
+                              id="new-guide-file"
+                              value={cgFileUrl}
+                              onChange={(e) => setCgFileUrl(e.target.value)}
+                              placeholder="/fake.pdf"
+                              readOnly={!howItWorksUrlAdvanced}
+                            />
+                            {cgFileUrlInvalid ? (
+                              <p className="text-xs text-destructive">La URL debe empezar por / o por https://</p>
+                            ) : null}
+                          </div>
+                        </div>
+                      </MediaSectionCard>
                         <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-2">
                             <Label htmlFor="new-guide-price">Precio (€)</Label>
@@ -1529,10 +1745,6 @@ export default function DashboardPage() {
                             <Input id="new-guide-position" type="number" min={1} value={cgPosition} onChange={(e) => setCgPosition(Number(e.target.value) || 1)} />
                             <p className="text-[11px] text-muted-foreground">Se normaliza automáticamente al guardar.</p>
                           </div>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="new-guide-file">URL del archivo (PDF)</Label>
-                          <Input id="new-guide-file" value={cgFileUrl} onChange={(e) => setCgFileUrl(e.target.value)} placeholder="/fake.pdf" />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="new-guide-synopsis">Sinopsis (cara trasera)</Label>
@@ -1558,7 +1770,7 @@ export default function DashboardPage() {
                             <Label htmlFor="new-guide-pop">Más popular</Label>
                           </div>
                         </div>
-                        <Button onClick={handleCreateGuide} disabled={creatingGuide} className="bg-primary text-primary-foreground">{creatingGuide ? "Creando..." : "Crear guía"}</Button>
+                      <Button onClick={handleCreateGuide} disabled={creatingGuide || cgFileUrlInvalid} className="bg-primary text-primary-foreground">{creatingGuide ? "Creando..." : "Crear guía"}</Button>
                       </div>
                     </details>
 
@@ -1581,6 +1793,7 @@ export default function DashboardPage() {
                                 setEgPrice(g.price)
                                 setEgFeaturesText(g.features.join("\n"))
                                 setEgFileUrl(g.fileUrl)
+                                setEgCoverImageUrl(g.coverImageUrl || "")
                                 setEgSynopsis(g.synopsis)
                                 setEgPosition(g.position)
                                 setEgFeaturedSpot(g.featuredSpot)
@@ -1624,10 +1837,51 @@ export default function DashboardPage() {
                                     <Label>Características</Label>
                                     <Textarea value={egFeaturesText} onChange={(e) => setEgFeaturesText(e.target.value)} />
                                   </div>
-                                  <div className="space-y-2">
-                                    <Label>URL archivo</Label>
-                                    <Input value={egFileUrl} onChange={(e) => setEgFileUrl(e.target.value)} />
-                                  </div>
+                                  <MediaSectionCard title="Media / Archivos" compact>
+                                    <div className="w-full max-w-2xl space-y-4">
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <MediaPicker
+                                          label="Portada (imagen)"
+                                          scope="products"
+                                          productSubscope="guides"
+                                          entitySlug={egId || g.id}
+                                          value={egCoverImageUrl}
+                                          accept="image/*"
+                                          onChange={(url) => setEgCoverImageUrl(url ?? "")}
+                                        />
+                                        <MediaPicker
+                                          label="Archivo (PDF)"
+                                          scope="products"
+                                          productSubscope="guides"
+                                          entitySlug={egId || g.id}
+                                          value={egFileUrl}
+                                          accept="application/pdf"
+                                          onChange={(url) => setEgFileUrl(url ?? "")}
+                                        />
+                                      </div>
+
+                                      <div className="flex items-center justify-between gap-3">
+                                        <Label htmlFor="how-it-works-url-advanced-edit" className="text-sm">Avanzado</Label>
+                                        <Switch
+                                          id="how-it-works-url-advanced-edit"
+                                          checked={howItWorksUrlAdvanced}
+                                          onCheckedChange={(v) => setHowItWorksUrlAdvanced(Boolean(v))}
+                                        />
+                                      </div>
+
+                                      <div className="space-y-2">
+                                        <Label>URL del archivo (PDF)</Label>
+                                        <Input
+                                          value={egFileUrl}
+                                          onChange={(e) => setEgFileUrl(e.target.value)}
+                                          readOnly={!howItWorksUrlAdvanced}
+                                        />
+                                        {egFileUrlInvalid ? (
+                                          <p className="text-xs text-destructive">La URL debe empezar por / o por https://</p>
+                                        ) : null}
+                                      </div>
+                                    </div>
+                                  </MediaSectionCard>
                                   <div className="space-y-2">
                                     <Label>Sinopsis</Label>
                                     <Textarea value={egSynopsis} onChange={(e) => setEgSynopsis(e.target.value)} />
@@ -1653,7 +1907,7 @@ export default function DashboardPage() {
                                     </div>
                                   </div>
                                   <div className="flex gap-2 flex-wrap">
-                                    <Button onClick={handleSaveGuide} disabled={savingGuide} className="bg-primary text-primary-foreground">{savingGuide ? "Guardando..." : "Guardar"}</Button>
+                                    <Button onClick={handleSaveGuide} disabled={savingGuide || egFileUrlInvalid} className="bg-primary text-primary-foreground">{savingGuide ? "Guardando..." : "Guardar"}</Button>
                                     <Button variant="outline" onClick={() => {
                                       const original = guides.find((it) => it.id === g.id)
                                       if (!original) return
@@ -1662,6 +1916,7 @@ export default function DashboardPage() {
                                       setEgPrice(original.price)
                                       setEgFeaturesText(original.features.join("\n"))
                                       setEgFileUrl(original.fileUrl)
+                                      setEgCoverImageUrl(original.coverImageUrl || "")
                                       setEgSynopsis(original.synopsis)
                                       setEgPosition(original.position)
                                       setEgFeaturedSpot(original.featuredSpot)
@@ -1726,7 +1981,7 @@ export default function DashboardPage() {
                             flipOnHover
                             initialFlipped={showGuidesBack}
                             backSynopsis={cgSynopsis || "Sinopsis de la guía"}
-                            backCoverSrc="/logo2.webp"
+                            backCoverSrc={cgCoverImageUrl || "/logo2.webp"}
                             forceSimpleFlip
                           />
                         </div>
@@ -1751,7 +2006,11 @@ export default function DashboardPage() {
                               flipOnHover
                               initialFlipped={showGuidesBack}
                               backSynopsis={selectedGuideId === g.id ? (egSynopsis || g.synopsis) : g.synopsis}
-                              backCoverSrc="/logo2.webp"
+                              backCoverSrc={
+                                selectedGuideId === g.id
+                                  ? ((egCoverImageUrl || g.coverImageUrl) || "/logo2.webp")
+                                  : (g.coverImageUrl || "/logo2.webp")
+                              }
                               forceSimpleFlip
                             />
                           </div>
@@ -1798,6 +2057,23 @@ export default function DashboardPage() {
                           <Label htmlFor="new-session-desc">Descripción</Label>
                           <Textarea id="new-session-desc" value={csDesc} onChange={(e) => setCsDesc(e.target.value)} placeholder="Descripción (texto principal)" />
                         </div>
+                        <MediaSectionCard title="Media / Archivos" compact>
+                          <div className="w-full max-w-2xl">
+                            {csTitle.trim() ? (
+                              <MediaPicker
+                                label="Imagen"
+                                scope="products"
+                                productSubscope="sessions"
+                                entitySlug={escapeProductSlug(csTitle)}
+                                value={csImageUrl}
+                                accept="image/*"
+                                onChange={(url) => setCsImageUrl(url ?? "")}
+                              />
+                            ) : (
+                              <div className="text-xs text-muted-foreground">Escribe un título para habilitar la subida de imagen.</div>
+                            )}
+                          </div>
+                        </MediaSectionCard>
                         <div className="space-y-2">
                           <Label htmlFor="new-session-features">Características (una por línea o separadas por coma)</Label>
                           <Textarea id="new-session-features" value={csFeaturesText} onChange={(e) => setCsFeaturesText(e.target.value)} placeholder={"Ej.: • 60 minutos\n• Soporte por email\n• Material de trabajo"} />
@@ -1864,6 +2140,7 @@ export default function DashboardPage() {
                                 setEsDesc(s.description)
                                 setEsPrice(s.price)
                                 setEsFeaturesText(s.features.join("\n"))
+                                setEsImageUrl(s.imageUrl || "")
                                 setEsNotes(s.notes || "")
                                 setEsAddon(s.addon || "")
                                 setEsPosition(s.position)
@@ -1912,6 +2189,19 @@ export default function DashboardPage() {
                                     <Label>Descripción</Label>
                                     <Textarea value={esDesc} onChange={(e) => setEsDesc(e.target.value)} />
                                   </div>
+                                  <MediaSectionCard title="Media / Archivos" compact>
+                                    <div className="w-full max-w-2xl">
+                                      <MediaPicker
+                                        label="Imagen"
+                                        scope="products"
+                                        productSubscope="sessions"
+                                        entitySlug={esId || s.id}
+                                        value={esImageUrl}
+                                        accept="image/*"
+                                        onChange={(url) => setEsImageUrl(url ?? "")}
+                                      />
+                                    </div>
+                                  </MediaSectionCard>
                                   <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-2">
                                       <Label>Precio (€)</Label>
@@ -1960,6 +2250,7 @@ export default function DashboardPage() {
                                       setEsDesc(original.description)
                                       setEsPrice(original.price)
                                       setEsFeaturesText(original.features.join("\n"))
+                                      setEsImageUrl(original.imageUrl || "")
                                       setEsNotes(original.notes || "")
                                       setEsAddon(original.addon || "")
                                       setEsPosition(original.position)
@@ -2143,7 +2434,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Editar "Sobre mí"</CardTitle>
+                  <CardTitle>Editar Sobre mí</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
@@ -2158,6 +2449,26 @@ export default function DashboardPage() {
                     <Label htmlFor="about-credentials">Credenciales (una por línea)</Label>
                     <Textarea id="about-credentials" placeholder={"Credenciales (una por línea)"} value={aboutCredentialsText} onChange={(e) => setAboutCredentialsText(e.target.value)} />
                   </div>
+                  <MediaSectionCard title="Media" description="Vídeo y póster de la sección" compact>
+                    <div className="w-full max-w-2xl overflow-hidden [&_video]:max-h-48 [&_video]:w-full [&_video]:object-contain">
+                      <MediaPicker
+                        label="Video (mp4)"
+                        scope="about"
+                        value={aboutVideoUrl}
+                        accept="video/mp4"
+                        onChange={(url) => setAboutVideoUrl(url ?? "")}
+                      />
+                    </div>
+                    <div className="w-full max-w-2xl overflow-hidden [&_img]:max-h-48">
+                      <MediaPicker
+                        label="Poster (imagen)"
+                        scope="about"
+                        value={aboutPosterImageUrl}
+                        accept="image/*"
+                        onChange={(url) => setAboutPosterImageUrl(url ?? "")}
+                      />
+                    </div>
+                  </MediaSectionCard>
                   <Button onClick={handleSaveAbout} disabled={savingAbout} className="bg-primary text-primary-foreground">
                     {savingAbout ? "Guardando..." : "Guardar"}
                   </Button>
@@ -2170,6 +2481,20 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
+                    {aboutVideoUrl ? (
+                      <div className="rounded-md border overflow-hidden">
+                        <video
+                          className="w-full max-h-64 object-contain"
+                          controls
+                          src={aboutVideoUrl}
+                          poster={aboutPosterImageUrl || undefined}
+                        />
+                      </div>
+                    ) : aboutPosterImageUrl ? (
+                      <div className="rounded-md border overflow-hidden">
+                        <img className="w-full max-h-64 object-contain" src={aboutPosterImageUrl} alt="Media Sobre mí" />
+                      </div>
+                    ) : null}
                     <h3 className="text-xl font-semibold">{aboutTitle || "(Sin título)"}</h3>
                     <p className="text-sm text-muted-foreground whitespace-pre-line">{aboutDescription || "(Sin descripción)"}</p>
                     <div>
@@ -2185,6 +2510,112 @@ export default function DashboardPage() {
                       </ul>
                     </div>
                     <p className="text-xs text-muted-foreground">El video y el botón de reserva se muestran en la página principal.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Breaker Tab */}
+          <TabsContent value="breaker" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Editar frase</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="breaker-kicker">Kicker</Label>
+                    <Input
+                      id="breaker-kicker"
+                      placeholder="Un alto aquí"
+                      value={breakerKicker}
+                      onChange={(e) => setBreakerKicker(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="breaker-text">Frase</Label>
+                    <Textarea
+                      id="breaker-text"
+                      placeholder="Escribe una frase corta y contundente"
+                      value={breakerText}
+                      onChange={(e) => setBreakerText(e.target.value)}
+                    />
+                  </div>
+                  <Button onClick={handleSaveBreaker} disabled={savingBreaker} className="bg-primary text-primary-foreground">
+                    {savingBreaker ? "Guardando..." : "Guardar"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vista previa</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="mx-auto max-w-4xl">
+                    <div className="relative rounded-2xl bg-background border border-border shadow-lg px-5 py-6 md:px-10 md:py-8 text-center">
+                      <div aria-hidden className="absolute -top-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-background border border-border border-b-0 border-r-0" />
+
+                      <div className="inline-flex items-center gap-2 rounded-full bg-accent/15 px-3 py-1">
+                        <span className="text-xs md:text-sm font-medium tracking-wide uppercase text-accent">{breakerKicker?.trim() || "Un alto aquí"}</span>
+                      </div>
+
+                      <p className="mt-4 text-xl md:text-3xl font-semibold tracking-tight text-balance text-foreground">
+                        <span className="text-muted-foreground">&ldquo;</span>
+                        <span className="px-1">{breakerText || "(Sin frase)"}</span>
+                        <span className="text-muted-foreground">&rdquo;</span>
+                      </p>
+
+                      <div className="mt-5 flex justify-center">
+                        <div className="h-px w-20 bg-border" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* CTA Tab */}
+          <TabsContent value="cta" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Editar CTA</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cta-title">Título</Label>
+                    <Input id="cta-title" placeholder="Título" value={ctaTitle} onChange={(e) => setCtaTitle(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cta-description">Descripción</Label>
+                    <Textarea id="cta-description" placeholder="Descripción" value={ctaDescription} onChange={(e) => setCtaDescription(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cta-button">Texto del botón</Label>
+                    <Input id="cta-button" placeholder="Reservar sesión" value={ctaButtonText} onChange={(e) => setCtaButtonText(e.target.value)} />
+                  </div>
+                  <Button onClick={handleSaveCta} disabled={savingCta} className="bg-primary text-primary-foreground">
+                    {savingCta ? "Guardando..." : "Guardar"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vista previa</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-balance">{ctaTitle || "(Sin título)"}</h3>
+                    <p className="text-sm text-muted-foreground whitespace-pre-line">{ctaDescription || "(Sin descripción)"}</p>
+                    <div>
+                      <Button className="w-full" size="lg">
+                        {ctaButtonText || "CTA"}
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

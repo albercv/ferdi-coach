@@ -2,6 +2,21 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { getHero, setHero, HeroContent } from "@/lib/content-md"
+import { MediaService } from "@/lib/media/mediaService"
+
+const media = new MediaService()
+
+async function tryCleanupReplacedUrl(oldUrl: string | undefined, newUrl: string | undefined) {
+  if (!oldUrl) return
+  if (oldUrl === newUrl) return
+  if (!oldUrl.startsWith("/uploads/")) return
+
+  try {
+    await media.tryDeleteIfUnreferenced(oldUrl)
+  } catch (err) {
+    console.warn("hero media cleanup failed", { url: oldUrl, err })
+  }
+}
 
 export async function GET() {
   try {
@@ -19,6 +34,7 @@ export async function PUT(req: Request) {
   }
 
   try {
+    const before = getHero()
     const body = await req.json()
 
     // Validación básica
@@ -26,6 +42,9 @@ export async function PUT(req: Request) {
     const subtitle = String(body?.subtitle || "").trim()
     const ctaPrimary = String(body?.ctaPrimary || "").trim()
     const ctaSecondary = body?.ctaSecondary ? String(body?.ctaSecondary).trim() : undefined
+    const backgroundImageUrl = typeof body?.backgroundImageUrl === "string" && body.backgroundImageUrl.trim()
+      ? String(body.backgroundImageUrl).trim()
+      : undefined
 
     if (!title) return NextResponse.json({ error: "title es requerido" }, { status: 400 })
     if (!subtitle) return NextResponse.json({ error: "subtitle es requerido" }, { status: 400 })
@@ -46,12 +65,14 @@ export async function PUT(req: Request) {
     const hero: HeroContent = {
       title,
       subtitle,
+      backgroundImageUrl,
       ctaPrimary,
       ctaSecondary,
       bullets,
     }
 
     setHero(hero)
+    await tryCleanupReplacedUrl(before.backgroundImageUrl, hero.backgroundImageUrl)
     return NextResponse.json({ ok: true })
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || "Error guardando hero" }, { status: 500 })
@@ -66,6 +87,7 @@ export async function POST(req: Request) {
   }
 
   try {
+    const before = getHero()
     const body = await req.json()
 
     // Validación básica (misma que en PUT)
@@ -73,6 +95,9 @@ export async function POST(req: Request) {
     const subtitle = String(body?.subtitle || "").trim()
     const ctaPrimary = String(body?.ctaPrimary || "").trim()
     const ctaSecondary = body?.ctaSecondary ? String(body?.ctaSecondary).trim() : undefined
+    const backgroundImageUrl = typeof body?.backgroundImageUrl === "string" && body.backgroundImageUrl.trim()
+      ? String(body.backgroundImageUrl).trim()
+      : undefined
 
     if (!title) return NextResponse.json({ error: "title es requerido" }, { status: 400 })
     if (!subtitle) return NextResponse.json({ error: "subtitle es requerido" }, { status: 400 })
@@ -93,12 +118,14 @@ export async function POST(req: Request) {
     const hero: HeroContent = {
       title,
       subtitle,
+      backgroundImageUrl,
       ctaPrimary,
       ctaSecondary,
       bullets,
     }
 
     setHero(hero)
+    await tryCleanupReplacedUrl(before.backgroundImageUrl, hero.backgroundImageUrl)
     return NextResponse.json({ ok: true })
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || "Error guardando hero" }, { status: 500 })

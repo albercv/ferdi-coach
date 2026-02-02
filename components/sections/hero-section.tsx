@@ -28,7 +28,7 @@ export function HeroSection({ hero }: { hero: HeroContent }) {
         className="absolute inset-0 -z-10"
       >
         <img
-          src="/hero-img-v1.png"
+          src={hero.backgroundImageUrl || "/hero-img-v1.png"}
           alt=""
           className="w-full h-full object-cover object-center md:object-[center_15%] lg:object-[center_20%] xl:object-[center_30%]"
         />

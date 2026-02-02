@@ -10,11 +10,14 @@ interface TestimonialCardProps {
   age: number
   text: string
   rating: number
+  mediaUrl?: string
+  videoUrl?: string
+  imageUrl?: string
   video?: string
   image?: string
 }
 
-export function TestimonialCard({ name, age, text, rating, video, image }: TestimonialCardProps) {
+export function TestimonialCard({ name, age, text, rating, mediaUrl }: TestimonialCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
 
@@ -31,9 +34,12 @@ export function TestimonialCard({ name, age, text, rating, video, image }: Testi
   }
 
   const renderMedia = () => {
-    if (video) {
+    const resolvedMediaUrl = mediaUrl?.trim() || undefined
+    const isVideo = Boolean(resolvedMediaUrl && resolvedMediaUrl.toLowerCase().endsWith(".mp4"))
+
+    if (resolvedMediaUrl && isVideo) {
       return (
-        <div 
+        <div
           className="w-16 h-16 rounded-full overflow-hidden cursor-pointer border-2 border-white shadow-lg hover:scale-105 transition-transform"
           onClick={handleVideoClick}
         >
@@ -44,17 +50,17 @@ export function TestimonialCard({ name, age, text, rating, video, image }: Testi
             playsInline
             onEnded={() => setIsPlaying(false)}
           >
-            <source src={`/${video}.mp4`} type="video/mp4" />
+            <source src={resolvedMediaUrl} type="video/mp4" />
           </video>
         </div>
       )
     }
 
-    if (image) {
+    if (resolvedMediaUrl) {
       return (
         <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-lg">
           <Image
-            src={`/${image}.png`}
+            src={resolvedMediaUrl}
             alt={`Foto de ${name}`}
             width={64}
             height={64}
@@ -87,9 +93,9 @@ export function TestimonialCard({ name, age, text, rating, video, image }: Testi
           ))}
         </div>
         <blockquote className="text-muted-foreground mb-4 italic pl-4 border-l-2 border-destructive/30">
-          <span className="text-destructive">"</span>
+          <span className="text-destructive">&quot;</span>
           {text}
-          <span className="text-destructive">"</span>
+          <span className="text-destructive">&quot;</span>
         </blockquote>
         <cite className="text-sm font-medium text-foreground not-italic">
           {name}, {age} años

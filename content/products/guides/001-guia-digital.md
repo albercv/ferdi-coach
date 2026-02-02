@@ -9,6 +9,7 @@ features:
   - "Acceso inmediato"
 fileUrl: "/fake.pdf"
 position: 1
-featuredSpot: 3
+featuredSpot: 1
+mostPopular: true
 ---
 Una guía directa y accionable para ayudarte a ordenar la semana. Incluye ejercicios simples y un checklist para que avances sin abrumarte.
