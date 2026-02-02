@@ -34,7 +34,12 @@ export class MediaService {
 
   constructor(args?: { storage?: StorageAdapter; contentRoot?: string }) {
     this.storage = args?.storage ?? new LocalPublicStorage()
-    this.contentRoot = args?.contentRoot ?? path.join(process.cwd(), "content")
+    const envContentDir = process.env.CONTENT_DIR?.trim()
+    const resolvedContentDir = envContentDir
+      ? (path.isAbsolute(envContentDir) ? envContentDir : path.join(process.cwd(), envContentDir))
+      : path.join(process.cwd(), "content")
+
+    this.contentRoot = args?.contentRoot ?? resolvedContentDir
   }
 
   async upload(input: UploadInput): Promise<UploadResult> {

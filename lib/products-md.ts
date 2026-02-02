@@ -38,7 +38,19 @@ export type SessionProduct = ProductBase & {
 
 export type ProductItem = GuideProduct | SessionProduct
 
-const CONTENT_DIR = path.join(process.cwd(), "content")
+function resolveContentDir(): string {
+  const fromEnv = process.env.CONTENT_DIR?.trim()
+  if (fromEnv) {
+    return path.isAbsolute(fromEnv) ? fromEnv : path.join(process.cwd(), fromEnv)
+  }
+
+  const localOverride = path.join(process.cwd(), "content.local")
+  if (fs.existsSync(localOverride)) return localOverride
+
+  return path.join(process.cwd(), "content")
+}
+
+const CONTENT_DIR = resolveContentDir()
 const PRODUCTS_DIR = path.join(CONTENT_DIR, "products")
 const GUIDES_DIR = path.join(PRODUCTS_DIR, "guides")
 const SESSIONS_DIR = path.join(PRODUCTS_DIR, "sessions")

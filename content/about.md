@@ -1,9 +1,9 @@
 ---
-title: "(Ferdy) desde detro"
+title: "El AMOR me inspira, ayudar me mueve."
 credentials:
-  - "Formación en coaching transpersonal para superar rupturas de pareja"
-  - "Enfoque integral: combinación de introspección, fuerza interior y acompañamiento emocional"
-  - "Guiar sin juicios, con comprensión y cercanía en procesos de duelo amoroso"
-  - "Hablo desde la experiencia: estuve en tu lugar y salí adelante tras mi ruptura"
+  - "Coach de Crecimiento Personal. Certificación en Transpersonal- Escuela de Coaching Transpersonal"
+  - "Experiencia real: Viví el proceso de transformación que cambió mi vida."
+  - "Guiando a otros hacia su propio camino de transformación."
+  - "Presencia y cercanía."
 ---
-Soy Ferdy, coach emocional especializado en procesos de ruptura de pareja. Tras 12 años de matrimonio mi ruptura me llevó a dejar un país que llevo en mi corazón, Perú, personas que amaba y también una profesión que ya no me llenaba, la cocina. Tras una etapa de duelo personal inicié un viaje de mochilero por el sudeste asiático donde me encontré conmigo mismo y con una verdad clara: quería ayudar a otros a superar una ruptura. No fue fácil, primero tuve que transitar mi propia sanación emocional antes de guiar a otros. Estudié coaching transpersonal para contar con las herramientas necesarias y hoy quiero compartirlas contigo junto con lo más valioso que tengo, mi experiencia personal y sobre todo mi presencia auténtica.
+Tras atravesar un dolor muy profundo y perderme a mi mismo, aprendí a reconstruirme. Hoy acompaño con presencia a quienes buscan claridad y fuerza para avanzar.

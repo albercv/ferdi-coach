@@ -1,16 +1,16 @@
 ---
 subtype: "program4"
-title: "Programa 4 Semanas"
+title: "LA BRÚJULA DESPUÉS DEL DESAMOR"
 price: 200
 features:
-  - "4 sesiones (1 por semana)"
-  - "Plan de acción semanal"
-  - "Soporte y revisión entre sesiones"
-  - "Material complementario"
-notes: "Incluye cosas importantes"
-addon: "Incluye guía digital gratuita."
+  - "Duración: 5 sesiones online de 70 min-una por semana."
+  - "Diagnóstico: Identificamos tus bloqueos emocionales y los trabajamos juntos."
+  - "Hoja de ruta: herramientas de autoconocimiento y ejercicios para avanzar."
+  - "Soporte continuo: Puedes escribirme por Whatsapp para cualquier duda"
+notes: "Puedes cancelar el programa completo con a menos 24 horas de antelación."
+addon: "Incluye 5 sesiones, una de ellas gratis, valor real por sesión 40 euros."
 position: 2
 featuredSpot: 2
 mostPopular: true
 ---
-Programa estructurado para trabajar durante 4 semanas con objetivos claros y seguimiento continuo.
+Libera bloqueos, encuentra dirección y camina hacia tu mejor versión.

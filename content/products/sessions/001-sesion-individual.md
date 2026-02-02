@@ -1,14 +1,14 @@
 ---
 subtype: "individual"
 title: "Sesión Individual"
-price: 60
+price: 50
 features:
-  - "60 minutos 1 a 1"
-  - "Objetivo claro para la semana"
-  - "Estrategias personalizadas"
-  - "Seguimiento por WhatsApp"
-notes: "Puedes cancelar o cambiar la cita con 24h de antelación."
+  - "Duración: Sesión online de 70 minutos 1 a 1"
+  - "Diagnóstico: Evaluamos tu situación y reconocemos tus obstáculos emocionales."
+  - "Informe personalizado: Lo recibirás al día siguiente por escrito."
+  - "Sugerencias prácticas para avanzar."
+notes: "Puedes cancelar la cita con al menos 24h de antelación."
 position: 1
 featuredSpot: 1
 ---
-Sesión enfocada en tu situación actual para diseñar un plan concreto de la semana y recuperar calma.
+Un rayo de luz en medio de tu oscuridad:  Te da perspectiva y tranquilidad.
