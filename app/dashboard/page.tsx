@@ -23,6 +23,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import { MediaPicker } from "@/components/dashboard/MediaPicker"
 import { MediaLibraryTab } from "@/components/dashboard/MediaLibraryTab"
 import { MediaSectionCard } from "@/components/dashboard/MediaSectionCard"
+import { PaymentsTab } from "@/components/dashboard/PaymentsTab"
 import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield, Users, ArrowRight, Sparkles, Target, Timer, MessageSquare } from "lucide-react"
 
 function escapeProductSlug(input: string) {
@@ -1149,6 +1150,7 @@ export default function DashboardPage() {
             <TabsTrigger value="hero">Hero</TabsTrigger>
             <TabsTrigger value="breaker">Frase destacada</TabsTrigger>
             <TabsTrigger value="products">Cómo funciona</TabsTrigger>
+            <TabsTrigger value="payments">Pagos</TabsTrigger>
             <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
             <TabsTrigger value="about">Sobre mí</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
@@ -1158,6 +1160,10 @@ export default function DashboardPage() {
 
           <TabsContent value="media" className="mt-6">
             <MediaLibraryTab />
+          </TabsContent>
+
+          <TabsContent value="payments" className="mt-6">
+            <PaymentsTab />
           </TabsContent>
 
           {/* Hero Tab */}

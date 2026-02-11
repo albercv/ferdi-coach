@@ -15,18 +15,27 @@ import { Toggle3D } from "@/components/ui/3d-toggle"
 import { LazyLoad } from "@/components/performance/intersection-observer"
 import { getTestimonials, getFAQ, getAbout, getHero, getCTA, getBreaker } from "@/lib/content-md"
 import { getProducts } from "@/lib/products-md"
+import type { PaymentProductRef } from "@/lib/payments"
 
 export default function HomePage() {
   const testimonials = getTestimonials()
   const about = getAbout()
   const faq = getFAQ()
   const { guides, sessions } = getProducts()
+  const individual = sessions.find((s) => s.subtype === "individual") || sessions[0]
+  const reserveProduct: PaymentProductRef = {
+    kind: "session",
+    id: individual.id,
+    subtype: "individual",
+    title: individual.title,
+    priceEuro: Number(individual.price || 0),
+  }
   const hero = getHero()
   const cta = getCTA()
   const breaker = getBreaker()
   return (
     <>
-      <Header />
+      <Header reserveProduct={reserveProduct} />
       <main id="main-content">
         <HeroSection hero={hero} />
         <BreakerBanner text={breaker.text} kicker={breaker.kicker} />
@@ -54,6 +63,7 @@ export default function HomePage() {
             text: cta.buttonText,
             href: "#reservar",
           }}
+          reserveProduct={reserveProduct}
           showTrustSeals={true}
         />
       </main>

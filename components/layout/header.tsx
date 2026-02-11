@@ -3,10 +3,12 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import type { PaymentProductRef } from "@/lib/payments"
+import { PaymentDialog } from "@/components/payments/PaymentDialog"
 import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
-export function Header() {
+export function Header({ reserveProduct }: { reserveProduct: PaymentProductRef }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { data: session, status } = useSession()
   const isAuthenticated = status === "authenticated"
@@ -76,14 +78,28 @@ export function Header() {
           )}
 
           {/* Existing CTA */}
-          <button className="hidden lg:inline-flex bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90 rounded-md px-4 py-2">
-            <a href="#reservar">Reservar sesión</a>
-          </button>
+          <div className="hidden lg:inline-flex">
+            <PaymentDialog
+              product={reserveProduct}
+              trigger={
+                <button className="bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90 rounded-md px-4 py-2">
+                  Reservar sesión
+                </button>
+              }
+            />
+          </div>
 
           {/* Mobile CTA visible under 1024px */}
-          <button className="inline-flex lg:hidden bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90 rounded-md px-3 py-1.5 text-sm">
-            <a href="#reservar">Reservar sesión</a>
-          </button>
+          <div className="inline-flex lg:hidden">
+            <PaymentDialog
+              product={reserveProduct}
+              trigger={
+                <button className="bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90 rounded-md px-3 py-1.5 text-sm">
+                  Reservar sesión
+                </button>
+              }
+            />
+          </div>
 
           {/* Mobile menu button */}
           <button
@@ -128,9 +144,17 @@ export function Header() {
               ) : (
                 <Button onClick={async () => { setIsMenuOpen(false); await signOut({ redirect: false }); router.push("/") }} className="w-full text-sm px-2 py-1 border border-border rounded-md bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted">Logout</Button>
               )}
-              <button className="w-full bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90 rounded-md px-4 py-2">
-                <a href="#reservar" onClick={() => setIsMenuOpen(false)}>Reservar sesión</a>
-              </button>
+              <PaymentDialog
+                product={reserveProduct}
+                trigger={
+                  <button
+                    className="w-full bg-accent text-white border border-amber-300/60 hover:shadow-sm hover:bg-accent/90 rounded-md px-4 py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Reservar sesión
+                  </button>
+                }
+              />
             </div>
           </div>
         )}

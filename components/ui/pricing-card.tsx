@@ -12,7 +12,8 @@ interface PricingCardProps {
   price: string
   features: string[]
   ctaText: string
-  ctaHref: string
+  ctaHref?: string
+  onCtaClick?: () => void
   popular?: boolean
   className?: string
   flipOnHover?: boolean
@@ -31,6 +32,7 @@ export function PricingCard({
   features,
   ctaText,
   ctaHref,
+  onCtaClick,
   popular = false,
   className,
   flipOnHover = false,
@@ -124,9 +126,15 @@ export function PricingCard({
                 
                 {/* Botón incluido en el frente */}
                 <div className="mt-auto">
-                  <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
-                    <a href={ctaHref}>{ctaText}</a>
-                  </Button>
+                  {onCtaClick ? (
+                    <Button className="w-full" variant={popular ? "default" : "outline"} onClick={onCtaClick}>
+                      {ctaText}
+                    </Button>
+                  ) : (
+                    <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
+                      <a href={ctaHref}>{ctaText}</a>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -195,9 +203,15 @@ export function PricingCard({
                 
                 {/* Botón incluido en el reverso - siempre visible */}
                 <div className="flex-shrink-0 relative z-10">
-                  <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
-                    <a href={ctaHref}>{ctaText}</a>
-                  </Button>
+                  {onCtaClick ? (
+                    <Button className="w-full" variant={popular ? "default" : "outline"} onClick={onCtaClick}>
+                      {ctaText}
+                    </Button>
+                  ) : (
+                    <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
+                      <a href={ctaHref}>{ctaText}</a>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -223,9 +237,15 @@ export function PricingCard({
             </ul>
           </div>
           <div className="mt-auto">
-            <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
-              <a href={ctaHref}>{ctaText}</a>
-            </Button>
+            {onCtaClick ? (
+              <Button className="w-full" variant={popular ? "default" : "outline"} onClick={onCtaClick}>
+                {ctaText}
+              </Button>
+            ) : (
+              <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
+                <a href={ctaHref}>{ctaText}</a>
+              </Button>
+            )}
           </div>
         </div>
       )}
@@ -233,9 +253,15 @@ export function PricingCard({
       {/* El botón no se da la vuelta - Solo para tarjetas sin flip */}
       {!flipOnHover && (
         <CardFooter className="mt-auto pt-4 pb-4">
-          <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
-            <a href={ctaHref}>{ctaText}</a>
-          </Button>
+          {onCtaClick ? (
+            <Button className="w-full" variant={popular ? "default" : "outline"} onClick={onCtaClick}>
+              {ctaText}
+            </Button>
+          ) : (
+            <Button asChild className="w-full" variant={popular ? "default" : "outline"}>
+              <a href={ctaHref}>{ctaText}</a>
+            </Button>
+          )}
         </CardFooter>
       )}
     </Card>
