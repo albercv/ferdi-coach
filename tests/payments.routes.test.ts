@@ -62,12 +62,10 @@ beforeEach(() => {
   seedProducts(tmpContentDir)
 
   process.env.CONTENT_DIR = tmpContentDir
-  process.env.PAYMENTS_DIR = path.join(tmpDir, "payments")
 })
 
 afterEach(() => {
   delete process.env.CONTENT_DIR
-  delete process.env.PAYMENTS_DIR
   fs.rmSync(tmpDir, { recursive: true, force: true })
 })
 

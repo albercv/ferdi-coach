@@ -4,15 +4,21 @@ import path from "node:path"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 let tmpDir: string
+let tmpContentDir: string
+const originalCwd = process.cwd()
 
 beforeEach(() => {
   vi.resetModules()
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ferdy-coach-payments-"))
-  process.env.PAYMENTS_DIR = path.join(tmpDir, "payments")
+  process.chdir(tmpDir)
+  tmpContentDir = path.join(tmpDir, "content")
+  fs.mkdirSync(tmpContentDir, { recursive: true })
+  process.env.CONTENT_DIR = tmpContentDir
 })
 
 afterEach(() => {
-  delete process.env.PAYMENTS_DIR
+  process.chdir(originalCwd)
+  delete process.env.CONTENT_DIR
   fs.rmSync(tmpDir, { recursive: true, force: true })
 })
 
