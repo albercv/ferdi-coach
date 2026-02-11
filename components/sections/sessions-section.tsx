@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle } from "lucide-react"
 import type { SessionProduct } from "@/lib/products-md"
+import { PaymentDialog } from "@/components/payments/PaymentDialog"
 
 
 export function SessionsSection({ sessions }: { sessions: SessionProduct[] }) {
@@ -55,9 +56,20 @@ export function SessionsSection({ sessions }: { sessions: SessionProduct[] }) {
                   <span className="text-xl font-bold">€{individual.price}</span>
                   <p className="text-xs text-muted-foreground">Precio por sesión individual</p>
                 </div>
-                <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
-                  Reservar ahora
-                </Button>
+                <PaymentDialog
+                  product={{
+                    kind: "session",
+                    id: individual.id,
+                    subtype: "individual",
+                    title: individual.title,
+                    priceEuro: Number(individual.price || 0),
+                  }}
+                  trigger={
+                    <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
+                      Pagar
+                    </Button>
+                  }
+                />
               </div>
             </CardContent>
           </Card>
@@ -111,9 +123,20 @@ export function SessionsSection({ sessions }: { sessions: SessionProduct[] }) {
                 <div className="text-center mb-2">
                   <div className="text-xl font-bold">€{program4.price}</div>
                 </div>
-                <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
-                  Empezar programa
-                </Button>
+                <PaymentDialog
+                  product={{
+                    kind: "session",
+                    id: program4.id,
+                    subtype: "program4",
+                    title: program4.title,
+                    priceEuro: Number(program4.price || 0),
+                  }}
+                  trigger={
+                    <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
+                      Pagar
+                    </Button>
+                  }
+                />
               </div>
             </CardContent>
           </Card>

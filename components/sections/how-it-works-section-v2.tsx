@@ -2,6 +2,7 @@ import React from "react"
 import { getProducts, GuideProduct, SessionProduct } from "@/lib/products-md"
 import { Button } from "@/components/ui/button"
 import { User, CheckCircle, BookOpen } from "lucide-react"
+import { PaymentDialog } from "@/components/payments/PaymentDialog"
 
 function resolveFeatured() {
   const { guides, sessions } = getProducts()
@@ -35,18 +36,6 @@ function resolveFeatured() {
   return picks
 }
 
-function buttonFor(item: GuideProduct | SessionProduct) {
-  if ((item as any).kind === "guide") {
-    return { label: "Descargar ahora", href: (item as GuideProduct).fileUrl || "/fake.pdf" }
-  } else {
-    const s = item as SessionProduct
-    // Llevamos a secciones existentes de la home
-    return s.subtype === "program4"
-      ? { label: "Empezar programa", href: "#sesiones" }
-      : { label: "Reservar ahora", href: "#reservar" }
-  }
-}
-
 export default function HowItWorksSectionV2() {
   const picks = resolveFeatured()
 
@@ -63,7 +52,6 @@ export default function HowItWorksSectionV2() {
         {/* Cards compactas: solo resumen */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {cards.map((item, idx) => {
-            const btn = buttonFor(item)
             const isCenter = idx === 1
             const title = item.title
             const price = item.price
@@ -89,9 +77,42 @@ export default function HowItWorksSectionV2() {
                 <h3 className="font-semibold text-sm mb-1" style={{ color: '#517e61' }}>{title}</h3>
                 <p className="text-xs text-muted-foreground mb-2 truncate">{summary}</p>
                 <p className="text-lg font-bold mb-3" style={{ color: '#517e61' }}>€{price}</p>
-                <Button asChild size="sm" className="w-full text-xs font-medium bg-[#517e61] hover:bg-[#406e55] text-white">
-                  <a href={btn.href}>{btn.label}</a>
-                </Button>
+                {(item as any).kind === "guide" ? (
+                  Number((item as GuideProduct).price || 0) > 0 ? (
+                    <PaymentDialog
+                      product={{
+                        kind: "guide",
+                        id: item.id,
+                        title: item.title,
+                        priceEuro: Number((item as GuideProduct).price || 0),
+                      }}
+                      trigger={
+                        <Button size="sm" className="w-full text-xs font-medium bg-[#517e61] hover:bg-[#406e55] text-white">
+                          Pagar
+                        </Button>
+                      }
+                    />
+                  ) : (
+                    <Button asChild size="sm" className="w-full text-xs font-medium bg-[#517e61] hover:bg-[#406e55] text-white">
+                      <a href={(item as GuideProduct).fileUrl || "/fake.pdf"}>Descargar ahora</a>
+                    </Button>
+                  )
+                ) : (
+                  <PaymentDialog
+                    product={{
+                      kind: "session",
+                      id: item.id,
+                      subtype: (item as SessionProduct).subtype,
+                      title: item.title,
+                      priceEuro: Number((item as SessionProduct).price || 0),
+                    }}
+                    trigger={
+                      <Button size="sm" className="w-full text-xs font-medium bg-[#517e61] hover:bg-[#406e55] text-white">
+                        Pagar
+                      </Button>
+                    }
+                  />
+                )}
               </div>
             )
           })}
