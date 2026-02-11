@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { assertAdmin } from "@/lib/auth/assertAdmin"
 import { getFAQ, setFAQItem, addFAQItem, deleteFAQItem } from "@/lib/content-md"
 
 export async function GET() {
@@ -12,6 +15,17 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 })
+  }
+
+  try {
+    assertAdmin(session)
+  } catch {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
+  }
+
   try {
     const body = await req.json()
     const id = String(body?.id || "").trim()
@@ -47,6 +61,17 @@ export async function PUT(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 })
+  }
+
+  try {
+    assertAdmin(session)
+  } catch {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
+  }
+
   try {
     const body = await req.json()
     const id = body?.id ? String(body.id).trim() : undefined
@@ -84,6 +109,17 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 })
+  }
+
+  try {
+    assertAdmin(session)
+  } catch {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
+  }
+
   try {
     const { searchParams } = new URL(req.url)
     const id = String(searchParams.get("id") || "").trim()
