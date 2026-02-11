@@ -89,6 +89,9 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center py-10">
       <div className="w-full max-w-sm border rounded-lg p-6 shadow-sm">
+        <Button type="button" variant="ghost" onClick={() => router.push("/")} className="mb-3">
+          ← Volver a Home
+        </Button>
         <h1 className="text-2xl font-bold mb-4">Acceso</h1>
         <p className="text-sm text-muted-foreground mb-6">
           Introduce tu email y contraseña para acceder al panel.

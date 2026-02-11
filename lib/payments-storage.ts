@@ -1,38 +1,55 @@
 import fs from "fs"
 import path from "path"
 import crypto from "crypto"
+import matter from "gray-matter"
 
 import type { PaymentStatus, PaymentSubmission, PaymentsConfig, PaymentProductRef } from "@/lib/payments"
 import { buildPaymentConceptShort } from "@/lib/payments"
 
-function resolvePaymentsDir(): string {
-  const explicit = process.env.PAYMENTS_DIR?.trim()
-  if (explicit) {
-    return path.isAbsolute(explicit) ? explicit : path.join(process.cwd(), explicit)
+function resolveContentDir(): string {
+  const fromEnv = process.env.CONTENT_DIR?.trim()
+  if (fromEnv) {
+    return path.isAbsolute(fromEnv) ? fromEnv : path.join(process.cwd(), fromEnv)
   }
 
-  const contentDir = process.env.CONTENT_DIR?.trim()
-  if (contentDir) {
-    const resolved = path.isAbsolute(contentDir) ? contentDir : path.join(process.cwd(), contentDir)
-    return path.join(resolved, "payments")
-  }
+  const localOverride = path.join(process.cwd(), "content.local")
+  if (fs.existsSync(localOverride)) return localOverride
 
-  return path.join(process.cwd(), "data", "payments")
+  return path.join(process.cwd(), "content")
 }
 
-const PAYMENTS_DIR = resolvePaymentsDir()
-const CONFIG_PATH = path.join(PAYMENTS_DIR, "config.json")
-const SUBMISSIONS_PATH = path.join(PAYMENTS_DIR, "submissions.json")
+const CONTENT_DIR = resolveContentDir()
+const PAYMENTS_DIR = path.join(CONTENT_DIR, "payments")
+const SUBMISSIONS_DIR = path.join(PAYMENTS_DIR, "submissions")
 
-function ensureDir(): void {
+const CONFIG_MD_PATH = path.join(PAYMENTS_DIR, "config.md")
+const LEGACY_CONFIG_JSON_PATH = path.join(process.cwd(), "data", "payments", "config.json")
+
+const LEGACY_SUBMISSIONS_JSON_PATH = path.join(process.cwd(), "data", "payments", "submissions.json")
+
+function ensureDirs(): void {
   fs.mkdirSync(PAYMENTS_DIR, { recursive: true })
+  fs.mkdirSync(SUBMISSIONS_DIR, { recursive: true })
 }
 
 function atomicWriteFile(filePath: string, content: string): void {
-  ensureDir()
+  ensureDirs()
   const tmp = `${filePath}.${crypto.randomUUID()}.tmp`
   fs.writeFileSync(tmp, content, "utf8")
   fs.renameSync(tmp, filePath)
+}
+
+function stripUndefined(input: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(input)) {
+    if (value !== undefined) out[key] = value
+  }
+  return out
+}
+
+function atomicWriteMarkdownFile(filePath: string, data: Record<string, unknown>, content: string): void {
+  const md = matter.stringify((content || "").trim() + "\n", stripUndefined(data))
+  atomicWriteFile(filePath, md)
 }
 
 function normalizeIban(raw: string): string {
@@ -40,16 +57,30 @@ function normalizeIban(raw: string): string {
 }
 
 export function getPaymentsConfig(): PaymentsConfig {
-  ensureDir()
-  if (!fs.existsSync(CONFIG_PATH)) {
-    return { iban: "", updatedAtIso: new Date(0).toISOString() }
+  ensureDirs()
+
+  if (fs.existsSync(CONFIG_MD_PATH)) {
+    const file = fs.readFileSync(CONFIG_MD_PATH, "utf8")
+    const { data } = matter(file)
+    return {
+      iban: typeof (data as any)?.iban === "string" ? String((data as any).iban) : "",
+      updatedAtIso:
+        typeof (data as any)?.updatedAtIso === "string" ? String((data as any).updatedAtIso) : new Date(0).toISOString(),
+    }
   }
-  const raw = fs.readFileSync(CONFIG_PATH, "utf8")
-  const parsed = JSON.parse(raw)
-  return {
-    iban: typeof parsed?.iban === "string" ? parsed.iban : "",
-    updatedAtIso: typeof parsed?.updatedAtIso === "string" ? parsed.updatedAtIso : new Date(0).toISOString(),
+
+  if (fs.existsSync(LEGACY_CONFIG_JSON_PATH)) {
+    const raw = fs.readFileSync(LEGACY_CONFIG_JSON_PATH, "utf8")
+    const parsed = JSON.parse(raw)
+    const config: PaymentsConfig = {
+      iban: typeof parsed?.iban === "string" ? parsed.iban : "",
+      updatedAtIso: typeof parsed?.updatedAtIso === "string" ? parsed.updatedAtIso : new Date(0).toISOString(),
+    }
+    atomicWriteMarkdownFile(CONFIG_MD_PATH, config as any, "")
+    return config
   }
+
+  return { iban: "", updatedAtIso: new Date(0).toISOString() }
 }
 
 export function setPaymentsIban(ibanRaw: string): PaymentsConfig {
@@ -58,17 +89,46 @@ export function setPaymentsIban(ibanRaw: string): PaymentsConfig {
     iban,
     updatedAtIso: new Date().toISOString(),
   }
-  atomicWriteFile(CONFIG_PATH, JSON.stringify(next, null, 2))
+  atomicWriteMarkdownFile(CONFIG_MD_PATH, next as any, "")
   return next
 }
 
 export function listPaymentSubmissions(): PaymentSubmission[] {
-  ensureDir()
-  if (!fs.existsSync(SUBMISSIONS_PATH)) return []
-  const raw = fs.readFileSync(SUBMISSIONS_PATH, "utf8")
-  const parsed = JSON.parse(raw)
-  if (!Array.isArray(parsed)) return []
-  return parsed as PaymentSubmission[]
+  ensureDirs()
+
+  const files = fs
+    .readdirSync(SUBMISSIONS_DIR)
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => path.join(SUBMISSIONS_DIR, f))
+
+  if (files.length === 0 && fs.existsSync(LEGACY_SUBMISSIONS_JSON_PATH)) {
+    const raw = fs.readFileSync(LEGACY_SUBMISSIONS_JSON_PATH, "utf8")
+    const parsed = JSON.parse(raw)
+    if (Array.isArray(parsed)) {
+      for (const entry of parsed as PaymentSubmission[]) {
+        if (!entry?.id) continue
+        const filePath = path.join(SUBMISSIONS_DIR, `${entry.id}.md`)
+        if (fs.existsSync(filePath)) continue
+        atomicWriteMarkdownFile(filePath, entry as any, "")
+      }
+    }
+  }
+
+  const finalFiles = fs
+    .readdirSync(SUBMISSIONS_DIR)
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => path.join(SUBMISSIONS_DIR, f))
+
+  const submissions = finalFiles
+    .map((filePath) => {
+      const file = fs.readFileSync(filePath, "utf8")
+      const { data } = matter(file)
+      return data as PaymentSubmission
+    })
+    .filter((s) => !!s?.id)
+    .sort((a, b) => String(b.createdAtIso || "").localeCompare(String(a.createdAtIso || "")) || String(b.id).localeCompare(String(a.id)))
+
+  return submissions
 }
 
 export function createPaymentSubmission(input: {
@@ -93,9 +153,8 @@ export function createPaymentSubmission(input: {
     payerPhone: input.payerPhone?.trim() ? input.payerPhone.trim() : undefined,
   }
 
-  const existing = listPaymentSubmissions()
-  const next = [submission, ...existing]
-  atomicWriteFile(SUBMISSIONS_PATH, JSON.stringify(next, null, 2))
+  const filePath = path.join(SUBMISSIONS_DIR, `${submission.id}.md`)
+  atomicWriteMarkdownFile(filePath, submission as any, "")
   return submission
 }
 
@@ -104,11 +163,13 @@ export function updatePaymentSubmissionStatus(input: {
   status: PaymentStatus
   updatedByEmail?: string
 }): PaymentSubmission {
-  const existing = listPaymentSubmissions()
-  const idx = existing.findIndex((s) => s.id === input.id)
-  if (idx < 0) throw new Error("NOT_FOUND")
+  ensureDirs()
+  const filePath = path.join(SUBMISSIONS_DIR, `${input.id}.md`)
+  if (!fs.existsSync(filePath)) throw new Error("NOT_FOUND")
 
-  const current = existing[idx]
+  const file = fs.readFileSync(filePath, "utf8")
+  const parsed = matter(file)
+  const current = parsed.data as PaymentSubmission
   const updated: PaymentSubmission = {
     ...current,
     status: input.status,
@@ -116,8 +177,6 @@ export function updatePaymentSubmissionStatus(input: {
     statusUpdatedByEmail: input.updatedByEmail,
   }
 
-  const next = [...existing]
-  next[idx] = updated
-  atomicWriteFile(SUBMISSIONS_PATH, JSON.stringify(next, null, 2))
+  atomicWriteMarkdownFile(filePath, updated as any, "")
   return updated
 }
