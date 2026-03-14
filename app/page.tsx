@@ -13,7 +13,7 @@ import { CTASection } from "@/components/ui/cta-section"
 import { BreakerBanner } from "@/components/ui/breaker-banner"
 import { Toggle3D } from "@/components/ui/3d-toggle"
 import { LazyLoad } from "@/components/performance/intersection-observer"
-import { getTestimonials, getFAQ, getAbout, getHero, getCTA, getBreaker } from "@/lib/content-md"
+import { getTestimonials, getFAQ, getAbout, getHero, getCTA, getBreaker, getForWho } from "@/lib/content-md"
 import { getProducts } from "@/lib/products-md"
 import type { PaymentProductRef } from "@/lib/payments"
 
@@ -33,6 +33,7 @@ export default function HomePage() {
   const hero = getHero()
   const cta = getCTA()
   const breaker = getBreaker()
+  const forWho = getForWho()
   return (
     <>
       <Header reserveProduct={reserveProduct} />
@@ -45,7 +46,7 @@ export default function HomePage() {
         <LazyLoad>
           <TestimonialsSection testimonials={testimonials} />
         </LazyLoad>
-        <ForWhoSection />
+        <ForWhoSection forWho={forWho} />
         <SessionsSection sessions={sessions} />
         <LazyLoad>
           <GuidesSection guides={guides} />

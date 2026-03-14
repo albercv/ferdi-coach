@@ -1,9 +1,9 @@
 'use client'
 
 import { Section } from "@/components/ui/section"
-import { siteContent } from "@/data/content"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import type { ForWhoContent } from "@/lib/content-md"
 import { HeartCrack, Clock, Users, Target } from "lucide-react"
 
 import { useEffect, useRef, useState } from "react"
@@ -15,14 +15,11 @@ const iconMap = {
   target: Target,
 } as const
 
-type IconKey = keyof typeof iconMap
-
-export function ForWhoSection() {
-  const { forWho } = siteContent
+export function ForWhoSection({ forWho }: { forWho: ForWhoContent }) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const heartRef = useRef<HTMLDivElement>(null)
-  const [progress, setProgress] = useState(0)
-  const [distance, setDistance] = useState(0)
+  const [, setProgress] = useState(0)
+  const [, setDistance] = useState(0)
 
   // Movimiento suave del corazón en mobile según el scroll dentro de la sección
   useEffect(() => {
@@ -112,9 +109,7 @@ export function ForWhoSection() {
               className="bg-accent hover:bg-accent/90 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               asChild
             >
-              <a href="#reservar">
-                Quiero salir de este bucle
-              </a>
+              <a href={forWho.ctaHref || "#reservar"}>{forWho.ctaText}</a>
             </Button>
           </div>
         </div>

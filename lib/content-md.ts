@@ -58,6 +58,22 @@ export type BreakerContent = {
   kicker?: string
 }
 
+export type ForWhoCard = {
+  id: string
+  position: number
+  icon: string
+  title: string
+  description: string
+}
+
+export type ForWhoContent = {
+  title: string
+  subtitle: string
+  ctaText: string
+  ctaHref: string
+  cards: ForWhoCard[]
+}
+
 function resolveContentDir(): string {
   const fromEnv = process.env.CONTENT_DIR?.trim()
   if (fromEnv) {
@@ -366,6 +382,7 @@ export function deleteFAQItem(id: string) {
 const HERO_FILE = path.join(CONTENT_DIR, "hero.md")
 const CTA_FILE = path.join(CONTENT_DIR, "cta.md")
 const BREAKER_FILE = path.join(CONTENT_DIR, "breaker.md")
+const FOR_WHO_FILE = path.join(CONTENT_DIR, "for-who.md")
 
 function ensureContentDir() {
   if (!fs.existsSync(CONTENT_DIR)) fs.mkdirSync(CONTENT_DIR, { recursive: true })
@@ -451,6 +468,79 @@ export function getBreaker(): BreakerContent {
   }
 }
 
+export function getForWho(): ForWhoContent {
+  const defaults: ForWhoContent = {
+    title: "¿Acabas de terminar una relación?",
+    subtitle: "Si te identificas con alguna de estas situaciones, puedo ayudarte a superar tu ruptura de pareja",
+    ctaText: "Quiero salir de este bucle",
+    ctaHref: "#reservar",
+    cards: [
+      {
+        id: "1",
+        position: 1,
+        icon: "heart-crack",
+        title: "Ruptura reciente",
+        description:
+          "Acabas de terminar una relación y sientes que no puedes seguir adelante. El dolor emocional es intenso y necesitas apoyo profesional para procesar el duelo amoroso.",
+      },
+      {
+        id: "2",
+        position: 2,
+        icon: "clock",
+        title: "Dependencia emocional",
+        description:
+          "Tienes dificultades para establecer límites sanos en tus relaciones. Sientes que necesitas constantemente la validación de tu ex pareja o de otros para sentirte bien contigo mismo.",
+      },
+      {
+        id: "3",
+        position: 3,
+        icon: "users",
+        title: "Patrones tóxicos",
+        description:
+          "Repites los mismos errores en tus relaciones amorosas. Quieres romper con patrones de dependencia emocional y construir relaciones más sanas en el futuro.",
+      },
+      {
+        id: "4",
+        position: 4,
+        icon: "target",
+        title: "Baja autoestima",
+        description:
+          "La ruptura ha afectado tu autoestima y confianza personal. Necesitas recuperar tu amor propio y aprender a valorarte independientemente de una relación de pareja.",
+      },
+    ],
+  }
+
+  if (!fs.existsSync(FOR_WHO_FILE)) {
+    return defaults
+  }
+
+  const { data } = readMarkdownFile(FOR_WHO_FILE)
+  const cardsRaw = Array.isArray((data as any).cards) ? (data as any).cards : []
+  const cards: ForWhoCard[] = cardsRaw
+    .map((it: any, idx: number) => ({
+      id: String(it?.id ?? String(idx + 1)),
+      position: Number(it?.position ?? idx + 1),
+      icon: String(it?.icon || "heart-crack"),
+      title: String(it?.title || "").trim(),
+      description: String(it?.description || "").trim(),
+    }))
+    .filter((c: ForWhoCard) => !!c.title && !!c.description)
+    .sort((a: ForWhoCard, b: ForWhoCard) => a.position - b.position)
+
+  const title = String((data as any).title || "").trim()
+  const subtitle = String((data as any).subtitle || "").trim()
+  const ctaText = String((data as any).ctaText || "").trim()
+  const ctaHref = String((data as any).ctaHref || "").trim()
+
+  return {
+    title: title || defaults.title,
+    subtitle: subtitle || defaults.subtitle,
+    ctaText: ctaText || defaults.ctaText,
+    ctaHref: ctaHref || defaults.ctaHref,
+    cards: cards.length ? cards : defaults.cards,
+  }
+}
+
 export function setHero(hero: HeroContent) {
   ensureContentDir()
   const fmBullets = normalizePositions(hero.bullets || [])
@@ -487,6 +577,33 @@ export function setBreaker(breaker: BreakerContent) {
     `---\n`
   const body = `${String(breaker.text || "").trim()}\n`
   fs.writeFileSync(BREAKER_FILE, frontmatter + body, "utf8")
+}
+
+export function setForWho(forWho: ForWhoContent) {
+  ensureContentDir()
+
+  const cardsYaml = normalizePositions(forWho.cards || [])
+    .map((it) => {
+      return (
+        `  - id: "${escapeYaml(String(it.id))}"\n` +
+        `    position: ${it.position}\n` +
+        `    icon: "${escapeYaml(String(it.icon || "heart-crack"))}"\n` +
+        `    title: "${escapeYaml(String(it.title || ""))}"\n` +
+        `    description: "${escapeYaml(String(it.description || ""))}"`
+      )
+    })
+    .join("\n")
+
+  const frontmatter =
+    `---\n` +
+    `title: "${escapeYaml(forWho.title)}"\n` +
+    `subtitle: "${escapeYaml(forWho.subtitle)}"\n` +
+    `ctaText: "${escapeYaml(forWho.ctaText)}"\n` +
+    `ctaHref: "${escapeYaml(forWho.ctaHref)}"\n` +
+    (cardsYaml ? `cards:\n${cardsYaml}\n` : "cards: []\n") +
+    `---\n`
+
+  fs.writeFileSync(FOR_WHO_FILE, frontmatter, "utf8")
 }
 
 export function addHeroBullet(newItem: { id?: string; position?: number; icon?: string; text: string }): HeroBullet {
