@@ -24,7 +24,7 @@ import { MediaPicker } from "@/components/dashboard/MediaPicker"
 import { MediaLibraryTab } from "@/components/dashboard/MediaLibraryTab"
 import { MediaSectionCard } from "@/components/dashboard/MediaSectionCard"
 import { PaymentsTab } from "@/components/dashboard/PaymentsTab"
-import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield, Users, ArrowRight, Sparkles, Target, Timer, MessageSquare } from "lucide-react"
+import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield, Users, ArrowRight, Sparkles, Target, Timer, MessageSquare, HeartCrack, Clock } from "lucide-react"
 
 function escapeProductSlug(input: string) {
   return input
@@ -196,6 +196,30 @@ export default function DashboardPage() {
   const [breakerText, setBreakerText] = useState("")
   const [savingBreaker, setSavingBreaker] = useState(false)
 
+  // --- ForWho state ---
+  const [forWhoTitle, setForWhoTitle] = useState("")
+  const [forWhoSubtitle, setForWhoSubtitle] = useState("")
+  const [forWhoCtaText, setForWhoCtaText] = useState("")
+  const [forWhoCtaHref, setForWhoCtaHref] = useState("")
+  const [forWhoCards, setForWhoCards] = useState<
+    Array<{ id: string; position: number; icon: string; title: string; description: string }>
+  >([])
+  const [creatingForWhoCard, setCreatingForWhoCard] = useState(false)
+  const [savingForWho, setSavingForWho] = useState(false)
+
+  const [selectedForWhoCardId, setSelectedForWhoCardId] = useState<string | null>(null)
+  const [cfIcon, setCfIcon] = useState("heart-crack")
+  const [cfTitle, setCfTitle] = useState("")
+  const [cfDescription, setCfDescription] = useState("")
+  const [cfPosition, setCfPosition] = useState<number>(1)
+
+  const [efId, setEfId] = useState("")
+  const [efIcon, setEfIcon] = useState("heart-crack")
+  const [efTitle, setEfTitle] = useState("")
+  const [efDescription, setEfDescription] = useState("")
+  const [efPosition, setEfPosition] = useState<number>(1)
+  const [deletingForWhoCard, setDeletingForWhoCard] = useState(false)
+
   const heroIconMap = {
     "check-circle": CheckCircle,
     wrench: Wrench,
@@ -211,6 +235,15 @@ export default function DashboardPage() {
     timer: Timer,
     "message-square": MessageSquare,
   } as const
+
+  const FOR_WHO_ICON_MAP = {
+    "heart-crack": HeartCrack,
+    clock: Clock,
+    users: Users,
+    target: Target,
+  } as const
+
+  const FOR_WHO_ICON_KEYS = ["heart-crack", "clock", "users", "target"] as const
 
   const HERO_ICON_KEYS = [
     "check-circle",
@@ -321,12 +354,38 @@ export default function DashboardPage() {
         toast({ title: "Error", description: "No se pudo cargar la frase" })
       }
     }
+
+    const loadForWho = async () => {
+      try {
+        const res = await fetch("/api/content/for-who", { cache: "no-store" })
+        if (!res.ok) throw new Error("Failed to load for-who")
+        const data = await res.json()
+        setForWhoTitle(String(data.title ?? ""))
+        setForWhoSubtitle(String(data.subtitle ?? ""))
+        setForWhoCtaText(String(data.ctaText ?? ""))
+        setForWhoCtaHref(String(data.ctaHref ?? ""))
+        const cards = Array.isArray(data.cards) ? data.cards : []
+        setForWhoCards(cards)
+        setCfPosition(Math.max(1, cards.length + 1))
+        if (cards.length > 0) {
+          setSelectedForWhoCardId(cards[0].id)
+          setEfId(String(cards[0].id))
+          setEfIcon(String(cards[0].icon || "heart-crack"))
+          setEfTitle(String(cards[0].title || ""))
+          setEfDescription(String(cards[0].description || ""))
+          setEfPosition(Number(cards[0].position || 1))
+        }
+      } catch (e) {
+        toast({ title: "Error", description: "No se pudo cargar la sección 'Para quién'" })
+      }
+    }
     loadAbout()
     loadFAQs()
     loadTestimonials()
     loadHero()
     loadCta()
     loadBreaker()
+    loadForWho()
   }, [toast])
 
   const handleLogout = async () => {
@@ -513,6 +572,124 @@ export default function DashboardPage() {
       toast({ title: "Error al guardar", description: "Revisa los campos e inténtalo de nuevo." })
     } finally {
       setSavingHero(false)
+    }
+  }
+
+  // --- ForWho helpers & handlers ---
+  const normalizeForWhoPositions = (
+    items: Array<{ id: string; position: number; icon: string; title: string; description: string }>,
+  ) => {
+    return items
+      .slice()
+      .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
+      .map((it, idx) => ({ ...it, position: idx + 1 }))
+  }
+
+  const handleSelectForWhoCard = (id: string) => {
+    setSelectedForWhoCardId(id)
+    const c = forWhoCards.find((it) => it.id === id)
+    if (c) {
+      setEfId(c.id)
+      setEfIcon(c.icon || "heart-crack")
+      setEfTitle(c.title || "")
+      setEfDescription(c.description || "")
+      setEfPosition(Number(c.position || 1))
+    }
+  }
+
+  const handleCreateForWhoCard = () => {
+    if (!cfTitle.trim() || !cfDescription.trim()) {
+      toast({ title: "Campos requeridos", description: "Título y descripción son obligatorios." })
+      return
+    }
+
+    setCreatingForWhoCard(true)
+    const id = String(Date.now())
+    const desired = Math.max(1, Math.min(Number(cfPosition || 1), forWhoCards.length + 1))
+    const inserted = [
+      ...forWhoCards.slice(0, desired - 1),
+      { id, position: desired, icon: cfIcon || "heart-crack", title: cfTitle.trim(), description: cfDescription.trim() },
+      ...forWhoCards.slice(desired - 1),
+    ]
+    const next = normalizeForWhoPositions(inserted)
+    setForWhoCards(next)
+    setCreatingForWhoCard(false)
+    setCfIcon("heart-crack")
+    setCfTitle("")
+    setCfDescription("")
+    setCfPosition(next.length + 1)
+    toast({ title: "Añadida", description: "Tarjeta creada en borrador. Recuerda GUARDAR la sección para persistir." })
+  }
+
+  const handleSaveForWhoCard = () => {
+    if (!selectedForWhoCardId) return
+    if (!efTitle.trim() || !efDescription.trim()) {
+      toast({ title: "Campos requeridos", description: "Título y descripción son obligatorios." })
+      return
+    }
+
+    const rest = forWhoCards.filter((it) => it.id !== selectedForWhoCardId)
+    const desired = Math.max(1, Math.min(Number(efPosition || 1), rest.length + 1))
+    rest.sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
+    const inserted = [
+      ...rest.slice(0, desired - 1),
+      { id: selectedForWhoCardId, position: desired, icon: efIcon || "heart-crack", title: efTitle.trim(), description: efDescription.trim() },
+      ...rest.slice(desired - 1),
+    ]
+    const next = normalizeForWhoPositions(inserted)
+    setForWhoCards(next)
+    toast({ title: "Actualizada", description: "Tarjeta actualizada en borrador. Recuerda GUARDAR la sección para persistir." })
+  }
+
+  const handleDeleteForWhoCard = () => {
+    if (!selectedForWhoCardId) return
+    const filtered = forWhoCards.filter((it) => it.id !== selectedForWhoCardId)
+    const next = normalizeForWhoPositions(filtered)
+    setForWhoCards(next)
+    if (next.length > 0) {
+      handleSelectForWhoCard(next[0].id)
+    } else {
+      setSelectedForWhoCardId(null)
+      setEfId("")
+      setEfIcon("heart-crack")
+      setEfTitle("")
+      setEfDescription("")
+      setEfPosition(1)
+    }
+    setDeletingForWhoCard(false)
+    toast({ title: "Eliminada", description: "Tarjeta eliminada en borrador. Recuerda GUARDAR la sección para persistir." })
+  }
+
+  const handleSaveForWho = async () => {
+    if (!forWhoTitle.trim() || !forWhoSubtitle.trim() || !forWhoCtaText.trim() || !forWhoCtaHref.trim()) {
+      toast({ title: "Campos requeridos", description: "Título, subtítulo, CTA y enlace son obligatorios." })
+      return
+    }
+    if (forWhoCards.length === 0) {
+      toast({ title: "Tarjetas requeridas", description: "Crea al menos una tarjeta." })
+      return
+    }
+
+    setSavingForWho(true)
+    try {
+      const body = {
+        title: forWhoTitle.trim(),
+        subtitle: forWhoSubtitle.trim(),
+        ctaText: forWhoCtaText.trim(),
+        ctaHref: forWhoCtaHref.trim(),
+        cards: normalizeForWhoPositions(forWhoCards).filter((c) => c.title && c.description),
+      }
+      const res = await fetch("/api/content/for-who", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) throw new Error(await res.text())
+      toast({ title: "Guardado", description: "Se actualizó la sección correctamente." })
+    } catch (e) {
+      toast({ title: "Error al guardar", description: "Revisa los campos e inténtalo de nuevo." })
+    } finally {
+      setSavingForWho(false)
     }
   }
 
@@ -1149,6 +1326,7 @@ export default function DashboardPage() {
           <TabsList className="bg-card text-foreground shadow-sm border rounded-md">
             <TabsTrigger value="hero">Hero</TabsTrigger>
             <TabsTrigger value="breaker">Frase destacada</TabsTrigger>
+            <TabsTrigger value="forWho">Para quién</TabsTrigger>
             <TabsTrigger value="products">Cómo funciona</TabsTrigger>
             <TabsTrigger value="payments">Pagos</TabsTrigger>
             <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
@@ -2576,6 +2754,285 @@ export default function DashboardPage() {
                       <div className="mt-5 flex justify-center">
                         <div className="h-px w-20 bg-border" />
                       </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* ForWho Tab */}
+          <TabsContent value="forWho" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Editar sección “¿Acabas de terminar una relación?”</CardTitle>
+                  <CardDescription>Gestiona el título, las tarjetas y el botón CTA</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="forwho-title">Título</Label>
+                    <Input id="forwho-title" value={forWhoTitle} onChange={(e) => setForWhoTitle(e.target.value)} placeholder="Título de la sección" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="forwho-subtitle">Subtítulo</Label>
+                    <Textarea id="forwho-subtitle" value={forWhoSubtitle} onChange={(e) => setForWhoSubtitle(e.target.value)} placeholder="Subtítulo de la sección" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="forwho-cta-text">Texto CTA</Label>
+                      <Input id="forwho-cta-text" value={forWhoCtaText} onChange={(e) => setForWhoCtaText(e.target.value)} placeholder="Texto del botón" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="forwho-cta-href">Enlace CTA</Label>
+                      <Input id="forwho-cta-href" value={forWhoCtaHref} onChange={(e) => setForWhoCtaHref(e.target.value)} placeholder="#reservar" />
+                    </div>
+                  </div>
+
+                  <div className="border rounded-md">
+                    <details className="group">
+                      <summary className="flex cursor-pointer items-center justify-between p-3 text-left text-sm font-medium rounded-md hover:bg-accent/5 group-open:bg-accent/10">
+                        <span>Crear nueva tarjeta</span>
+                        <span className="text-xs text-muted-foreground group-open:hidden">+</span>
+                        <span className="text-xs text-muted-foreground hidden group-open:inline">-</span>
+                      </summary>
+                      <div className="space-y-3 border-t p-3">
+                        <div className="flex items-center gap-3">
+                          <Label className="text-xs text-muted-foreground w-16">Icono</Label>
+                          <HoverCard openDelay={100} closeDelay={100}>
+                            <HoverCardTrigger asChild>
+                              <Button type="button" variant="outline" className="justify-start gap-2">
+                                {(() => {
+                                  const Icon = (FOR_WHO_ICON_MAP[cfIcon as keyof typeof FOR_WHO_ICON_MAP] ?? HeartCrack)
+                                  return <Icon className="h-3 w-3" />
+                                })()}
+                                <span className="text-xs">{cfIcon}</span>
+                              </Button>
+                            </HoverCardTrigger>
+                            <HoverCardContent align="start" className="w-[240px] p-2">
+                              <div className="grid grid-cols-4 gap-2">
+                                {FOR_WHO_ICON_KEYS.map((key) => {
+                                  const Icon = FOR_WHO_ICON_MAP[key] ?? HeartCrack
+                                  const selected = cfIcon === key
+                                  return (
+                                    <Button
+                                      key={key}
+                                      type="button"
+                                      variant={selected ? "default" : "outline"}
+                                      onClick={() => setCfIcon(key)}
+                                      className="h-8 px-2 justify-center"
+                                      aria-pressed={selected}
+                                    >
+                                      <Icon className="h-3 w-3" />
+                                    </Button>
+                                  )
+                                })}
+                              </div>
+                            </HoverCardContent>
+                          </HoverCard>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="forwho-card-title">Título</Label>
+                          <Input id="forwho-card-title" value={cfTitle} onChange={(e) => setCfTitle(e.target.value)} placeholder="Título de la tarjeta" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="forwho-card-description">Descripción</Label>
+                          <Textarea
+                            id="forwho-card-description"
+                            value={cfDescription}
+                            onChange={(e) => setCfDescription(e.target.value)}
+                            placeholder="Descripción de la tarjeta"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="forwho-card-position">Posición</Label>
+                          <Input
+                            id="forwho-card-position"
+                            type="number"
+                            min={1}
+                            value={cfPosition}
+                            onChange={(e) => setCfPosition(Number(e.target.value) || 1)}
+                          />
+                        </div>
+
+                        <Button onClick={handleCreateForWhoCard} disabled={creatingForWhoCard} className="bg-primary text-primary-foreground">
+                          {creatingForWhoCard ? "Creando..." : "Añadir tarjeta"}
+                        </Button>
+                      </div>
+                    </details>
+
+                    <div className="border-t p-3 space-y-3">
+                      <div className="text-sm font-medium">Tarjetas</div>
+                      {forWhoCards.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">Aún no hay tarjetas.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {forWhoCards
+                            .slice()
+                            .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
+                            .map((c) => {
+                              const selected = c.id === selectedForWhoCardId
+                              const Icon = (FOR_WHO_ICON_MAP[c.icon as keyof typeof FOR_WHO_ICON_MAP] ?? HeartCrack)
+                              return (
+                                <button
+                                  key={c.id}
+                                  type="button"
+                                  onClick={() => handleSelectForWhoCard(c.id)}
+                                  className={[
+                                    "w-full text-left rounded-md border px-3 py-2 transition",
+                                    selected ? "border-primary bg-primary/5" : "hover:bg-accent/5",
+                                  ].join(" ")}
+                                >
+                                  <div className="flex items-center justify-between gap-3">
+                                    <div className="min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <Icon className="h-4 w-4 text-accent" aria-hidden="true" />
+                                        <span className="text-sm font-medium truncate">{c.title || "(Sin título)"}</span>
+                                      </div>
+                                      <p className="text-xs text-muted-foreground truncate">{c.description || "(Sin descripción)"}</p>
+                                    </div>
+                                    <Badge variant="secondary">#{c.position}</Badge>
+                                  </div>
+                                </button>
+                              )
+                            })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {selectedForWhoCardId ? (
+                    <div className="border rounded-md p-3 space-y-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="text-sm font-medium">Editar tarjeta</div>
+                        <Badge variant="outline">{efId}</Badge>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <Label className="text-xs text-muted-foreground w-16">Icono</Label>
+                        <HoverCard openDelay={100} closeDelay={100}>
+                          <HoverCardTrigger asChild>
+                            <Button type="button" variant="outline" className="justify-start gap-2">
+                              {(() => {
+                                const Icon = (FOR_WHO_ICON_MAP[efIcon as keyof typeof FOR_WHO_ICON_MAP] ?? HeartCrack)
+                                return <Icon className="h-3 w-3" />
+                              })()}
+                              <span className="text-xs">{efIcon}</span>
+                            </Button>
+                          </HoverCardTrigger>
+                          <HoverCardContent align="start" className="w-[240px] p-2">
+                            <div className="grid grid-cols-4 gap-2">
+                              {FOR_WHO_ICON_KEYS.map((key) => {
+                                const Icon = FOR_WHO_ICON_MAP[key] ?? HeartCrack
+                                const selected = efIcon === key
+                                return (
+                                  <Button
+                                    key={key}
+                                    type="button"
+                                    variant={selected ? "default" : "outline"}
+                                    onClick={() => setEfIcon(key)}
+                                    className="h-8 px-2 justify-center"
+                                    aria-pressed={selected}
+                                  >
+                                    <Icon className="h-3 w-3" />
+                                  </Button>
+                                )
+                              })}
+                            </div>
+                          </HoverCardContent>
+                        </HoverCard>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="forwho-edit-title">Título</Label>
+                        <Input id="forwho-edit-title" value={efTitle} onChange={(e) => setEfTitle(e.target.value)} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="forwho-edit-description">Descripción</Label>
+                        <Textarea id="forwho-edit-description" value={efDescription} onChange={(e) => setEfDescription(e.target.value)} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="forwho-edit-position">Posición</Label>
+                        <Input
+                          id="forwho-edit-position"
+                          type="number"
+                          min={1}
+                          value={efPosition}
+                          onChange={(e) => setEfPosition(Number(e.target.value) || 1)}
+                        />
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <Button type="button" onClick={handleSaveForWhoCard} className="bg-primary text-primary-foreground">
+                          Actualizar tarjeta
+                        </Button>
+
+                        <AlertDialog open={deletingForWhoCard} onOpenChange={setDeletingForWhoCard}>
+                          <AlertDialogTrigger asChild>
+                            <Button type="button" variant="destructive">
+                              Eliminar
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Eliminar tarjeta</AlertDialogTitle>
+                              <AlertDialogDescription>Esta acción elimina la tarjeta del borrador. Recuerda guardar la sección.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={handleDeleteForWhoCard}>Eliminar</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <Button onClick={handleSaveForWho} disabled={savingForWho} className="bg-primary text-primary-foreground">
+                    {savingForWho ? "Guardando..." : "Guardar sección"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vista previa</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <h2 className="text-xl md:text-2xl font-bold text-balance">{forWhoTitle || "(Sin título)"}</h2>
+                      <p className="text-sm text-muted-foreground text-pretty">{forWhoSubtitle || "(Sin subtítulo)"}</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {forWhoCards
+                        .slice()
+                        .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
+                        .map((c) => {
+                          const Icon = (FOR_WHO_ICON_MAP[c.icon as keyof typeof FOR_WHO_ICON_MAP] ?? HeartCrack)
+                          return (
+                            <div key={c.id} className="rounded-xl border bg-background p-4">
+                              <div className="flex items-start gap-3">
+                                <div className="shrink-0 rounded-xl bg-accent/10 text-accent p-2 ring-1 ring-accent/15">
+                                  <Icon className="h-5 w-5" aria-hidden="true" />
+                                </div>
+                                <div className="min-w-0">
+                                  <h3 className="font-semibold leading-tight">{c.title || "(Sin título)"}</h3>
+                                  <p className="mt-1 text-sm text-muted-foreground text-pretty">{c.description || "(Sin descripción)"}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        })}
+                    </div>
+
+                    <div className="pt-2">
+                      <Button className="w-full" size="lg">
+                        {forWhoCtaText || "CTA"}
+                      </Button>
+                      <p className="mt-2 text-xs text-muted-foreground text-center">Enlace: {forWhoCtaHref || "(vacío)"}</p>
                     </div>
                   </div>
                 </CardContent>
