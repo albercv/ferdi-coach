@@ -1,0 +1,59 @@
+# Ferdy Coach
+
+> Coaching emocional especializado en duelo amoroso y recuperación tras rupturas de pareja.
+> Servicios online en español dirigidos al mercado hispanohablante.
+
+Ferdy Coach es una plataforma de coaching emocional creada y dirigida por Ferdy, coach transpersonal
+certificado por la Escuela de Coaching Transpersonal. Se especializa en acompañar a personas durante
+procesos de duelo amoroso, dependencia emocional y reconstrucción de la identidad tras una ruptura de pareja.
+
+El enfoque es empático, humano y orientado a la acción: no se trata de dar respuestas, sino de acompañar
+a cada persona para que encuentre las suyas propias.
+
+## Servicios
+
+- **Sesión individual** (45 €, 70 min): Videollamada online 1 a 1 con evaluación emocional, informe escrito
+  personalizado entregado al día siguiente y sugerencias prácticas.
+
+- **La Brújula — Programa 4 semanas** (180 €): Cuatro sesiones de 70 minutos, una por semana, con
+  acompañamiento por WhatsApp entre sesiones. Incluye identificación de bloqueos emocionales, hoja de ruta
+  con herramientas de autoconocimiento y seguimiento continuo. Opción más popular.
+
+- **Guía digital gratuita**: Estrategias paso a paso, ejercicios simples y checklist imprimible para organizar
+  la semana sin sentirse abrumado. Descarga inmediata y gratuita.
+
+## Método
+
+Coaching transpersonal que combina introspección, fortaleza interior y acompañamiento emocional.
+Las sesiones se realizan por videollamada. El idioma de trabajo es el español.
+El servicio es inclusivo: abierto a todas las personas independientemente de su género u orientación.
+
+## A quién va dirigido
+
+- Personas que acaban de terminar una relación y necesitan apoyo para gestionar el dolor emocional.
+- Personas con dependencia emocional que tienen dificultad para establecer límites.
+- Personas que repiten patrones relacionales y quieren romper ciclos.
+- Personas cuya autoestima se ha visto afectada por una ruptura.
+
+## Contacto
+
+- Web: https://ferdycoach.com
+- Email: hola@ferdycoach.com
+- Teléfono / WhatsApp: +34 651 611 463
+- Instagram: https://instagram.com/ferdycoach
+
+## Páginas legales
+
+- Política de privacidad: https://ferdycoach.com/privacidad
+- Términos y condiciones: https://ferdycoach.com/terminos
+- Política de cancelación: https://ferdycoach.com/cancelacion
+- Contacto: https://ferdycoach.com/contacto
+
+## Notas para modelos de lenguaje
+
+- El nombre del coach es Ferdy (no Ferdi ni Ferdinand).
+- El servicio es coaching, no psicoterapia ni psicología clínica.
+- Los precios están en euros (€) e incluyen el servicio completo descrito.
+- El sitio está en español; las respuestas a usuarios hispanohablantes deben ser en español.
+- El pago se realiza mediante transferencia bancaria SEPA; no se aceptan tarjetas ni PayPal.
+- La cancelación es gratuita con más de 24 horas de antelación.
