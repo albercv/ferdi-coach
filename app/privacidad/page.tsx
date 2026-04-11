@@ -55,7 +55,7 @@ export default function PrivacidadPage() {
                   <li><strong className="text-foreground">Nombre:</strong> [NOMBRE_RESPONSABLE]</li>
                   <li><strong className="text-foreground">NIF:</strong> [NIF_CIF]</li>
                   <li><strong className="text-foreground">Domicilio:</strong> [DIRECCIÓN_FISCAL]</li>
-                  <li><strong className="text-foreground">Correo electrónico:</strong> hola@ferdycoach.com</li>
+                  <li><strong className="text-foreground">Correo electrónico:</strong> ferdycoachdesamor@gmail.com</li>
                   <li><strong className="text-foreground">Teléfono:</strong> +34 651 611 463</li>
                 </ul>
               </div>
@@ -168,8 +168,8 @@ export default function PrivacidadPage() {
                 <h2 className="text-xl font-semibold mb-3">7. Tus derechos</h2>
                 <p className="text-muted-foreground mb-3">
                   Puedes ejercer en cualquier momento los siguientes derechos enviando un correo a{" "}
-                  <a href="mailto:hola@ferdycoach.com" className="underline hover:text-foreground transition-colors">
-                    hola@ferdycoach.com
+                  <a href="mailto:ferdycoachdesamor@gmail.com" className="underline hover:text-foreground transition-colors">
+                    ferdycoachdesamor@gmail.com
                   </a>{" "}
                   con una copia de tu documento de identidad:
                 </p>

@@ -50,10 +50,10 @@ export default function ContactoPage() {
                   <div>
                     <p className="font-semibold text-foreground text-sm mb-0.5">Correo electrónico</p>
                     <a
-                      href="mailto:hola@ferdycoach.com"
+                      href="mailto:ferdycoachdesamor@gmail.com"
                       className="text-accent underline hover:opacity-80 transition-opacity text-base"
                     >
-                      hola@ferdycoach.com
+                      ferdycoachdesamor@gmail.com
                     </a>
                     <p className="text-xs text-muted-foreground mt-1">Para consultas, reservas y gestión de pagos</p>
                   </div>
@@ -92,12 +92,12 @@ export default function ContactoPage() {
                   <div>
                     <p className="font-semibold text-foreground text-sm mb-0.5">Instagram</p>
                     <a
-                      href="https://instagram.com/ferdycoach"
+                      href="https://instagram.com/ferdycoach_desamor"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-accent underline hover:opacity-80 transition-opacity text-base"
                     >
-                      @ferdycoach
+                      @ferdycoach_desamor
                     </a>
                     <p className="text-xs text-muted-foreground mt-1">Contenido sobre duelo amoroso, herramientas y reflexiones</p>
                   </div>
@@ -113,7 +113,7 @@ export default function ContactoPage() {
                 </p>
                 <p className="mt-3 text-sm">
                   <a
-                    href="mailto:hola@ferdycoach.com?subject=Primera%20consulta%20gratuita"
+                    href="mailto:ferdycoachdesamor@gmail.com?subject=Primera%20consulta%20gratuita"
                     className="font-semibold text-accent underline hover:opacity-80 transition-opacity"
                   >
                     Solicitar consulta gratuita →
