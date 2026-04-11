@@ -96,7 +96,7 @@ export default function CancelacionPage() {
                     <p className="font-semibold text-foreground">Pausa del programa</p>
                     <p className="text-muted-foreground">
                       Si necesitas pausar el programa por causas justificadas, contacta con
-                      hola@ferdycoach.com. Se valorará la posibilidad de aplazar las sesiones restantes
+                      ferdycoachdesamor@gmail.com. Se valorará la posibilidad de aplazar las sesiones restantes
                       hasta un máximo de 60 días naturales desde la fecha de la última sesión realizada.
                     </p>
                   </div>
@@ -140,10 +140,10 @@ export default function CancelacionPage() {
                   <li>
                     <strong className="text-foreground">Correo electrónico:</strong>{" "}
                     <a
-                      href="mailto:hola@ferdycoach.com"
+                      href="mailto:ferdycoachdesamor@gmail.com"
                       className="underline hover:text-foreground transition-colors"
                     >
-                      hola@ferdycoach.com
+                      ferdycoachdesamor@gmail.com
                     </a>
                   </li>
                   <li>

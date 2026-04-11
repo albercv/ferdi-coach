@@ -20,7 +20,7 @@ export function generateStructuredData() {
       contactType: "customer service",
       availableLanguage: "Spanish",
     },
-    sameAs: ["https://instagram.com/ferdycoach"],
+    sameAs: ["https://instagram.com/ferdycoach_desamor_desamor"],
     areaServed: {
       "@type": "Country",
       name: "Spain",
@@ -180,7 +180,7 @@ export function generateLocalBusinessStructuredData() {
     serviceType: "Coaching emocional online para rupturas de pareja",
     priceRange: "€€",
     openingHours: "Mo-Fr 09:00-18:00",
-    sameAs: ["https://instagram.com/ferdycoach"],
+    sameAs: ["https://instagram.com/ferdycoach_desamor"],
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "5.0",

@@ -70,15 +70,15 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="mailto:hola@ferdycoach.com"
+                  href="mailto:ferdycoachdesamor@gmail.com"
                   className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                 >
-                  hola@ferdycoach.com
+                  ferdycoachdesamor@gmail.com
                 </Link>
               </li>
               <li>
                 <Link
-                  href="https://instagram.com/ferdycoach"
+                  href="https://instagram.com/ferdycoach_desamor"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"

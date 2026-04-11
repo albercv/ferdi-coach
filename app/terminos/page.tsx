@@ -57,7 +57,7 @@ export default function TerminosPage() {
                   <li><strong className="text-foreground">Titular:</strong> [NOMBRE_RESPONSABLE]</li>
                   <li><strong className="text-foreground">NIF:</strong> [NIF_CIF]</li>
                   <li><strong className="text-foreground">Domicilio:</strong> [DIRECCIÓN_FISCAL]</li>
-                  <li><strong className="text-foreground">Correo electrónico:</strong> hola@ferdycoach.com</li>
+                  <li><strong className="text-foreground">Correo electrónico:</strong> ferdycoachdesamor@gmail.com</li>
                   <li><strong className="text-foreground">Teléfono:</strong> +34 651 611 463</li>
                 </ul>
               </div>
