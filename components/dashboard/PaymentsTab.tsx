@@ -13,8 +13,18 @@ import type { PaymentSubmission } from "@/lib/payments"
 type StatusFilter = "all" | "pending" | "confirmed" | "failed"
 
 function formatEuro(amount: number): string {
-  const fixed = Number.isFinite(amount) ? amount.toFixed(0) : "0"
-  return `${fixed}€`
+  return `${Number.isFinite(amount) ? amount.toFixed(0) : "0"}€`
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleString("es-ES", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  })
+}
+
+function daysSince(iso: string): number {
+  return (Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24)
 }
 
 function statusBadge(status: PaymentSubmission["status"]) {
@@ -30,6 +40,7 @@ export function PaymentsTab() {
   const [submissions, setSubmissions] = useState<PaymentSubmission[]>([])
   const [loadingSubmissions, setLoadingSubmissions] = useState(false)
   const [filter, setFilter] = useState<StatusFilter>("pending")
+  const [remindingId, setRemindingId] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
     if (filter === "all") return submissions
@@ -56,9 +67,7 @@ export function PaymentsTab() {
     }
   }
 
-  useEffect(() => {
-    loadAll()
-  }, [])
+  useEffect(() => { loadAll() }, [])
 
   async function saveIban() {
     const value = iban.trim()
@@ -108,6 +117,61 @@ export function PaymentsTab() {
     }
   }
 
+  async function sendReminder(id: string) {
+    setRemindingId(id)
+    try {
+      const res = await fetch("/api/payments/submissions", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id, action: "remind" }),
+      })
+      if (!res.ok) {
+        toast({ title: "No se pudo enviar", description: "Inténtalo de nuevo." })
+        return
+      }
+      toast({ title: "Recordatorio enviado", description: "El email ha sido enviado al cliente." })
+    } catch {
+      toast({ title: "Error", description: "No se pudo conectar." })
+    } finally {
+      setRemindingId(null)
+    }
+  }
+
+  function renderButtons(s: PaymentSubmission) {
+    if (s.status !== "pending") {
+      return (
+        <Button size="sm" variant="outline" onClick={() => updateStatus(s.id, "pending")}>
+          Reabrir
+        </Button>
+      )
+    }
+
+    const age = daysSince(s.createdAtIso)
+
+    return (
+      <>
+        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => updateStatus(s.id, "confirmed")}>
+          Comprobado
+        </Button>
+        {age >= 2 && age < 5 && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => sendReminder(s.id)}
+            disabled={remindingId === s.id}
+          >
+            {remindingId === s.id ? "Enviando..." : "Recordatorio"}
+          </Button>
+        )}
+        {age >= 5 && (
+          <Button size="sm" className="bg-red-600 hover:bg-red-700" onClick={() => updateStatus(s.id, "failed")}>
+            Fallido
+          </Button>
+        )}
+      </>
+    )
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
@@ -128,8 +192,8 @@ export function PaymentsTab() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Pagos pendientes</CardTitle>
-          <CardDescription>Personas que han marcado “PAGADO”.</CardDescription>
+          <CardTitle>Pagos</CardTitle>
+          <CardDescription>Gestión de solicitudes de pago.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
@@ -158,14 +222,11 @@ export function PaymentsTab() {
                   <div className="text-sm">
                     <div className="font-medium">{s.payerName}</div>
                     <div className="text-muted-foreground break-all">{s.payerEmail}</div>
-                    {s.payerPhone ? (
-                      <div className="text-muted-foreground break-all">{s.payerPhone}</div>
-                    ) : null}
+                    {s.payerPhone && <div className="text-muted-foreground">{s.payerPhone}</div>}
+                    <div className="text-xs text-muted-foreground mt-1">Inicio: {formatDate(s.createdAtIso)}</div>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-600" onClick={() => updateStatus(s.id, "confirmed")}>Comprobado</Button>
-                    <Button size="sm" className="bg-red-600 hover:bg-red-600" onClick={() => updateStatus(s.id, "failed")}>Fallido</Button>
-                    <Button size="sm" variant="outline" onClick={() => updateStatus(s.id, "pending")}>Pendiente</Button>
+                    {renderButtons(s)}
                   </div>
                 </div>
               ))}
