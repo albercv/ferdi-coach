@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { z } from "zod"
@@ -17,6 +18,7 @@ export async function GET() {
     if (err instanceof AuthzError) {
       return NextResponse.json({ error: err.message }, { status: err.status })
     }
+    Sentry.captureException(err, { tags: { flow: "payment", step: "list" } })
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 })
   }
 }
@@ -48,6 +50,7 @@ export async function PATCH(req: Request) {
     if (err instanceof Error && err.message === "NOT_FOUND") {
       return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 })
     }
+    Sentry.captureException(err, { tags: { flow: "payment", step: "confirmation" } })
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 })
   }
 }

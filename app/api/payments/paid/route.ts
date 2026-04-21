@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
@@ -57,6 +58,7 @@ export async function POST(req: Request) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: "BAD_REQUEST", details: err.flatten() }, { status: 400 })
     }
+    Sentry.captureException(err, { tags: { flow: "payment", step: "submission" } })
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 })
   }
 }
