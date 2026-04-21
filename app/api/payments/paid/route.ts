@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
+import { sendPaymentConfirmation } from "@/lib/email/emailService"
 import type { PaymentProductRef } from "@/lib/payments"
 import { createPaymentSubmission } from "@/lib/payments-storage"
 import { getProducts } from "@/lib/products-md"
@@ -53,6 +54,7 @@ export async function POST(req: Request) {
       payerPhone: body.payerPhone,
     })
 
+    void sendPaymentConfirmation(created)
     return NextResponse.json({ id: created.id, status: created.status })
   } catch (err) {
     if (err instanceof z.ZodError) {
