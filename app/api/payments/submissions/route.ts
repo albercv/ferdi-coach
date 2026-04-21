@@ -5,7 +5,7 @@ import { z } from "zod"
 
 import { authOptions } from "@/lib/auth"
 import { assertAdmin, AuthzError } from "@/lib/auth/assertAdmin"
-import { sendPaymentConfirmed, sendPaymentFailed, sendPaymentReminder } from "@/lib/email/emailService"
+import { sendPaymentConfirmed } from "@/lib/email/emailService"
 import { listPaymentSubmissions, updatePaymentSubmissionStatus } from "@/lib/payments-storage"
 
 export const runtime = "nodejs"
@@ -24,16 +24,10 @@ export async function GET() {
   }
 }
 
-const PatchSchema = z.union([
-  z.object({
-    id: z.string().trim().min(1),
-    status: z.enum(["pending", "confirmed", "failed"]),
-  }),
-  z.object({
-    id: z.string().trim().min(1),
-    action: z.literal("remind"),
-  }),
-])
+const PatchSchema = z.object({
+  id: z.string().trim().min(1),
+  status: z.enum(["pending", "confirmed"]),
+})
 
 export async function PATCH(req: Request) {
   try {
@@ -41,16 +35,6 @@ export async function PATCH(req: Request) {
     assertAdmin(session)
 
     const body = PatchSchema.parse(await req.json())
-
-    if ("action" in body && body.action === "remind") {
-      const submission = listPaymentSubmissions().find((s) => s.id === body.id)
-      if (!submission) {
-        return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 })
-      }
-      void sendPaymentReminder(submission)
-      return NextResponse.json({ ok: true })
-    }
-
     const updated = updatePaymentSubmissionStatus({
       id: body.id,
       status: body.status,
@@ -58,7 +42,6 @@ export async function PATCH(req: Request) {
     })
 
     if (body.status === "confirmed") void sendPaymentConfirmed(updated)
-    if (body.status === "failed") void sendPaymentFailed(updated)
 
     return NextResponse.json({ submission: updated })
   } catch (err) {

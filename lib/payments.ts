@@ -1,4 +1,4 @@
-export type PaymentStatus = "pending" | "confirmed" | "failed"
+export type PaymentStatus = "pending" | "overdue" | "failed_warning" | "confirmed" | "failed"
 
 export type PaymentProductRef =
   | { kind: "session"; id: string; subtype: "individual" | "program4"; title: string; priceEuro: number }
@@ -26,6 +26,7 @@ export type PaymentSubmission = {
   payerName: string
   payerEmail: string
   payerPhone?: string
+  failedWarningAtIso?: string
 }
 
 export function buildPaymentConceptShort(product: PaymentProductRef): string {

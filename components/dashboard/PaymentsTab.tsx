@@ -10,7 +10,9 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import type { PaymentSubmission } from "@/lib/payments"
 
-type StatusFilter = "all" | "pending" | "confirmed" | "failed"
+type StatusFilter = "active" | "confirmed" | "failed" | "all"
+
+const ACTIVE_STATUSES = new Set(["pending", "overdue", "failed_warning"])
 
 function formatEuro(amount: number): string {
   return `${Number.isFinite(amount) ? amount.toFixed(0) : "0"}€`
@@ -23,14 +25,19 @@ function formatDate(iso: string): string {
   })
 }
 
-function daysSince(iso: string): number {
-  return (Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24)
-}
-
 function statusBadge(status: PaymentSubmission["status"]) {
-  if (status === "confirmed") return <Badge className="bg-green-600 hover:bg-green-600 text-white">Comprobado</Badge>
-  if (status === "failed") return <Badge className="bg-red-600 hover:bg-red-600 text-white">Fallido</Badge>
-  return <Badge className="bg-yellow-500 hover:bg-yellow-500 text-white">Pendiente</Badge>
+  switch (status) {
+    case "confirmed":
+      return <Badge className="bg-green-600 hover:bg-green-600 text-white">Comprobado</Badge>
+    case "failed":
+      return <Badge className="bg-red-900 hover:bg-red-900 text-white">Fallido</Badge>
+    case "failed_warning":
+      return <Badge className="bg-red-500 hover:bg-red-500 text-white">Aviso enviado</Badge>
+    case "overdue":
+      return <Badge className="bg-orange-500 hover:bg-orange-500 text-white">Recordatorio enviado</Badge>
+    default:
+      return <Badge className="bg-yellow-500 hover:bg-yellow-500 text-white">Pendiente</Badge>
+  }
 }
 
 export function PaymentsTab() {
@@ -39,12 +46,15 @@ export function PaymentsTab() {
   const [savingIban, setSavingIban] = useState(false)
   const [submissions, setSubmissions] = useState<PaymentSubmission[]>([])
   const [loadingSubmissions, setLoadingSubmissions] = useState(false)
-  const [filter, setFilter] = useState<StatusFilter>("pending")
-  const [remindingId, setRemindingId] = useState<string | null>(null)
+  const [filter, setFilter] = useState<StatusFilter>("active")
 
   const filtered = useMemo(() => {
-    if (filter === "all") return submissions
-    return submissions.filter((s) => s.status === filter)
+    switch (filter) {
+      case "active": return submissions.filter((s) => ACTIVE_STATUSES.has(s.status))
+      case "confirmed": return submissions.filter((s) => s.status === "confirmed")
+      case "failed": return submissions.filter((s) => s.status === "failed")
+      default: return submissions
+    }
   }, [filter, submissions])
 
   async function loadAll() {
@@ -93,7 +103,7 @@ export function PaymentsTab() {
     }
   }
 
-  async function updateStatus(id: string, status: PaymentSubmission["status"]) {
+  async function updateStatus(id: string, status: "pending" | "confirmed") {
     const prev = submissions
     setSubmissions((current) => current.map((s) => (s.id === id ? { ...s, status } : s)))
     try {
@@ -117,58 +127,18 @@ export function PaymentsTab() {
     }
   }
 
-  async function sendReminder(id: string) {
-    setRemindingId(id)
-    try {
-      const res = await fetch("/api/payments/submissions", {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ id, action: "remind" }),
-      })
-      if (!res.ok) {
-        toast({ title: "No se pudo enviar", description: "Inténtalo de nuevo." })
-        return
-      }
-      toast({ title: "Recordatorio enviado", description: "El email ha sido enviado al cliente." })
-    } catch {
-      toast({ title: "Error", description: "No se pudo conectar." })
-    } finally {
-      setRemindingId(null)
-    }
-  }
-
   function renderButtons(s: PaymentSubmission) {
-    if (s.status !== "pending") {
+    if (s.status === "confirmed" || s.status === "failed") {
       return (
         <Button size="sm" variant="outline" onClick={() => updateStatus(s.id, "pending")}>
           Reabrir
         </Button>
       )
     }
-
-    const age = daysSince(s.createdAtIso)
-
     return (
-      <>
-        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => updateStatus(s.id, "confirmed")}>
-          Comprobado
-        </Button>
-        {age >= 2 && age < 5 && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => sendReminder(s.id)}
-            disabled={remindingId === s.id}
-          >
-            {remindingId === s.id ? "Enviando..." : "Recordatorio"}
-          </Button>
-        )}
-        {age >= 5 && (
-          <Button size="sm" className="bg-red-600 hover:bg-red-700" onClick={() => updateStatus(s.id, "failed")}>
-            Fallido
-          </Button>
-        )}
-      </>
+      <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => updateStatus(s.id, "confirmed")}>
+        Comprobado
+      </Button>
     )
   }
 
@@ -197,7 +167,7 @@ export function PaymentsTab() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
-            <Button variant={filter === "pending" ? "default" : "outline"} size="sm" onClick={() => setFilter("pending")}>Pendientes</Button>
+            <Button variant={filter === "active" ? "default" : "outline"} size="sm" onClick={() => setFilter("active")}>Activos</Button>
             <Button variant={filter === "confirmed" ? "default" : "outline"} size="sm" onClick={() => setFilter("confirmed")}>Comprobados</Button>
             <Button variant={filter === "failed" ? "default" : "outline"} size="sm" onClick={() => setFilter("failed")}>Fallidos</Button>
             <Button variant={filter === "all" ? "default" : "outline"} size="sm" onClick={() => setFilter("all")}>Todos</Button>
