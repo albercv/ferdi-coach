@@ -42,7 +42,7 @@ export function AboutSection({ about }: { about: AboutContent }) {
   }, [])
 
   return (
-    <Section id="sobre-mi" aria-labelledby="sobre-mi-title" className="bg-secondary/50">
+    <Section id="sobre-mi" aria-labelledby="sobre-mi-title" className="bg-background">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
           <h2 id="sobre-mi-title" className="text-3xl md:text-4xl font-bold text-balance">

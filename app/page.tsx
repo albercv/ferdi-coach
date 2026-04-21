@@ -40,19 +40,21 @@ export default function HomePage() {
       <main id="main-content">
         <HeroSection hero={hero} />
         <BreakerBanner text={breaker.text} kicker={breaker.kicker} />
-        <LazyLoad>
-          <HowItWorksSectionV2 />
-        </LazyLoad>
-        <LazyLoad>
-          <TestimonialsSection testimonials={testimonials} />
-        </LazyLoad>
         <ForWhoSection forWho={forWho} />
-        <SessionsSection sessions={sessions} />
+        <LazyLoad>
+          <SessionsSection sessions={sessions} />
+        </LazyLoad>
         <LazyLoad>
           <GuidesSection guides={guides} />
         </LazyLoad>
         <LazyLoad>
+          <TestimonialsSection testimonials={testimonials} />
+        </LazyLoad>
+        <LazyLoad>
           <AboutSection about={about} />
+        </LazyLoad>
+        <LazyLoad>
+          <HowItWorksSectionV2 />
         </LazyLoad>
         <LazyLoad>
           <FAQSection faq={faq} />

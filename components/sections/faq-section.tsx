@@ -6,7 +6,7 @@ export function FAQSection({ faq }: { faq: { title: string; subtitle?: string; i
   // const { faq } = siteContent
 
   return (
-    <Section id="preguntas" aria-labelledby="faq-title" className="bg-primary/5">
+    <Section id="preguntas" aria-labelledby="faq-title" className="bg-background">
       <div className="text-center mb-12">
         <h2 id="faq-title" className="text-3xl md:text-4xl font-bold mb-6 text-balance">
           {faq.title}
