@@ -5,20 +5,22 @@ import { sendTelegramAlert } from "@/lib/monitoring/telegram"
 export const runtime = "nodejs"
 
 function formatSentryAlert(body: unknown): string {
-  const data = (body as Record<string, unknown>)?.data as Record<string, unknown> | undefined
-  const issue = (data?.issue ?? data?.event ?? {}) as Record<string, unknown>
-  const title = (issue.title ?? (body as Record<string, unknown>)?.message ?? "Error desconocido") as string
-  const level = ((issue.level ?? "error") as string).toUpperCase()
-  const project = ((issue.project as Record<string, unknown>)?.name ?? (body as Record<string, unknown>)?.project_name ?? "ferdi-coach") as string
-  const url = (issue.web_url ?? issue.permalink ?? "") as string
+  const root = body as Record<string, unknown>
+  const data = root?.data as Record<string, unknown> | undefined
+  const event = (data?.event ?? data?.issue ?? {}) as Record<string, unknown>
+
+  const title = (event.title ?? root?.message ?? "Error desconocido") as string
+  const level = ((event.level ?? "error") as string).toUpperCase()
+  const rule = (data?.triggered_rule ?? "") as string
+  const url = (event.web_url ?? event.permalink ?? "") as string
 
   const lines = [
-    `🚨 <b>Error en producción</b>`,
+    `🚨 <b>Error en producción — ferdi-coach</b>`,
     ``,
     `<b>Nivel:</b> ${level}`,
-    `<b>Proyecto:</b> ${project}`,
     `<b>Error:</b> ${title}`,
   ]
+  if (rule) lines.push(`<b>Regla:</b> ${rule}`)
   if (url) lines.push(`<b>Sentry:</b> ${url}`)
   return lines.join("\n")
 }
