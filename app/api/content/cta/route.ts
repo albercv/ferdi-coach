@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -41,6 +42,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json({ ok: true })
   } catch (err: any) {
+    Sentry.captureException(err, { tags: { flow: "content-write", route: "cta", method: "PUT" } })
     return NextResponse.json({ error: err?.message || "Error guardando cta" }, { status: 500 })
   }
 }
@@ -73,6 +75,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true })
   } catch (err: any) {
+    Sentry.captureException(err, { tags: { flow: "content-write", route: "cta", method: "POST" } })
     return NextResponse.json({ error: err?.message || "Error guardando cta" }, { status: 500 })
   }
 }

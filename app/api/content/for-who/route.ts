@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 
@@ -65,6 +66,7 @@ async function save(req: Request) {
     setForWho(next)
     return NextResponse.json({ ok: true })
   } catch (err: any) {
+    Sentry.captureException(err, { tags: { flow: "content-write", route: "for-who" } })
     return NextResponse.json({ error: err?.message || "Error guardando for-who" }, { status: 500 })
   }
 }

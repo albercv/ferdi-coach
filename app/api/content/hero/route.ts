@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -82,6 +83,7 @@ export async function PUT(req: Request) {
     await tryCleanupReplacedUrl(before.backgroundImageUrl, hero.backgroundImageUrl)
     return NextResponse.json({ ok: true })
   } catch (err: any) {
+    Sentry.captureException(err, { tags: { flow: "content-write", route: "hero", method: "PUT" } })
     return NextResponse.json({ error: err?.message || "Error guardando hero" }, { status: 500 })
   }
 }
@@ -141,6 +143,7 @@ export async function POST(req: Request) {
     await tryCleanupReplacedUrl(before.backgroundImageUrl, hero.backgroundImageUrl)
     return NextResponse.json({ ok: true })
   } catch (err: any) {
+    Sentry.captureException(err, { tags: { flow: "content-write", route: "hero", method: "POST" } })
     return NextResponse.json({ error: err?.message || "Error guardando hero" }, { status: 500 })
   }
 }

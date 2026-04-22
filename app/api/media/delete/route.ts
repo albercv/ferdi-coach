@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -36,6 +37,14 @@ export async function DELETE(req: Request) {
     return NextResponse.json(res)
   } catch (err: any) {
     const message = typeof err?.message === "string" ? err.message : "DELETE_FAILED"
+    Sentry.captureException(err, {
+      tags: { flow: "media-delete", outcome: "error" },
+      extra: {
+        email: session.user?.email ?? null,
+        role: (session.user as any)?.role ?? null,
+        errorMessage: message,
+      },
+    })
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
