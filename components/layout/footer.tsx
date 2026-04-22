@@ -46,7 +46,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#guias"
-                  title="Guías gratuitas descargables para comenzar tu proceso de sanación emocional"
+                  title="Guías de apoyo descargables para comenzar tu proceso de sanación emocional"
                   className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                 >
                   Guías digitales
