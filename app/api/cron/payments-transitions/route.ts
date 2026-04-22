@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 
-import { sendPaymentFailed, sendPaymentReminder } from "@/lib/email/emailService"
+import { sendPaymentFailed, sendPaymentReminder, sendPaymentCancelled } from "@/lib/email/emailService"
 import { getSubmissionsForTransition, updatePaymentSubmissionStatus } from "@/lib/payments-storage"
 
 export const runtime = "nodejs"
@@ -40,7 +40,8 @@ export async function GET(req: Request): Promise<NextResponse> {
 
   for (const sub of toFailed) {
     try {
-      updatePaymentSubmissionStatus({ id: sub.id, status: "failed" })
+      const updated = updatePaymentSubmissionStatus({ id: sub.id, status: "failed" })
+      await sendPaymentCancelled(updated)
       results.failed++
     } catch (err) {
       console.error("[cron/payments] Error al pasar a failed:", sub.id, err)

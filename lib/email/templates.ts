@@ -115,14 +115,33 @@ export function buildRecordatorioPagoEmail(s: PaymentSubmission, iban: string): 
   }
 }
 
-export function buildPagoFallidoEmail(s: PaymentSubmission): EmailTemplate {
+export function buildPagoFallidoEmail(s: PaymentSubmission, iban: string): EmailTemplate {
+  return {
+    subject: `Tienes 3 días para completar tu pago — ${s.productTitle}`,
+    html: buildWrapper(`
+      <h2 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0d0d0d;">Aún estás a tiempo</h2>
+      <p>Hola <strong>${s.payerName}</strong>,</p>
+      <p>Todavía no hemos recibido la transferencia correspondiente a <strong>${s.productTitle}</strong>. Tienes <strong>3 días</strong> para realizarla antes de que procedamos a cancelar la solicitud.</p>
+      ${accentBlock(`
+        <strong>IBAN:</strong> ${iban}<br/>
+        <strong>Importe:</strong> ${s.amountEuro} €<br/>
+        <strong>Concepto:</strong> ${s.conceptShort} - ${s.payerName}
+      `)}
+      <p>Si ya realizaste el ingreso o tienes algún problema, responde a este email y lo resolvemos.</p>
+      <p>Un saludo,<br/><strong>Ferdy</strong></p>
+    `),
+  }
+}
+
+export function buildPagoCanceladoEmail(s: PaymentSubmission): EmailTemplate {
   return {
     subject: `Solicitud cancelada — ${s.productTitle}`,
     html: buildWrapper(`
       <h2 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0d0d0d;">Solicitud cancelada</h2>
       <p>Hola <strong>${s.payerName}</strong>,</p>
-      <p>Lamentablemente no hemos recibido el ingreso correspondiente a tu solicitud de <strong>${s.productTitle}</strong>, por lo que la hemos cancelado.</p>
-      <p>Si crees que esto es un error o quieres volver a intentarlo, responde a este email y lo resolvemos.</p>
+      <p>Hemos cancelado tu solicitud de <strong>${s.productTitle}</strong> al no haber recibido el pago en el plazo establecido.</p>
+      <p><strong>Por favor, no realices ya ninguna transferencia</strong> para esta solicitud, ya que no podría ser procesada.</p>
+      <p>Si deseas retomar el proceso, puedes volver a hacer una reserva desde la web en cualquier momento.</p>
       <p>Un saludo,<br/><strong>Ferdy</strong></p>
     `),
   }

@@ -7,6 +7,7 @@ import {
   buildPagoComprobadoEmail,
   buildRecordatorioPagoEmail,
   buildPagoFallidoEmail,
+  buildPagoCanceladoEmail,
 } from "@/lib/email/templates"
 
 export async function sendPaymentConfirmation(submission: PaymentSubmission): Promise<void> {
@@ -40,6 +41,14 @@ export async function sendPaymentReminder(submission: PaymentSubmission): Promis
 export async function sendPaymentFailed(submission: PaymentSubmission): Promise<void> {
   if (!process.env.RESEND_API_KEY) return
 
-  const template = buildPagoFallidoEmail(submission)
+  const { iban } = getPaymentsConfig()
+  const template = buildPagoFallidoEmail(submission, iban)
+  await resend.emails.send({ from: EMAIL_FROM, to: submission.payerEmail, subject: template.subject, html: template.html })
+}
+
+export async function sendPaymentCancelled(submission: PaymentSubmission): Promise<void> {
+  if (!process.env.RESEND_API_KEY) return
+
+  const template = buildPagoCanceladoEmail(submission)
   await resend.emails.send({ from: EMAIL_FROM, to: submission.payerEmail, subject: template.subject, html: template.html })
 }
