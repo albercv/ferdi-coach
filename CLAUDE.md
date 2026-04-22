@@ -150,6 +150,7 @@ ome `.md` files act as the project's content database.
 
 - Commit prefix: `feat:` · `fix:` · `refactor:` · `docs:` · `chore:`
 - Do not mix functional and formatting changes in the same commit.
+- **No `Co-Authored-By` trailers.** Commits van sin firma de Claude ni de ningún agente. Autor único = quien hace el commit.
 
 ---
 
