@@ -89,4 +89,42 @@ describe("authOptions Google", () => {
     })
     expect(out2.role).toBe("user")
   })
+
+  it("JWT callback recalcula role a admin si el email entra al allowlist después del primer login", async () => {
+    vi.resetModules()
+    ;(process.env as any).NODE_ENV = "development"
+    process.env.GOOGLE_CLIENT_ID = "x"
+    process.env.GOOGLE_CLIENT_SECRET = "y"
+    process.env.AUTH_ADMIN_EMAIL = "admin@example.com"
+    process.env.AUTH_ADMIN_EMAIL_2 = "ferdy-test@example.com"
+    process.env.AUTH_ADMINS = ""
+
+    const authOptions = await loadAuthOptions()
+    const out = await (authOptions.callbacks as any).jwt({
+      token: { email: "ferdy-test@example.com", role: "user" },
+      user: undefined,
+    })
+
+    expect(out.role).toBe("admin")
+
+    delete process.env.AUTH_ADMIN_EMAIL_2
+  })
+
+  it("JWT callback baja role a user si el email se quita del allowlist", async () => {
+    vi.resetModules()
+    ;(process.env as any).NODE_ENV = "development"
+    process.env.GOOGLE_CLIENT_ID = "x"
+    process.env.GOOGLE_CLIENT_SECRET = "y"
+    process.env.AUTH_ADMIN_EMAIL = "admin@example.com"
+    delete process.env.AUTH_ADMIN_EMAIL_2
+    process.env.AUTH_ADMINS = ""
+
+    const authOptions = await loadAuthOptions()
+    const out = await (authOptions.callbacks as any).jwt({
+      token: { email: "formerly-admin@example.com", role: "admin" },
+      user: undefined,
+    })
+
+    expect(out.role).toBe("user")
+  })
 })
