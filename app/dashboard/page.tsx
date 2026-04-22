@@ -1322,18 +1322,11 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="hero" className="">
+        <Tabs defaultValue="sections" className="">
           <TabsList className="bg-card text-foreground shadow-sm border rounded-md">
-            <TabsTrigger value="hero">Hero</TabsTrigger>
-            <TabsTrigger value="breaker">Frase destacada</TabsTrigger>
-            <TabsTrigger value="forWho">Para quién</TabsTrigger>
-            <TabsTrigger value="products">Cómo funciona</TabsTrigger>
-            <TabsTrigger value="payments">Pagos</TabsTrigger>
-            <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
-            <TabsTrigger value="about">Sobre mí</TabsTrigger>
-            <TabsTrigger value="faqs">FAQs</TabsTrigger>
-            <TabsTrigger value="cta">CTA</TabsTrigger>
+            <TabsTrigger value="sections">Secciones</TabsTrigger>
             <TabsTrigger value="media">Media</TabsTrigger>
+            <TabsTrigger value="payments">Pagos</TabsTrigger>
           </TabsList>
 
           <TabsContent value="media" className="mt-6">
@@ -1343,6 +1336,20 @@ export default function DashboardPage() {
           <TabsContent value="payments" className="mt-6">
             <PaymentsTab />
           </TabsContent>
+
+          <TabsContent value="sections" className="mt-6">
+            <Tabs defaultValue="hero" className="">
+              <TabsList className="bg-card text-foreground shadow-sm border rounded-md flex-wrap h-auto">
+                <TabsTrigger value="hero">Hero</TabsTrigger>
+                <TabsTrigger value="breaker">Frase destacada</TabsTrigger>
+                <TabsTrigger value="forWho">Para quién</TabsTrigger>
+                <TabsTrigger value="sessions">Sesiones</TabsTrigger>
+                <TabsTrigger value="guides">Guías</TabsTrigger>
+                <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
+                <TabsTrigger value="about">Sobre mí</TabsTrigger>
+                <TabsTrigger value="faqs">FAQs</TabsTrigger>
+                <TabsTrigger value="cta">CTA</TabsTrigger>
+              </TabsList>
 
           {/* Hero Tab */}
           <TabsContent value="hero" className="mt-6">
@@ -1838,9 +1845,7 @@ export default function DashboardPage() {
           </TabsContent>
 
           {/* Products Tab */}
-          <TabsContent value="products" className="mt-6">
-            <div className="space-y-8">
-              {/* Guías */}
+          <TabsContent value="guides" className="mt-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Izquierda: Crear y editar Guías */}
                 <Card>
@@ -2205,6 +2210,9 @@ export default function DashboardPage() {
                 </Card>
               </div>
 
+          </TabsContent>
+
+          <TabsContent value="sessions" className="mt-6">
               {/* Sesiones */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Izquierda: Crear y editar Sesiones */}
@@ -2610,7 +2618,6 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               </div>
-            </div>
           </TabsContent>
 
           {/* About Tab */}
@@ -3259,6 +3266,8 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+            </Tabs>
           </TabsContent>
         </Tabs>
       </div>
