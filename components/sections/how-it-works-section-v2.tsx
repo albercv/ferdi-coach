@@ -42,7 +42,7 @@ export default function HowItWorksSectionV2() {
   const cards = picks.filter(Boolean) as Array<GuideProduct | SessionProduct>
 
   return (
-    <section id="como-funciona" className="py-16 lg:py-24">
+    <section id="como-funciona" className="py-16 lg:py-24 bg-secondary">
       <div className="container mx-auto px-6">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Cómo funciona</h2>

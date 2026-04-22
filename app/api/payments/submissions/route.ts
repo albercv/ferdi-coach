@@ -1,9 +1,11 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { z } from "zod"
 
 import { authOptions } from "@/lib/auth"
 import { assertAdmin, AuthzError } from "@/lib/auth/assertAdmin"
+import { sendPaymentConfirmed } from "@/lib/email/emailService"
 import { listPaymentSubmissions, updatePaymentSubmissionStatus } from "@/lib/payments-storage"
 
 export const runtime = "nodejs"
@@ -17,13 +19,14 @@ export async function GET() {
     if (err instanceof AuthzError) {
       return NextResponse.json({ error: err.message }, { status: err.status })
     }
+    Sentry.captureException(err, { tags: { flow: "payment", step: "list" } })
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 })
   }
 }
 
 const PatchSchema = z.object({
   id: z.string().trim().min(1),
-  status: z.enum(["pending", "confirmed", "failed"]),
+  status: z.enum(["pending", "confirmed"]),
 })
 
 export async function PATCH(req: Request) {
@@ -37,6 +40,9 @@ export async function PATCH(req: Request) {
       status: body.status,
       updatedByEmail: session?.user?.email ?? undefined,
     })
+
+    if (body.status === "confirmed") void sendPaymentConfirmed(updated)
+
     return NextResponse.json({ submission: updated })
   } catch (err) {
     if (err instanceof AuthzError) {
@@ -48,6 +54,7 @@ export async function PATCH(req: Request) {
     if (err instanceof Error && err.message === "NOT_FOUND") {
       return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 })
     }
+    Sentry.captureException(err, { tags: { flow: "payment", step: "confirmation" } })
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 })
   }
 }

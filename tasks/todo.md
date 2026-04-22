@@ -8,9 +8,15 @@ _Generado: 2026-04-07 | Basado en: tasks/pending_tasks.md_
 | Tarea | Título | Estado |
 |-------|--------|--------|
 | T0 | Fix: edición de sección faltante | ✅ Hecho |
-| T1 | CSS y estilos — STYLES.md | 🔴 Pendiente |
+| T1 | CSS y estilos — STYLES.md | ✅ Hecho |
 | T2 | Proceso de deploy — DEPLOY.md | 🔴 Pendiente |
-| T3 | Emails transaccionales con Resend | ⏸ Bloqueado (requiere credenciales) |
+| T3 | Emails transaccionales con Resend | ✅ Hecho |
+| T4 | Reestructurar orden de secciones de la web | ✅ Hecho |
+| T5 | Monitorización de errores | ✅ Hecho |
+| T6 | Bug: permisos de Ferdy en el dashboard | 🔴 Pendiente |
+| T7 | Migración de .md a base de datos | 🔴 Pendiente |
+| T8 | Auditoría de seguridad — correcciones | 🔴 Pendiente |
+| T9 | Auditoría SEO — correcciones | 🔴 Pendiente |
 
 ---
 
@@ -139,6 +145,171 @@ T0 ✅ → T1 ──┐
 - [ ] Verificar logs sin errores tras una compra de prueba completa
 
 **Criterio de done:** Cliente recibe confirmación al registrar pago. Coach recibe notificación. Cliente recibe entrega cuando el coach confirma. Logs limpios.
+
+---
+
+---
+
+## TAREA 4 — Reestructurar orden de secciones de la web
+
+**Objetivo:** Reordenar las secciones de la página principal según el nuevo orden definido, respetando la alternancia de fondos blanco/gris.
+
+**Orden final:**
+
+| # | Sección | Fondo |
+|---|---------|-------|
+| 1 | Hero | Imagen (no aplica alternancia) |
+| 2 | Frase — *"Detente un segundo… Sí, estás roto…pero algo en ti empieza a despertar"* | Gris |
+| 3 | Te acompaño a reconstruirte con sentido | Blanco |
+| 4 | Sesiones y programas | Gris |
+| 5 | Descarga de guías | Blanco |
+| 6 | Testimonios | Gris |
+| 7 | Quién soy | Blanco |
+| 8 | Preguntas frecuentes | Gris |
+
+**Checklist:**
+- [ ] Identificar el archivo de la página principal (`app/page.tsx` o similar) que monta las secciones
+- [ ] Identificar qué componente corresponde a cada sección del orden deseado
+- [ ] La frase "Detente un segundo" ya existe: `components/ui/breaker-banner.tsx` + `content/breaker.md`
+- [ ] Reordenar los componentes en la página según el orden definido
+- [ ] Aplicar/verificar los fondos alternos: `bg-muted/30` o `bg-primary/5` para gris, `bg-background` para blanco
+- [ ] Verificar en local que el resultado visual es correcto (orden + alternancia de fondos)
+
+**Criterio de done:** La página muestra las secciones en el orden definido con la alternancia blanco/gris correcta.
+
+---
+
+---
+
+## TAREA 5 — Monitorización de errores
+
+> **Estado: 📋 Por planificar** — No implementar sin sesión de planificación previa.
+
+**Objetivo:** Tener visibilidad de errores en producción sin tener que revisar logs manualmente. Saber cuándo algo falla, dónde y con qué frecuencia.
+
+**Áreas a cubrir:**
+- Errores de servidor (API routes, excepciones no capturadas)
+- Errores de cliente (JS runtime errors, errores de UI)
+- Alertas de pagos fallidos o flujo de compra roto
+- Métricas básicas de rendimiento (Core Web Vitals — ya hay `@vercel/analytics`)
+
+**Opciones a evaluar en la sesión de planificación:**
+
+| Opción | Pros | Contras |
+|---|---|---|
+| **Sentry** (free tier) | Estándar industria, SDK Next.js oficial, alertas email, trazas completas | Requiere cuenta externa, datos salen del servidor |
+| **Logs estructurados a fichero** (solución propia) | Sin dependencias externas, datos en el servidor, simple | Sin alertas automáticas, hay que revisar manualmente |
+| **Better Stack / Logtail** | Dashboard bonito, free tier generoso, fácil integración | Dato externo, curva de configuración |
+| **PM2 + pm2-logrotate** | Ya está en el servidor, cero coste | Solo logs de proceso, sin contexto de errores de app |
+
+**Preguntas a responder antes de implementar:**
+- ¿Queremos alertas automáticas por email/Slack cuando algo falla?
+- ¿Datos sensibles pueden salir del servidor (Sentry, Logtail)?
+- ¿Presupuesto para herramientas externas?
+- ¿Qué nivel de detalle necesitamos (solo errores o también métricas)?
+
+**Criterio de done:** Un error en producción genera una alerta o es visible en un dashboard sin necesidad de hacer SSH al servidor.
+
+---
+
+## TAREA 6 — Bug: permisos de Ferdy en el dashboard
+
+**Objetivo:** Ferdy (`ferdycoachdesamor@gmail.com`) puede entrar al dashboard pero recibe FORBIDDEN al intentar subir documentos o imágenes. Alberto (`alberto.carrasco@evolve2digital.com`) sí puede.
+
+**Alcance del bug:** afecta a TODAS las operaciones protegidas del dashboard (subir docs, subir imágenes, editar contenido de secciones, borrar archivos). El acceso visual al dashboard funciona porque el middleware usa una comprobación distinta a la de las API routes.
+
+**Causas identificadas (por orden de probabilidad):**
+
+**Causa 1 — JWT cacheado con `role: "user"` (más probable)**
+El callback `jwt` solo asigna el rol en el momento del login. Si Ferdy inició sesión antes de que se añadiera `AUTH_ADMIN_EMAIL_2` al `.env`, su token quedó con `role: "user"`. La función `isAdmin()` comprueba el rol primero: si existe y no es `"admin"`, devuelve `false` sin llegar a comprobar el email. El token persiste hasta que expire o Ferdy cierre sesión.
+
+→ **Solución:** Ferdy cierra sesión y vuelve a entrar con Google.
+
+**Causa 2 — Servidor no reiniciado tras añadir `AUTH_ADMIN_EMAIL_2`**
+Next.js en producción carga las variables de entorno al arrancar el proceso PM2. Si el `.env` se modificó después del último restart, el proceso no tiene la variable en memoria y `getAdminEmails()` no devuelve el email de Ferdy.
+
+→ **Solución:** `pm2 restart ferdy-web` y que Ferdy lo intente de nuevo.
+
+**Causa 3 — Email de Google no coincide**
+El `.env` tiene `AUTH_ADMIN_EMAIL_2=ferdycoachdesamor@gmail.com`. Si Ferdy entra con una cuenta de Google distinta, el email del token no coincide con el allowlist.
+
+→ **Solución:** Revisar los logs del servidor para ver qué email llega en el token de Ferdy.
+
+**Vulnerabilidad de fondo (a corregir aunque se resuelva con la solución rápida):**
+En `lib/auth.ts`, el callback `jwt` no re-evalúa el rol si ya existe en el token. Si un email se añade al allowlist de admins después de que el usuario haya iniciado sesión, no surtirá efecto hasta que el JWT expire. Corrección: en el callback `jwt`, forzar re-evaluación del rol cuando el email está en el allowlist de admins, ignorando el rol previo del token.
+
+**Checklist:**
+- [ ] Que Ferdy cierre sesión y vuelva a entrar (Causa 1)
+- [ ] Si sigue fallando: `pm2 restart ferdy-web` (Causa 2)
+- [ ] Si sigue fallando: revisar logs para ver el email del token (Causa 3)
+- [ ] Corregir la vulnerabilidad de fondo en `lib/auth.ts` (callback `jwt`)
+- [ ] Verificar que Ferdy puede subir un documento desde el dashboard
+
+**Criterio de done:** Ferdy puede subir docs e imágenes desde el dashboard sin errores FORBIDDEN.
+
+---
+
+---
+
+## TAREA 8 — Auditoría de Seguridad — Correcciones
+
+> Resultados de auditoría automática del 2026-04-21. Ordenadas por prioridad.
+
+### CRÍTICO
+
+- [ ] **SEC-1** Verificar si `.env` está en git history (`git log --all --full-history -- .env`). Si aparece: rotar TODOS los secretos en producción y limpiar history con BFG/filter-branch.
+- [ ] **SEC-2** Comparación de secretos con tiempo constante (`crypto.timingSafeEqual`) en:
+  - `app/api/cron/payments-transitions/route.ts` línea 12
+  - `app/api/monitoring/webhook/route.ts` línea 33
+- [ ] **SEC-3** Contraseñas en variables de entorno comparadas en texto plano. Si el Credentials Provider se activa, usar bcrypt (`lib/auth.ts` líneas 145-147).
+
+### ALTO
+
+- [ ] **SEC-4** Añadir headers de seguridad en `next.config.mjs`: `Content-Security-Policy`, `Strict-Transport-Security`, `Referrer-Policy`.
+- [ ] **SEC-5** Implementar rate limiting en endpoints sensibles: `POST /api/payments/paid`, endpoint cron, endpoint webhook de monitoring.
+- [ ] **SEC-6** Validación de ID en schema Zod: cambiar `z.string().min(1)` a `z.string().uuid()` en `app/api/payments/submissions/route.ts` para prevenir path traversal.
+
+### MEDIO
+
+- [ ] **SEC-7** Añadir validación estricta con Zod en `app/api/content/testimonials/route.ts` (actualmente usa coerción suelta).
+- [ ] **SEC-8** Añadir `Cache-Control` headers a los endpoints de contenido público (hero, faq, about, etc.).
+
+**Criterio de done:** SEC-1 al SEC-6 completados y verificados en producción.
+
+---
+
+## TAREA 9 — Auditoría SEO — Correcciones
+
+> Resultados de auditoría automática del 2026-04-21. Ordenadas por prioridad.
+
+### CRÍTICO
+
+- [ ] **SEO-1** Dominio incorrecto en todo el sistema SEO. Reemplazar `ferdy-coach.com` → `ferdycoachdesamor.com` en:
+  - `app/layout.tsx` (openGraph.url y canonical)
+  - `app/robots.ts`
+  - `app/sitemap.ts`
+  - `lib/seo.ts` (todas las URLs hardcodeadas)
+- [ ] **SEO-2** Crear imagen OG `public/og-image.jpg` (1200×630 px) — referenciada pero inexistente.
+- [ ] **SEO-3** Reemplazar placeholder de verificación de Google Search Console en `app/layout.tsx` línea 85 (`"your-google-verification-code"`).
+- [ ] **SEO-4** Añadir export `metadata` específico a `app/page.tsx` (home). Actualmente hereda solo del layout global.
+- [ ] **SEO-5** Eliminar `export const dynamic = "force-dynamic"` de `app/page.tsx` — impide static generation y perjudica Core Web Vitals.
+
+### ALTO
+
+- [ ] **SEO-6** Crear `public/logo.png` o actualizar ruta en `lib/seo.ts` — el schema de Organization referencia un fichero inexistente.
+- [ ] **SEO-7** Añadir `robots: { index: false }` al metadata de `app/login/page.tsx` y `app/dashboard/page.tsx`.
+- [ ] **SEO-8** Reemplazar teléfono placeholder `+34-XXX-XXX-XXX` en `lib/seo.ts` (LocalBusiness schema) con número real o eliminarlo.
+- [ ] **SEO-9** Revisar URLs del sitemap en `app/sitemap.ts` — actualmente contiene fragments (`#sesiones`, `#programa-4`) que los crawlers no indexan.
+
+### MEDIO
+
+- [ ] **SEO-10** Convertir tags `<img>` nativos a `<Image>` de Next.js en:
+  - `components/sections/hero-section.tsx` (línea ~30)
+  - `components/sections/about-section.tsx` (líneas ~69-70, ~100-104)
+- [ ] **SEO-11** Corregir dominio en `app/terminos/page.tsx` (usa `ferdycoach.com` en lugar de `ferdycoachdesamor.com`).
+- [ ] **SEO-12** Añadir VideoObject JSON-LD en `components/sections/about-section.tsx` para el elemento `<video>`.
+
+**Criterio de done:** SEO-1 al SEO-9 completados y verificados con Google Search Console + herramienta de testing de rich results.
 
 ---
 

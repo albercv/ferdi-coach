@@ -150,6 +150,7 @@ ome `.md` files act as the project's content database.
 
 - Commit prefix: `feat:` · `fix:` · `refactor:` · `docs:` · `chore:`
 - Do not mix functional and formatting changes in the same commit.
+- **No `Co-Authored-By` trailers.** Commits van sin firma de Claude ni de ningún agente. Autor único = quien hace el commit.
 
 ---
 
@@ -162,3 +163,19 @@ ome `.md` files act as the project's content database.
 ---
 
 _Update this file when conventions, structure or project context change._
+
+---
+
+## Memory Vault
+
+Path: ~/claude-memory/
+
+At session start: read ~/claude-memory/Index.md and relevant files in ~/claude-memory/Context/ferdy-coach/ for project context.
+
+When you learn something reusable:
+- Decision made → ~/claude-memory/Decisions/ferdy-coach/YYYY-MM-DD-topic.md
+- Pattern discovered → ~/claude-memory/Patterns/topic.md
+- Mistake to avoid → ~/claude-memory/Mistakes/topic.md
+- At session end → ~/claude-memory/Sessions/ferdy-coach/YYYY-MM-DD.md with a summary of what was done
+
+After writing to the vault: cd ~/claude-memory && git add . && git commit -m "memory: update" && git push

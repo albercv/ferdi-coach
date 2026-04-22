@@ -10,17 +10,34 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import type { PaymentSubmission } from "@/lib/payments"
 
-type StatusFilter = "all" | "pending" | "confirmed" | "failed"
+type StatusFilter = "active" | "confirmed" | "failed" | "all"
+
+const ACTIVE_STATUSES = new Set(["pending", "overdue", "failed_warning"])
 
 function formatEuro(amount: number): string {
-  const fixed = Number.isFinite(amount) ? amount.toFixed(0) : "0"
-  return `${fixed}€`
+  return `${Number.isFinite(amount) ? amount.toFixed(0) : "0"}€`
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleString("es-ES", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  })
 }
 
 function statusBadge(status: PaymentSubmission["status"]) {
-  if (status === "confirmed") return <Badge className="bg-green-600 hover:bg-green-600 text-white">Comprobado</Badge>
-  if (status === "failed") return <Badge className="bg-red-600 hover:bg-red-600 text-white">Fallido</Badge>
-  return <Badge className="bg-yellow-500 hover:bg-yellow-500 text-white">Pendiente</Badge>
+  switch (status) {
+    case "confirmed":
+      return <Badge className="bg-green-600 hover:bg-green-600 text-white">Comprobado</Badge>
+    case "failed":
+      return <Badge className="bg-red-900 hover:bg-red-900 text-white">Fallido</Badge>
+    case "failed_warning":
+      return <Badge className="bg-red-500 hover:bg-red-500 text-white">Aviso enviado</Badge>
+    case "overdue":
+      return <Badge className="bg-orange-500 hover:bg-orange-500 text-white">Recordatorio enviado</Badge>
+    default:
+      return <Badge className="bg-yellow-500 hover:bg-yellow-500 text-white">Pendiente</Badge>
+  }
 }
 
 export function PaymentsTab() {
@@ -29,11 +46,15 @@ export function PaymentsTab() {
   const [savingIban, setSavingIban] = useState(false)
   const [submissions, setSubmissions] = useState<PaymentSubmission[]>([])
   const [loadingSubmissions, setLoadingSubmissions] = useState(false)
-  const [filter, setFilter] = useState<StatusFilter>("pending")
+  const [filter, setFilter] = useState<StatusFilter>("active")
 
   const filtered = useMemo(() => {
-    if (filter === "all") return submissions
-    return submissions.filter((s) => s.status === filter)
+    switch (filter) {
+      case "active": return submissions.filter((s) => ACTIVE_STATUSES.has(s.status))
+      case "confirmed": return submissions.filter((s) => s.status === "confirmed")
+      case "failed": return submissions.filter((s) => s.status === "failed")
+      default: return submissions
+    }
   }, [filter, submissions])
 
   async function loadAll() {
@@ -56,9 +77,7 @@ export function PaymentsTab() {
     }
   }
 
-  useEffect(() => {
-    loadAll()
-  }, [])
+  useEffect(() => { loadAll() }, [])
 
   async function saveIban() {
     const value = iban.trim()
@@ -84,7 +103,7 @@ export function PaymentsTab() {
     }
   }
 
-  async function updateStatus(id: string, status: PaymentSubmission["status"]) {
+  async function updateStatus(id: string, status: "pending" | "confirmed") {
     const prev = submissions
     setSubmissions((current) => current.map((s) => (s.id === id ? { ...s, status } : s)))
     try {
@@ -108,6 +127,21 @@ export function PaymentsTab() {
     }
   }
 
+  function renderButtons(s: PaymentSubmission) {
+    if (s.status === "confirmed" || s.status === "failed") {
+      return (
+        <Button size="sm" variant="outline" onClick={() => updateStatus(s.id, "pending")}>
+          Reabrir
+        </Button>
+      )
+    }
+    return (
+      <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => updateStatus(s.id, "confirmed")}>
+        Comprobado
+      </Button>
+    )
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
@@ -128,12 +162,12 @@ export function PaymentsTab() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Pagos pendientes</CardTitle>
-          <CardDescription>Personas que han marcado “PAGADO”.</CardDescription>
+          <CardTitle>Pagos</CardTitle>
+          <CardDescription>Gestión de solicitudes de pago.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
-            <Button variant={filter === "pending" ? "default" : "outline"} size="sm" onClick={() => setFilter("pending")}>Pendientes</Button>
+            <Button variant={filter === "active" ? "default" : "outline"} size="sm" onClick={() => setFilter("active")}>Activos</Button>
             <Button variant={filter === "confirmed" ? "default" : "outline"} size="sm" onClick={() => setFilter("confirmed")}>Comprobados</Button>
             <Button variant={filter === "failed" ? "default" : "outline"} size="sm" onClick={() => setFilter("failed")}>Fallidos</Button>
             <Button variant={filter === "all" ? "default" : "outline"} size="sm" onClick={() => setFilter("all")}>Todos</Button>
@@ -158,14 +192,11 @@ export function PaymentsTab() {
                   <div className="text-sm">
                     <div className="font-medium">{s.payerName}</div>
                     <div className="text-muted-foreground break-all">{s.payerEmail}</div>
-                    {s.payerPhone ? (
-                      <div className="text-muted-foreground break-all">{s.payerPhone}</div>
-                    ) : null}
+                    {s.payerPhone && <div className="text-muted-foreground">{s.payerPhone}</div>}
+                    <div className="text-xs text-muted-foreground mt-1">Inicio: {formatDate(s.createdAtIso)}</div>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-600" onClick={() => updateStatus(s.id, "confirmed")}>Comprobado</Button>
-                    <Button size="sm" className="bg-red-600 hover:bg-red-600" onClick={() => updateStatus(s.id, "failed")}>Fallido</Button>
-                    <Button size="sm" variant="outline" onClick={() => updateStatus(s.id, "pending")}>Pendiente</Button>
+                    {renderButtons(s)}
                   </div>
                 </div>
               ))}

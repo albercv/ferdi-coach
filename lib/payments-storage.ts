@@ -175,8 +175,38 @@ export function updatePaymentSubmissionStatus(input: {
     status: input.status,
     statusUpdatedAtIso: new Date().toISOString(),
     statusUpdatedByEmail: input.updatedByEmail,
+    // Record when the 3-day TTL starts for the failed_warning state
+    ...(input.status === "failed_warning" ? { failedWarningAtIso: new Date().toISOString() } : {}),
+    // Clear TTL when reopening so the clock restarts
+    ...(input.status === "pending" ? { failedWarningAtIso: undefined } : {}),
   }
 
   atomicWriteMarkdownFile(filePath, updated as any, "")
   return updated
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000
+
+export function getSubmissionsForTransition(): {
+  toOverdue: PaymentSubmission[]
+  toFailedWarning: PaymentSubmission[]
+  toFailed: PaymentSubmission[]
+} {
+  const all = listPaymentSubmissions()
+  const now = Date.now()
+
+  return {
+    toOverdue: all.filter(
+      (s) => s.status === "pending" && now - new Date(s.createdAtIso).getTime() >= 2 * DAY_MS
+    ),
+    toFailedWarning: all.filter(
+      (s) => s.status === "overdue" && now - new Date(s.createdAtIso).getTime() >= 5 * DAY_MS
+    ),
+    toFailed: all.filter(
+      (s) =>
+        s.status === "failed_warning" &&
+        s.failedWarningAtIso != null &&
+        now - new Date(s.failedWarningAtIso).getTime() >= 3 * DAY_MS
+    ),
+  }
 }
