@@ -42,6 +42,9 @@ lerna-debug.log*
 .env.production.local
 client_secret_*.json
 
+# user uploads (stored outside the repo in prod vía /var/www/ferdy-uploads + symlink)
+/public/uploads
+
 # vercel
 .vercel
 
