@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import Link from "next/link"
-import { signOut, useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
@@ -25,6 +25,8 @@ import { MediaLibraryTab } from "@/components/dashboard/MediaLibraryTab"
 import { MediaSectionCard } from "@/components/dashboard/MediaSectionCard"
 import { PaymentsTab } from "@/components/dashboard/PaymentsTab"
 import { DocsTab } from "@/components/dashboard/DocsTab"
+import { DashboardShell } from "@/components/dashboard/DashboardShell"
+import { LayoutGrid, ImageIcon, Banknote, BookOpen } from "lucide-react"
 import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield, Users, ArrowRight, Sparkles, Target, Timer, MessageSquare, HeartCrack, Clock } from "lucide-react"
 
 function escapeProductSlug(input: string) {
@@ -388,10 +390,6 @@ export default function DashboardPage() {
     loadBreaker()
     loadForWho()
   }, [toast])
-
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: "/login" })
-  }
 
   const handleSaveAbout = async () => {
     setSavingAbout(true)
@@ -1309,26 +1307,26 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen py-10">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <div className="flex gap-3 mt-4">
-            <Button asChild variant="outline">
-              <Link href="/">Volver a Home</Link>
-            </Button>
-            <Button variant="destructive" onClick={handleLogout}>
-              Logout
-            </Button>
-          </div>
-        </div>
-
+    <DashboardShell>
+      <div>
         <Tabs defaultValue="sections" className="">
-          <TabsList className="bg-card text-foreground shadow-sm border rounded-md flex w-full justify-start gap-1 h-auto p-1">
-            <TabsTrigger value="sections">Secciones</TabsTrigger>
-            <TabsTrigger value="media">Media</TabsTrigger>
-            <TabsTrigger value="payments">Pagos</TabsTrigger>
-            <TabsTrigger value="docs" className="ml-auto">Documentación</TabsTrigger>
+          <TabsList className="dash-tabs flex w-full justify-start gap-0 h-auto p-0">
+            <TabsTrigger value="sections" className="dash-tab">
+              <LayoutGrid className="size-3.5" />
+              <span>Secciones</span>
+            </TabsTrigger>
+            <TabsTrigger value="media" className="dash-tab">
+              <ImageIcon className="size-3.5" />
+              <span>Media</span>
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="dash-tab">
+              <Banknote className="size-3.5" />
+              <span>Pagos</span>
+            </TabsTrigger>
+            <TabsTrigger value="docs" className="dash-tab dash-tab--right">
+              <BookOpen className="size-3.5" />
+              <span>Documentación</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="media" className="mt-6">
@@ -1343,18 +1341,18 @@ export default function DashboardPage() {
             <DocsTab />
           </TabsContent>
 
-          <TabsContent value="sections" className="mt-6">
+          <TabsContent value="sections" className="mt-8">
             <Tabs defaultValue="hero" className="">
-              <TabsList className="bg-card text-foreground shadow-sm border rounded-md flex-wrap h-auto">
-                <TabsTrigger value="hero">Hero</TabsTrigger>
-                <TabsTrigger value="breaker">Frase destacada</TabsTrigger>
-                <TabsTrigger value="forWho">Para quién</TabsTrigger>
-                <TabsTrigger value="sessions">Sesiones</TabsTrigger>
-                <TabsTrigger value="guides">Guías</TabsTrigger>
-                <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
-                <TabsTrigger value="about">Sobre mí</TabsTrigger>
-                <TabsTrigger value="faqs">FAQs</TabsTrigger>
-                <TabsTrigger value="cta">CTA</TabsTrigger>
+              <TabsList className="dash-subtabs flex-wrap h-auto p-0">
+                <TabsTrigger value="hero" className="dash-subtab">Hero</TabsTrigger>
+                <TabsTrigger value="breaker" className="dash-subtab">Frase destacada</TabsTrigger>
+                <TabsTrigger value="forWho" className="dash-subtab">Para quién</TabsTrigger>
+                <TabsTrigger value="sessions" className="dash-subtab">Sesiones</TabsTrigger>
+                <TabsTrigger value="guides" className="dash-subtab">Guías</TabsTrigger>
+                <TabsTrigger value="testimonials" className="dash-subtab">Testimonios</TabsTrigger>
+                <TabsTrigger value="about" className="dash-subtab">Sobre mí</TabsTrigger>
+                <TabsTrigger value="faqs" className="dash-subtab">FAQs</TabsTrigger>
+                <TabsTrigger value="cta" className="dash-subtab">CTA</TabsTrigger>
               </TabsList>
 
           {/* Hero Tab */}
@@ -3277,6 +3275,6 @@ export default function DashboardPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </main>
+    </DashboardShell>
   )
 }
