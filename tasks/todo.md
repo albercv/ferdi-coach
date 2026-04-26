@@ -17,7 +17,7 @@ _Generado: 2026-04-07 | Basado en: tasks/pending_tasks.md_
 | T7 | Migración de .md a base de datos | 🔴 Pendiente |
 | T8 | Auditoría de seguridad — correcciones | 🔴 Pendiente |
 | T9 | Auditoría SEO — correcciones | 🔴 Pendiente |
-| T10 | Tab Documentación dinámica en dashboard | 🟡 En curso |
+| T10 | Tab Documentación dinámica en dashboard | ✅ Hecho |
 
 ---
 
