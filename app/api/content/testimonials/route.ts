@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getTestimonials, addTestimonialItem, setTestimonialItem, deleteTestimonialItem } from "@/lib/content-md"
 import { getServerSession } from "next-auth"
@@ -97,6 +98,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, item: created, items })
   } catch (e: any) {
     console.error("POST /api/content/testimonials failed", e)
+    Sentry.captureException(e, { tags: { flow: "content-write", route: "testimonials", method: "POST" } })
     const message = typeof e?.message === "string" ? e.message : "No se pudo crear el testimonio"
     return NextResponse.json({ error: message }, { status: 500 })
   }
@@ -160,6 +162,7 @@ export async function PUT(req: Request) {
     return NextResponse.json({ ok: true, item: updated, items })
   } catch (e: any) {
     console.error("PUT /api/content/testimonials failed", e)
+    Sentry.captureException(e, { tags: { flow: "content-write", route: "testimonials", method: "PUT" } })
     const message = typeof e?.message === "string" ? e.message : "No se pudo guardar el testimonio"
     return NextResponse.json({ error: message }, { status: 500 })
   }
@@ -187,6 +190,7 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ ok: true, items })
   } catch (e: any) {
     console.error("DELETE /api/content/testimonials failed", e)
+    Sentry.captureException(e, { tags: { flow: "content-write", route: "testimonials", method: "DELETE" } })
     const message = typeof e?.message === "string" ? e.message : "No se pudo eliminar el testimonio"
     return NextResponse.json({ error: message }, { status: 500 })
   }

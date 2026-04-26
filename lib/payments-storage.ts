@@ -136,6 +136,7 @@ export function createPaymentSubmission(input: {
   payerName: string
   payerEmail: string
   payerPhone?: string
+  productFileUrl?: string
 }): PaymentSubmission {
   const conceptShort = buildPaymentConceptShort(input.product)
   const submission: PaymentSubmission = {
@@ -148,6 +149,7 @@ export function createPaymentSubmission(input: {
     productTitle: input.product.title,
     amountEuro: input.product.priceEuro,
     conceptShort,
+    productFileUrl: input.productFileUrl?.trim() ? input.productFileUrl.trim() : undefined,
     payerName: input.payerName,
     payerEmail: input.payerEmail,
     payerPhone: input.payerPhone?.trim() ? input.payerPhone.trim() : undefined,
@@ -156,6 +158,33 @@ export function createPaymentSubmission(input: {
   const filePath = path.join(SUBMISSIONS_DIR, `${submission.id}.md`)
   atomicWriteMarkdownFile(filePath, submission as any, "")
   return submission
+}
+
+/**
+ * Devuelve las submissions cuyo productFileUrl == url y cuyo estado no es
+ * terminal (pending, overdue o failed_warning). Se usa para bloquear borrados
+ * del fichero en la sección media mientras haya compras vivas que dependen de él.
+ */
+export function listActiveSubmissionsReferencingFileUrl(url: string): PaymentSubmission[] {
+  if (!url) return []
+  const ACTIVE_STATUSES: PaymentStatus[] = ["pending", "overdue", "failed_warning"]
+  return listPaymentSubmissions().filter(
+    (s) => s.productFileUrl === url && ACTIVE_STATUSES.includes(s.status),
+  )
+}
+
+/**
+ * Cuenta submissions terminales (confirmed, failed) cuyo productFileUrl == url.
+ * Estas no bloquean el borrado pero sí aparecen en el scan genérico de referencias;
+ * restándolas del total podemos distinguir "bloquea porque la guía aún se usa"
+ * de "bloquea sólo porque lo refiere una compra ya cerrada".
+ */
+export function countTerminalSubmissionRefsMatchingFileUrl(url: string): number {
+  if (!url) return 0
+  const TERMINAL: PaymentStatus[] = ["confirmed", "failed"]
+  return listPaymentSubmissions().filter(
+    (s) => s.productFileUrl === url && TERMINAL.includes(s.status),
+  ).length
 }
 
 export function updatePaymentSubmissionStatus(input: {

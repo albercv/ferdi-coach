@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/nextjs"
+
 export type SessionLike = {
   user?: { email?: string | null; role?: string | null } | null
 } | null
@@ -47,8 +49,7 @@ export function getAdminEmails(): string[] {
 }
 
 export function isAdmin(session: SessionLike): boolean {
-  const role = session?.user?.role
-  if (role) return role === "admin"
+  if (session?.user?.role === "admin") return true
 
   const email = session?.user?.email
   if (!email) return false
@@ -60,6 +61,27 @@ export function isAdmin(session: SessionLike): boolean {
 }
 
 export function assertAdmin(session: SessionLike): void {
-  if (!session?.user) throw new AuthzError("UNAUTHENTICATED", 401)
-  if (!isAdmin(session)) throw new AuthzError("FORBIDDEN", 403)
+  if (!session?.user) {
+    Sentry.captureMessage("assertAdmin: unauthenticated", {
+      level: "warning",
+      tags: { flow: "authz", outcome: "unauthenticated" },
+    })
+    throw new AuthzError("UNAUTHENTICATED", 401)
+  }
+
+  if (!isAdmin(session)) {
+    const email = session.user.email ?? null
+    const allowlist = getAdminEmails()
+    Sentry.captureMessage("assertAdmin: forbidden", {
+      level: "warning",
+      tags: { flow: "authz", outcome: "forbidden" },
+      extra: {
+        email,
+        role: session.user.role ?? null,
+        allowlistSize: allowlist.length,
+        emailInAllowlist: email ? allowlist.includes(normalizeEmail(email)) : false,
+      },
+    })
+    throw new AuthzError("FORBIDDEN", 403)
+  }
 }

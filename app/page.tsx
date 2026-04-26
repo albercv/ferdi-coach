@@ -15,6 +15,8 @@ import { Toggle3D } from "@/components/ui/3d-toggle"
 import { LazyLoad } from "@/components/performance/intersection-observer"
 import { getTestimonials, getFAQ, getAbout, getHero, getCTA, getBreaker, getForWho } from "@/lib/content-md"
 import { getProducts } from "@/lib/products-md"
+import { getSectionStyles } from "@/lib/section-styles"
+import { SectionBg } from "@/components/sections/SectionBg"
 import type { PaymentProductRef } from "@/lib/payments"
 
 export default function HomePage() {
@@ -34,41 +36,58 @@ export default function HomePage() {
   const cta = getCTA()
   const breaker = getBreaker()
   const forWho = getForWho()
+  const sectionStyles = getSectionStyles()
   return (
     <>
       <Header reserveProduct={reserveProduct} />
       <main id="main-content">
         <HeroSection hero={hero} />
-        <BreakerBanner text={breaker.text} kicker={breaker.kicker} />
-        <ForWhoSection forWho={forWho} />
-        <LazyLoad>
-          <SessionsSection sessions={sessions} />
-        </LazyLoad>
-        <LazyLoad>
-          <GuidesSection guides={guides} />
-        </LazyLoad>
-        <LazyLoad>
-          <TestimonialsSection testimonials={testimonials} />
-        </LazyLoad>
-        <LazyLoad>
-          <AboutSection about={about} />
-        </LazyLoad>
+        <SectionBg id="breaker" styles={sectionStyles}>
+          <BreakerBanner text={breaker.text} kicker={breaker.kicker} />
+        </SectionBg>
+        <SectionBg id="forWho" styles={sectionStyles}>
+          <ForWhoSection forWho={forWho} />
+        </SectionBg>
+        <SectionBg id="sessions" styles={sectionStyles}>
+          <LazyLoad>
+            <SessionsSection sessions={sessions} />
+          </LazyLoad>
+        </SectionBg>
+        <SectionBg id="guides" styles={sectionStyles}>
+          <LazyLoad>
+            <GuidesSection guides={guides} />
+          </LazyLoad>
+        </SectionBg>
+        <SectionBg id="testimonials" styles={sectionStyles}>
+          <LazyLoad>
+            <TestimonialsSection testimonials={testimonials} />
+          </LazyLoad>
+        </SectionBg>
+        <SectionBg id="about" styles={sectionStyles}>
+          <LazyLoad>
+            <AboutSection about={about} />
+          </LazyLoad>
+        </SectionBg>
         <LazyLoad>
           <HowItWorksSectionV2 />
         </LazyLoad>
-        <LazyLoad>
-          <FAQSection faq={faq} />
-        </LazyLoad>
-        <CTASection
-          title={cta.title}
-          description={cta.description}
-          primaryCTA={{
-            text: cta.buttonText,
-            href: "#reservar",
-          }}
-          reserveProduct={reserveProduct}
-          showTrustSeals={true}
-        />
+        <SectionBg id="faqs" styles={sectionStyles}>
+          <LazyLoad>
+            <FAQSection faq={faq} />
+          </LazyLoad>
+        </SectionBg>
+        <SectionBg id="cta" styles={sectionStyles}>
+          <CTASection
+            title={cta.title}
+            description={cta.description}
+            primaryCTA={{
+              text: cta.buttonText,
+              href: "#reservar",
+            }}
+            reserveProduct={reserveProduct}
+            showTrustSeals={true}
+          />
+        </SectionBg>
       </main>
       <Footer />
       <Toggle3D />

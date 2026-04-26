@@ -87,4 +87,83 @@ describe("payments core", () => {
     expect(subs[0].id).toBe(created.id)
     expect(subs[0].status).toBe("confirmed")
   })
+
+  it("captura productFileUrl de la guía en el momento de crear la submission", async () => {
+    const { createPaymentSubmission, listPaymentSubmissions } = await import("../lib/payments-storage")
+
+    createPaymentSubmission({
+      product: { kind: "guide", id: "g1", title: "Guía de prueba", priceEuro: 30 },
+      payerName: "Nombre",
+      payerEmail: "x@example.com",
+      productFileUrl: "/uploads/products/guides/g1/guia-v1.pdf",
+    })
+
+    const subs = listPaymentSubmissions()
+    expect(subs[0].productFileUrl).toBe("/uploads/products/guides/g1/guia-v1.pdf")
+  })
+
+  it("listActiveSubmissionsReferencingFileUrl filtra por estado no terminal", async () => {
+    const {
+      createPaymentSubmission,
+      updatePaymentSubmissionStatus,
+      listActiveSubmissionsReferencingFileUrl,
+    } = await import("../lib/payments-storage")
+
+    const url = "/uploads/products/guides/g-active/guia.pdf"
+
+    const a = createPaymentSubmission({
+      product: { kind: "guide", id: "g-active", title: "Guía", priceEuro: 30 },
+      payerName: "A",
+      payerEmail: "a@example.com",
+      productFileUrl: url,
+    })
+    const b = createPaymentSubmission({
+      product: { kind: "guide", id: "g-active", title: "Guía", priceEuro: 30 },
+      payerName: "B",
+      payerEmail: "b@example.com",
+      productFileUrl: url,
+    })
+    const c = createPaymentSubmission({
+      product: { kind: "guide", id: "g-active", title: "Guía", priceEuro: 30 },
+      payerName: "C",
+      payerEmail: "c@example.com",
+      productFileUrl: url,
+    })
+
+    // a se queda pending; b overdue; c confirmed (terminal)
+    updatePaymentSubmissionStatus({ id: b.id, status: "overdue" })
+    updatePaymentSubmissionStatus({ id: c.id, status: "confirmed" })
+
+    const active = listActiveSubmissionsReferencingFileUrl(url)
+    expect(active.length).toBe(2)
+    expect(active.map((s) => s.id).sort()).toEqual([a.id, b.id].sort())
+  })
+
+  it("countTerminalSubmissionRefsMatchingFileUrl cuenta sólo confirmed y failed", async () => {
+    const {
+      createPaymentSubmission,
+      updatePaymentSubmissionStatus,
+      countTerminalSubmissionRefsMatchingFileUrl,
+    } = await import("../lib/payments-storage")
+
+    const url = "/uploads/products/guides/g-term/guia.pdf"
+
+    const p = createPaymentSubmission({
+      product: { kind: "guide", id: "g-term", title: "Guía", priceEuro: 30 },
+      payerName: "P",
+      payerEmail: "p@example.com",
+      productFileUrl: url,
+    })
+    const q = createPaymentSubmission({
+      product: { kind: "guide", id: "g-term", title: "Guía", priceEuro: 30 },
+      payerName: "Q",
+      payerEmail: "q@example.com",
+      productFileUrl: url,
+    })
+
+    updatePaymentSubmissionStatus({ id: p.id, status: "confirmed" })
+    updatePaymentSubmissionStatus({ id: q.id, status: "failed" })
+
+    expect(countTerminalSubmissionRefsMatchingFileUrl(url)).toBe(2)
+  })
 })

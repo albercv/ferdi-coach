@@ -5,6 +5,10 @@ import { resolveUploadDir } from "./paths"
 import { buildUniqueFilename, getSafeExt } from "./filename"
 import { validateUploadMeta } from "./validation"
 import { countUrlReferencesInContent } from "./reference-scan"
+import {
+  countTerminalSubmissionRefsMatchingFileUrl,
+  listActiveSubmissionsReferencingFileUrl,
+} from "@/lib/payments-storage"
 import { LocalPublicStorage } from "./storage/LocalPublicStorage"
 import type {
   ListObject,
@@ -80,13 +84,31 @@ export class MediaService {
       return { deleted: false, reason: "not-local-upload" }
     }
 
-    const refs = await countUrlReferencesInContent({
+    // Cuenta TODAS las referencias en content/**. Incluye product .md, submissions
+    // activas y submissions terminales (confirmed/failed).
+    const totalRefs = await countUrlReferencesInContent({
       contentRoot: this.contentRoot,
       url,
     })
 
-    if (refs > 0) {
-      return { deleted: false, reason: "still-referenced" }
+    if (totalRefs > 0) {
+      // Hay al menos una referencia. Las submissions activas (pending, overdue,
+      // failed_warning) tienen que bloquear el borrado porque el fichero aún se
+      // va a entregar. Las submissions terminales (confirmed, failed) NO bloquean
+      // porque la entrega ya se hizo o se canceló.
+      const activeSubmissions = listActiveSubmissionsReferencingFileUrl(url)
+      if (activeSubmissions.length > 0) {
+        return { deleted: false, reason: "referenced-by-active-payments" }
+      }
+
+      // Si llegan más refs que las que viven SÓLO en submissions terminales,
+      // significa que algún otro .md (p.ej. el producto visible) sigue usando
+      // el fichero. Mantenemos el bloqueo.
+      const terminalSubmissionRefs = countTerminalSubmissionRefsMatchingFileUrl(url)
+      if (totalRefs > terminalSubmissionRefs) {
+        return { deleted: false, reason: "still-referenced" }
+      }
+      // else: todas las referencias son submissions terminales → podemos borrar
     }
 
     const deleted = await this.storage.deleteByUrl(url)

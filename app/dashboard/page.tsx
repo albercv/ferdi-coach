@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import Link from "next/link"
-import { signOut, useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
@@ -24,6 +24,10 @@ import { MediaPicker } from "@/components/dashboard/MediaPicker"
 import { MediaLibraryTab } from "@/components/dashboard/MediaLibraryTab"
 import { MediaSectionCard } from "@/components/dashboard/MediaSectionCard"
 import { PaymentsTab } from "@/components/dashboard/PaymentsTab"
+import { DocsTab } from "@/components/dashboard/DocsTab"
+import { DashboardShell } from "@/components/dashboard/DashboardShell"
+import { SectionBgPicker, SectionBgPreview } from "@/components/dashboard/SectionBgPicker"
+import { LayoutGrid, ImageIcon, Banknote, BookOpen } from "lucide-react"
 import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield, Users, ArrowRight, Sparkles, Target, Timer, MessageSquare, HeartCrack, Clock } from "lucide-react"
 
 function escapeProductSlug(input: string) {
@@ -387,10 +391,6 @@ export default function DashboardPage() {
     loadBreaker()
     loadForWho()
   }, [toast])
-
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: "/login" })
-  }
 
   const handleSaveAbout = async () => {
     setSavingAbout(true)
@@ -1308,32 +1308,26 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen py-10">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <div className="flex gap-3 mt-4">
-            <Button asChild variant="outline">
-              <Link href="/">Volver a Home</Link>
-            </Button>
-            <Button variant="destructive" onClick={handleLogout}>
-              Logout
-            </Button>
-          </div>
-        </div>
-
-        <Tabs defaultValue="hero" className="">
-          <TabsList className="bg-card text-foreground shadow-sm border rounded-md">
-            <TabsTrigger value="hero">Hero</TabsTrigger>
-            <TabsTrigger value="breaker">Frase destacada</TabsTrigger>
-            <TabsTrigger value="forWho">Para quién</TabsTrigger>
-            <TabsTrigger value="products">Cómo funciona</TabsTrigger>
-            <TabsTrigger value="payments">Pagos</TabsTrigger>
-            <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
-            <TabsTrigger value="about">Sobre mí</TabsTrigger>
-            <TabsTrigger value="faqs">FAQs</TabsTrigger>
-            <TabsTrigger value="cta">CTA</TabsTrigger>
-            <TabsTrigger value="media">Media</TabsTrigger>
+    <DashboardShell>
+      <div>
+        <Tabs defaultValue="sections" className="">
+          <TabsList className="dash-tabs flex w-full justify-start gap-0 h-auto p-0">
+            <TabsTrigger value="sections" className="dash-tab">
+              <LayoutGrid className="size-3.5" />
+              <span>Secciones</span>
+            </TabsTrigger>
+            <TabsTrigger value="media" className="dash-tab">
+              <ImageIcon className="size-3.5" />
+              <span>Media</span>
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="dash-tab">
+              <Banknote className="size-3.5" />
+              <span>Pagos</span>
+            </TabsTrigger>
+            <TabsTrigger value="docs" className="dash-tab dash-tab--right">
+              <BookOpen className="size-3.5" />
+              <span>Documentación</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="media" className="mt-6">
@@ -1344,8 +1338,26 @@ export default function DashboardPage() {
             <PaymentsTab />
           </TabsContent>
 
+          <TabsContent value="docs" className="mt-6">
+            <DocsTab />
+          </TabsContent>
+
+          <TabsContent value="sections" className="mt-8">
+            <Tabs defaultValue="hero" className="">
+              <TabsList className="dash-subtabs flex-wrap h-auto p-0">
+                <TabsTrigger value="hero" className="dash-subtab">Hero</TabsTrigger>
+                <TabsTrigger value="breaker" className="dash-subtab">Frase destacada</TabsTrigger>
+                <TabsTrigger value="forWho" className="dash-subtab">Para quién</TabsTrigger>
+                <TabsTrigger value="sessions" className="dash-subtab">Sesiones</TabsTrigger>
+                <TabsTrigger value="guides" className="dash-subtab">Guías</TabsTrigger>
+                <TabsTrigger value="testimonials" className="dash-subtab">Testimonios</TabsTrigger>
+                <TabsTrigger value="about" className="dash-subtab">Sobre mí</TabsTrigger>
+                <TabsTrigger value="faqs" className="dash-subtab">FAQs</TabsTrigger>
+                <TabsTrigger value="cta" className="dash-subtab">CTA</TabsTrigger>
+              </TabsList>
+
           {/* Hero Tab */}
-          <TabsContent value="hero" className="mt-6">
+          <TabsContent value="hero" className="mt-6 space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Izquierda: formulario */}
               <Card>
@@ -1600,7 +1612,8 @@ export default function DashboardPage() {
           </TabsContent>
 
           {/* Testimonials Tab */}
-          <TabsContent value="testimonials" className="mt-6">
+          <TabsContent value="testimonials" className="mt-6 space-y-4">
+            <SectionBgPicker section="testimonials" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Izquierda: Añadir nuevo y edición dentro del mismo contenedor, todo plegable */}
               <Card>
@@ -1795,6 +1808,7 @@ export default function DashboardPage() {
                   <CardTitle>Visualización de testimonios</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <SectionBgPreview section="testimonials" className="rounded-md p-3 -mx-2">
                   <div className="border rounded-md divide-y">
                     {/* Vista previa del nuevo testimonio (borrador) */}
                     <details open={selectedTestimonialId === "__new__"} className="group">
@@ -1832,15 +1846,15 @@ export default function DashboardPage() {
                       </details>
                     ))}
                   </div>
+                  </SectionBgPreview>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
           {/* Products Tab */}
-          <TabsContent value="products" className="mt-6">
-            <div className="space-y-8">
-              {/* Guías */}
+          <TabsContent value="guides" className="mt-6 space-y-4">
+            <SectionBgPicker section="guides" />
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Izquierda: Crear y editar Guías */}
                 <Card>
@@ -2146,6 +2160,7 @@ export default function DashboardPage() {
                     </CardAction>
                   </CardHeader>
                   <CardContent>
+                    <SectionBgPreview section="guides" className="rounded-md p-3 -mx-2">
                     <div className="border rounded-md divide-y">
                       {/* Vista previa del borrador */}
                       <details className="group" open={openGuidesDraftPreview}>
@@ -2201,10 +2216,15 @@ export default function DashboardPage() {
                         </details>
                       ))}
                     </div>
+                    </SectionBgPreview>
                   </CardContent>
                 </Card>
               </div>
 
+          </TabsContent>
+
+          <TabsContent value="sessions" className="mt-6 space-y-4">
+            <SectionBgPicker section="sessions" />
               {/* Sesiones */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Izquierda: Crear y editar Sesiones */}
@@ -2475,6 +2495,7 @@ export default function DashboardPage() {
                     <CardTitle>Vista previa (Sesiones)</CardTitle>
                   </CardHeader>
                   <CardContent>
+                    <SectionBgPreview section="sessions" className="rounded-md p-3 -mx-2">
                     <div className="border rounded-md divide-y">
                       {/* Vista previa del borrador */}
                       <details className="group" open={openSessionsDraftPreview}>
@@ -2607,14 +2628,15 @@ export default function DashboardPage() {
                         </details>
                       ))}
                     </div>
+                    </SectionBgPreview>
                   </CardContent>
                 </Card>
               </div>
-            </div>
           </TabsContent>
 
           {/* About Tab */}
-          <TabsContent value="about" className="mt-6">
+          <TabsContent value="about" className="mt-6 space-y-4">
+            <SectionBgPicker section="about" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -2664,6 +2686,7 @@ export default function DashboardPage() {
                   <CardTitle>Vista previa</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <SectionBgPreview section="about" className="rounded-md p-4 -mx-2">
                   <div className="space-y-4">
                     {aboutVideoUrl ? (
                       <div className="rounded-md border overflow-hidden">
@@ -2695,13 +2718,15 @@ export default function DashboardPage() {
                     </div>
                     <p className="text-xs text-muted-foreground">El video y el botón de reserva se muestran en la página principal.</p>
                   </div>
+                  </SectionBgPreview>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
           {/* Breaker Tab */}
-          <TabsContent value="breaker" className="mt-6">
+          <TabsContent value="breaker" className="mt-6 space-y-4">
+            <SectionBgPicker section="breaker" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -2737,9 +2762,17 @@ export default function DashboardPage() {
                   <CardTitle>Vista previa</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <SectionBgPreview section="breaker" className="rounded-md p-4 -mx-2">
                   <div className="mx-auto max-w-4xl">
-                    <div className="relative rounded-2xl bg-background border border-border shadow-lg px-5 py-6 md:px-10 md:py-8 text-center">
-                      <div aria-hidden className="absolute -top-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-background border border-border border-b-0 border-r-0" />
+                    <div
+                      className="relative rounded-2xl border border-border shadow-lg px-5 py-6 md:px-10 md:py-8 text-center"
+                      style={{ backgroundColor: "var(--section-bg, var(--background))" }}
+                    >
+                      <div
+                        aria-hidden
+                        className="absolute -top-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 border border-border border-b-0 border-r-0"
+                        style={{ backgroundColor: "var(--section-bg, var(--background))" }}
+                      />
 
                       <div className="inline-flex items-center gap-2 rounded-full bg-accent/15 px-3 py-1">
                         <span className="text-xs md:text-sm font-medium tracking-wide uppercase text-accent">{breakerKicker?.trim() || "Un alto aquí"}</span>
@@ -2756,13 +2789,15 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </div>
+                  </SectionBgPreview>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
           {/* ForWho Tab */}
-          <TabsContent value="forWho" className="mt-6">
+          <TabsContent value="forWho" className="mt-6 space-y-4">
+            <SectionBgPicker section="forWho" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -3000,6 +3035,7 @@ export default function DashboardPage() {
                   <CardTitle>Vista previa</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <SectionBgPreview section="forWho" className="rounded-md p-4 -mx-2">
                   <div className="space-y-6">
                     <div className="text-center space-y-2">
                       <h2 className="text-xl md:text-2xl font-bold text-balance">{forWhoTitle || "(Sin título)"}</h2>
@@ -3035,13 +3071,15 @@ export default function DashboardPage() {
                       <p className="mt-2 text-xs text-muted-foreground text-center">Enlace: {forWhoCtaHref || "(vacío)"}</p>
                     </div>
                   </div>
+                  </SectionBgPreview>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
           {/* CTA Tab */}
-          <TabsContent value="cta" className="mt-6">
+          <TabsContent value="cta" className="mt-6 space-y-4">
+            <SectionBgPicker section="cta" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -3071,6 +3109,7 @@ export default function DashboardPage() {
                   <CardTitle>Vista previa</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <SectionBgPreview section="cta" className="rounded-md p-4 -mx-2">
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-balance">{ctaTitle || "(Sin título)"}</h3>
                     <p className="text-sm text-muted-foreground whitespace-pre-line">{ctaDescription || "(Sin descripción)"}</p>
@@ -3080,13 +3119,15 @@ export default function DashboardPage() {
                       </Button>
                     </div>
                   </div>
+                  </SectionBgPreview>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
           {/* FAQs Tab */}
-          <TabsContent value="faqs" className="mt-6">
+          <TabsContent value="faqs" className="mt-6 space-y-4">
+            <SectionBgPicker section="faqs" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -3238,6 +3279,7 @@ export default function DashboardPage() {
                   <CardTitle>Vista previa de FAQ</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <SectionBgPreview section="faqs" className="rounded-md p-4 -mx-2">
                   {selectedFaqId ? (
                     (() => {
                       const current = faqItems.find((it) => it.id === selectedFaqId)
@@ -3256,12 +3298,15 @@ export default function DashboardPage() {
                   ) : (
                     <p className="text-sm text-muted-foreground">Selecciona una FAQ para ver la vista previa.</p>
                   )}
+                  </SectionBgPreview>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
+            </Tabs>
+          </TabsContent>
         </Tabs>
       </div>
-    </main>
+    </DashboardShell>
   )
 }

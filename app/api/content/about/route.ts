@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -69,6 +70,7 @@ export async function PUT(req: Request) {
     return NextResponse.json({ ok: true })
   } catch (e) {
     console.error("PUT /api/content/about failed", e)
+    Sentry.captureException(e, { tags: { flow: "content-write", route: "about", method: "PUT" } })
     return NextResponse.json({ error: "No se pudo actualizar el contenido de 'Sobre mí'" }, { status: 500 })
   }
 }
@@ -114,6 +116,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true })
   } catch (e) {
     console.error("POST /api/content/about failed", e)
+    Sentry.captureException(e, { tags: { flow: "content-write", route: "about", method: "POST" } })
     return NextResponse.json({ error: "No se pudo actualizar el contenido de 'Sobre mí'" }, { status: 500 })
   }
 }
