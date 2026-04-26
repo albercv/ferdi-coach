@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -55,6 +56,7 @@ export async function PUT(req: Request) {
     return NextResponse.json({ ok: true, item: updated, faq })
   } catch (e: any) {
     console.error("PUT /api/content/faq failed", e)
+    Sentry.captureException(e, { tags: { flow: "content-write", route: "faq", method: "PUT" } })
     const message = typeof e?.message === "string" ? e.message : "No se pudo guardar la FAQ"
     return NextResponse.json({ error: message }, { status: 500 })
   }
@@ -103,6 +105,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, item: created, faq })
   } catch (e: any) {
     console.error("POST /api/content/faq failed", e)
+    Sentry.captureException(e, { tags: { flow: "content-write", route: "faq", method: "POST" } })
     const message = typeof e?.message === "string" ? e.message : "No se pudo crear la FAQ"
     return NextResponse.json({ error: message }, { status: 500 })
   }
@@ -130,6 +133,7 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ ok: true, faq })
   } catch (e: any) {
     console.error("DELETE /api/content/faq failed", e)
+    Sentry.captureException(e, { tags: { flow: "content-write", route: "faq", method: "DELETE" } })
     const message = typeof e?.message === "string" ? e.message : "No se pudo eliminar la FAQ"
     return NextResponse.json({ error: message }, { status: 500 })
   }

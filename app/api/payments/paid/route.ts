@@ -22,15 +22,22 @@ const PostSchema = z.object({
     .optional(),
 })
 
-function resolveProductRefById(productId: string): PaymentProductRef | null {
+type ResolvedProduct = { ref: PaymentProductRef; fileUrl?: string }
+
+function resolveProductRefById(productId: string): ResolvedProduct | null {
   const { guides, sessions } = getProducts()
   const g = guides.find((it) => it.id === productId)
   if (g) {
-    return { kind: "guide", id: g.id, title: g.title, priceEuro: Number(g.price || 0) }
+    return {
+      ref: { kind: "guide", id: g.id, title: g.title, priceEuro: Number(g.price || 0) },
+      fileUrl: typeof g.fileUrl === "string" && g.fileUrl.trim() ? g.fileUrl.trim() : undefined,
+    }
   }
   const s = sessions.find((it) => it.id === productId)
   if (s) {
-    return { kind: "session", id: s.id, subtype: s.subtype, title: s.title, priceEuro: Number(s.price || 0) }
+    return {
+      ref: { kind: "session", id: s.id, subtype: s.subtype, title: s.title, priceEuro: Number(s.price || 0) },
+    }
   }
   return null
 }
@@ -38,11 +45,12 @@ function resolveProductRefById(productId: string): PaymentProductRef | null {
 export async function POST(req: Request) {
   try {
     const body = PostSchema.parse(await req.json())
-    const product = resolveProductRefById(body.productId)
-    if (!product) {
+    const resolved = resolveProductRefById(body.productId)
+    if (!resolved) {
       return NextResponse.json({ error: "UNKNOWN_PRODUCT" }, { status: 400 })
     }
 
+    const product = resolved.ref
     if (!Number.isFinite(product.priceEuro) || product.priceEuro <= 0) {
       return NextResponse.json({ error: "INVALID_AMOUNT" }, { status: 400 })
     }
@@ -52,6 +60,7 @@ export async function POST(req: Request) {
       payerName: body.payerName,
       payerEmail: body.payerEmail,
       payerPhone: body.payerPhone,
+      productFileUrl: resolved.fileUrl,
     })
 
     void sendPaymentConfirmation(created)

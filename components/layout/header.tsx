@@ -22,8 +22,8 @@ export function Header({ reserveProduct }: { reserveProduct: PaymentProductRef }
   const navigation = [
     { name: "Sesiones", href: "#sesiones", title: "Sesiones individuales de coaching emocional para superar rupturas" },
     // "Programa 4" se elimina porque es el mismo section que "Sesiones"
-    { name: "Guías", href: "#guias", title: "Guías gratuitas para comenzar tu proceso de sanación emocional" },
-    { name: "Cómo funciona", href: "#como-funciona", title: "Metodología de coaching emocional para superar dependencia emocional" },
+    { name: "Guías de apoyo", href: "#guias", title: "Guías de apoyo para comenzar tu proceso de sanación emocional" },
+    { name: "Guías", href: "#como-funciona", title: "Metodología de coaching emocional para superar dependencia emocional" },
     { name: "Sobre mí", href: "#sobre-mi", title: "Conoce a Ferdy, coach especializado en rupturas de pareja" },
   ]
 

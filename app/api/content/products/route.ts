@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -103,6 +104,7 @@ export async function POST(req: Request) {
     const created = addProductItem(body)
     return NextResponse.json({ success: true, data: created })
   } catch (error: any) {
+    Sentry.captureException(error, { tags: { flow: "content-write", route: "products", method: "POST" } })
     return NextResponse.json({ success: false, error: error?.message || String(error) }, { status: 400 })
   }
 }
@@ -136,6 +138,7 @@ export async function PUT(req: Request) {
     await tryCleanupProductMedia({ before, after: updated })
     return NextResponse.json({ success: true, data: updated })
   } catch (error: any) {
+    Sentry.captureException(error, { tags: { flow: "content-write", route: "products", method: "PUT" } })
     return NextResponse.json({ success: false, error: error?.message || String(error) }, { status: 400 })
   }
 }
@@ -159,6 +162,7 @@ export async function DELETE(req: Request) {
     deleteProductItem(id, kind)
     return NextResponse.json({ success: true })
   } catch (error: any) {
+    Sentry.captureException(error, { tags: { flow: "content-write", route: "products", method: "DELETE" } })
     return NextResponse.json({ success: false, error: error?.message || String(error) }, { status: 400 })
   }
 }

@@ -80,8 +80,14 @@ export function buildCoachNotificationEmail(s: PaymentSubmission): EmailTemplate
   }
 }
 
-export function buildPagoComprobadoEmail(s: PaymentSubmission): EmailTemplate {
+export function buildPagoComprobadoEmail(
+  s: PaymentSubmission,
+  opts: { guideAttached?: boolean } = {},
+): EmailTemplate {
   const isSession = s.productKind === "session"
+  const guideBody = opts.guideAttached
+    ? `<p>Adjunta a este mensaje encontrarás tu guía en PDF. Si no la ves, revisa la carpeta de spam o respóndenos y te la reenviamos.</p>`
+    : `<p>Tu guía estará disponible en breve. Te enviaremos un email con el acceso.</p>`
   return {
     subject: `Pago confirmado — ${s.productTitle}`,
     html: buildWrapper(`
@@ -90,7 +96,7 @@ export function buildPagoComprobadoEmail(s: PaymentSubmission): EmailTemplate {
       <p>Hemos confirmado el ingreso correspondiente a <strong>${s.productTitle}</strong>.</p>
       ${isSession
         ? `<p>En breve me pondré en contacto contigo para coordinar los próximos pasos.</p>`
-        : `<p>Tu guía estará disponible en breve. Te enviaremos un email con el acceso.</p>`
+        : guideBody
       }
       <p>Gracias por tu confianza,<br/><strong>Ferdy</strong></p>
     `),

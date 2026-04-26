@@ -22,6 +22,10 @@ export type PaymentSubmission = {
   productTitle: string
   amountEuro: number
   conceptShort: string
+  // Snapshot de la fileUrl del producto en el momento en que el cliente hizo el
+  // submit. Se usa para entregar el mismo PDF aunque el producto se haya editado
+  // después, y para proteger de borrado ese fichero mientras la compra esté viva.
+  productFileUrl?: string
 
   payerName: string
   payerEmail: string

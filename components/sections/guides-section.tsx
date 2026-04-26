@@ -26,7 +26,7 @@ export function GuidesSection({ guides }: { guides: GuideProduct[] }) {
     <Section id="guias" aria-labelledby="guias-title" className="bg-background">
       <div className="text-center mb-12">
         <h2 id="guias-title" className="text-3xl md:text-4xl font-bold mb-6 text-balance">
-          Guías gratuitas
+          Guías de apoyo
         </h2>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
           Recursos descargables para comenzar tu proceso de sanación

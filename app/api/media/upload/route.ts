@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -85,6 +86,14 @@ export async function POST(req: Request) {
     return NextResponse.json(result)
   } catch (err: any) {
     const message = typeof err?.message === "string" ? err.message : "UPLOAD_FAILED"
+    Sentry.captureException(err, {
+      tags: { flow: "media-upload", outcome: "error" },
+      extra: {
+        email: session.user?.email ?? null,
+        role: (session.user as any)?.role ?? null,
+        errorMessage: message,
+      },
+    })
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

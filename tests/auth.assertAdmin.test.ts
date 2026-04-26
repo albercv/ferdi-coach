@@ -28,6 +28,17 @@ describe("assertAdmin", () => {
     process.env.AUTH_ADMINS = prevAdmins
   })
 
+  it("isAdmin returns true si role=user pero email está en el allowlist (caso JWT cacheado)", () => {
+    const prev = process.env.AUTH_ADMIN_EMAIL_2
+    process.env.AUTH_ADMIN_EMAIL_2 = "ferdy-test@example.com"
+
+    expect(
+      isAdmin({ user: { role: "user", email: "FERDY-TEST@example.com" } })
+    ).toBe(true)
+
+    process.env.AUTH_ADMIN_EMAIL_2 = prev
+  })
+
   it("assertAdmin throws 401 when unauthenticated", () => {
     try {
       assertAdmin(null)

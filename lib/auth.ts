@@ -168,10 +168,9 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         if ((user as any).email) token.email = (user as any).email
-        token.role = (user as any).role
       }
 
-      if (!token.role && typeof token.email === "string") {
+      if (typeof token.email === "string") {
         token.role = isAdminEmail(token.email) ? "admin" : "user"
       }
 
