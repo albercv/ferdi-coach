@@ -1272,3 +1272,21 @@
     .dash-tab--right { margin-left: 0; }
   }
 }
+
+/* =====================================================
+   Section background overrides driven by content/section-styles.md
+   The wrapper sets --section-bg as an inline style; the class
+   reads it and forces the inner section to be transparent so the
+   chosen color always wins over the section's own background.
+   ===================================================== */
+.section-bg {
+  background-color: var(--section-bg, transparent);
+  transition: background-color 220ms ease;
+}
+.section-bg.section-bg--inner {
+  background-color: transparent;
+}
+.section-bg:not(.section-bg--inner) > section,
+.section-bg:not(.section-bg--inner) > div > section {
+  background-color: transparent !important;
+}
