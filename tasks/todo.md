@@ -17,6 +17,7 @@ _Generado: 2026-04-07 | Basado en: tasks/pending_tasks.md_
 | T7 | Migración de .md a base de datos | 🔴 Pendiente |
 | T8 | Auditoría de seguridad — correcciones | 🔴 Pendiente |
 | T9 | Auditoría SEO — correcciones | 🔴 Pendiente |
+| T10 | Tab Documentación dinámica en dashboard | ✅ Hecho |
 
 ---
 
@@ -314,3 +315,49 @@ En `lib/auth.ts`, el callback `jwt` no re-evalúa el rol si ya existe en el toke
 ---
 
 _Actualizar este archivo marcando `[x]` cada ítem al completarlo._
+
+---
+
+## TAREA 10 — Tab Documentación dinámica en el dashboard
+
+**Objetivo:** Centralizar toda la documentación del proyecto (devs + usuarios) en un tab del dashboard, con buscador avanzado y carga dinámica desde ficheros `.md`.
+
+**Decisiones clave:**
+- Documentación en `docs/*.md` siguiendo el patrón existente de `content/` (frontmatter + body)
+- Renderizado con `react-markdown` + `remark-gfm` (estándar, ~30kb, evita reinventar parser)
+- Búsqueda con `cmdk` (ya instalado vía shadcn/ui `command.tsx`) — full-text + filtro por categoría
+- API server-side bajo `assertAdmin` (consistente con el resto del dashboard)
+- El tab "Documentación" se coloca arriba a la derecha en el `TabsList` mediante `ml-auto`
+
+**Archivos a crear:**
+- [x] `docs/README.md` — índice de la documentación
+- [x] `docs/architecture.md` — visión técnica del proyecto
+- [x] `docs/dashboard.md` — guía del dashboard (usuario admin)
+- [x] `docs/payments-flow.md` — flujo de pagos (transferencia + estados)
+- [x] `docs/emails.md` — sistema transaccional con Resend
+- [x] `docs/api-reference.md` — endpoints internos
+- [x] `docs/content-system.md` — `.md` como BD documental
+- [x] `docs/deployment.md` — referencia a `DEPLOY.md`
+- [x] `docs/styles.md` — referencia a `STYLES.md`
+- [x] `docs/troubleshooting.md` — problemas frecuentes
+- [x] `lib/docs.ts` — lectura dinámica de `docs/*.md` con frontmatter
+- [x] `app/api/docs/route.ts` — `GET` lista de documentos (admin)
+- [x] `app/api/docs/[slug]/route.ts` — `GET` documento concreto (admin)
+- [x] `components/dashboard/DocsTab.tsx` — UI con buscador
+
+**Archivos a modificar:**
+- [x] `app/dashboard/page.tsx` — añadir TabsTrigger "Documentación" + TabsContent
+- [x] `package.json` — `react-markdown` y `remark-gfm`
+
+**Checklist:**
+- [x] Crear `docs/` con los `.md` listados arriba
+- [x] Implementar `lib/docs.ts` con `getDocsList()` y `getDoc(slug)`
+- [x] Crear endpoints API protegidos con `assertAdmin`
+- [x] Instalar `react-markdown` y `remark-gfm`
+- [x] Implementar `DocsTab.tsx` con: lista lateral, panel de lectura, buscador full-text con resaltado, filtro por categoría y tags
+- [x] Integrar tab "Documentación" en el dashboard, alineado arriba-derecha
+- [x] Verificar `npm run typecheck` y `npm run build` en verde
+- [x] Desplegar la rama (`feature/deploy-docs`) en local para probar visualmente
+- [x] Commit con prefijo `feat:` (sin Co-Authored-By)
+
+**Criterio de done:** Un admin entra al dashboard, ve el tab "Documentación" arriba a la derecha, puede buscar/filtrar por categoría/tag y leer cualquier doc renderizado.

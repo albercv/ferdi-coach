@@ -863,3 +863,430 @@
     .icon-lift { transform: none; }
   }
 }
+
+@layer utilities {
+  .docs-prose {
+    color: var(--foreground);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    max-width: 72ch;
+  }
+  .docs-prose h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 1.5rem 0 1rem;
+    line-height: 1.25;
+  }
+  .docs-prose h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 1.4rem 0 0.75rem;
+    line-height: 1.3;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.25rem;
+  }
+  .docs-prose h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.2rem 0 0.5rem;
+  }
+  .docs-prose h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1rem 0 0.4rem;
+  }
+  .docs-prose p {
+    margin: 0.75rem 0;
+  }
+  .docs-prose a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .docs-prose a:hover {
+    text-decoration-thickness: 2px;
+  }
+  .docs-prose ul,
+  .docs-prose ol {
+    margin: 0.75rem 0;
+    padding-left: 1.4rem;
+  }
+  .docs-prose ul { list-style: disc; }
+  .docs-prose ol { list-style: decimal; }
+  .docs-prose li { margin: 0.25rem 0; }
+  .docs-prose li > p { margin: 0.25rem 0; }
+  .docs-prose blockquote {
+    border-left: 3px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+    padding: 0.5rem 0.9rem;
+    margin: 1rem 0;
+    color: var(--muted-foreground);
+    border-radius: 0.25rem;
+  }
+  .docs-prose code {
+    background: color-mix(in srgb, var(--foreground) 8%, transparent);
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.25rem;
+    font-size: 0.85em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .docs-prose pre {
+    background: #0d0d0d;
+    color: #e5e7eb;
+    padding: 0.9rem 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  .docs-prose pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+  .docs-prose table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  .docs-prose th,
+  .docs-prose td {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .docs-prose th {
+    background: color-mix(in srgb, var(--foreground) 4%, transparent);
+    font-weight: 600;
+  }
+  .docs-prose hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+  .docs-prose img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.375rem;
+  }
+  .docs-prose input[type="checkbox"] {
+    margin-right: 0.4rem;
+    transform: translateY(2px);
+  }
+}
+
+/* =====================================================
+   Dashboard scope — Editorial Atelier admin aesthetic
+   Limited to .dashboard-scope to avoid leaking to public site.
+   ===================================================== */
+.dashboard-scope {
+  --dash-bg: color-mix(in srgb, var(--accent) 5%, #fafaf7);
+  --dash-line: color-mix(in srgb, var(--foreground) 12%, transparent);
+  --dash-line-strong: color-mix(in srgb, var(--foreground) 22%, transparent);
+  --dash-chip: color-mix(in srgb, var(--foreground) 3%, transparent);
+  --dash-radius: 0.65rem;
+}
+
+@layer utilities {
+  /* ---------- Top bar ---------- */
+  .dash-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--background) 92%, transparent);
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--dash-line);
+  }
+  .dash-topbar-line {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--accent) 70%, transparent) 18%,
+      color-mix(in srgb, var(--accent) 30%, transparent) 50%,
+      color-mix(in srgb, var(--accent) 70%, transparent) 82%,
+      transparent 100%
+    );
+  }
+  .dash-mark {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent),
+      0 4px 12px -4px color-mix(in srgb, var(--accent) 60%, transparent);
+    transition: transform 200ms ease;
+  }
+  .dash-mark:hover { transform: rotate(-2deg) scale(1.02); }
+
+  .dash-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
+    animation: dash-pulse 2.4s ease-out infinite;
+  }
+  @keyframes dash-pulse {
+    0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 50%, transparent); }
+    70%  { box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent); }
+    100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
+  }
+
+  /* ---------- Buttons (top bar) ---------- */
+  .dash-btn-ghost,
+  .dash-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    border-radius: 0.5rem;
+    transition: all 180ms cubic-bezier(.2,.7,.2,1);
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .dash-btn-ghost {
+    color: var(--foreground);
+    background: transparent;
+    border-color: var(--dash-line);
+  }
+  .dash-btn-ghost:hover {
+    border-color: var(--dash-line-strong);
+    background: var(--dash-chip);
+    color: var(--accent);
+  }
+  .dash-btn-primary {
+    color: var(--background);
+    background: var(--foreground);
+    box-shadow:
+      0 1px 0 0 color-mix(in srgb, var(--accent) 80%, transparent) inset,
+      0 4px 12px -6px color-mix(in srgb, var(--foreground) 60%, transparent);
+  }
+  .dash-btn-primary:hover {
+    background: color-mix(in srgb, var(--foreground) 88%, var(--accent) 12%);
+    transform: translateY(-1px);
+    box-shadow:
+      0 1px 0 0 color-mix(in srgb, var(--accent) 100%, transparent) inset,
+      0 8px 18px -8px color-mix(in srgb, var(--foreground) 70%, transparent);
+  }
+  .dash-btn-primary:active { transform: translateY(0); }
+
+  /* ---------- Title ---------- */
+  .dash-title {
+    font-size: clamp(1.75rem, 2.4vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    color: var(--foreground);
+  }
+  .dash-title::after {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 2px;
+    background: var(--accent);
+    margin-top: 0.55rem;
+    border-radius: 2px;
+  }
+
+  /* ---------- Primary tabs (Secciones / Media / Pagos / Documentación) ---------- */
+  .dash-tabs {
+    background: transparent;
+    border-bottom: 1px solid var(--dash-line);
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
+  }
+  .dash-tab[data-slot="tabs-trigger"] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.85rem 1.1rem;
+    margin-bottom: -1px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    color: color-mix(in srgb, var(--foreground) 55%, transparent);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    height: auto;
+    flex: 0 0 auto;
+    box-shadow: none;
+    transition: color 180ms ease, border-color 180ms ease;
+  }
+  .dash-tab[data-slot="tabs-trigger"] svg {
+    color: color-mix(in srgb, var(--foreground) 40%, transparent);
+    transition: color 180ms ease;
+  }
+  .dash-tab[data-slot="tabs-trigger"]:hover {
+    color: var(--foreground);
+  }
+  .dash-tab[data-slot="tabs-trigger"]:hover svg {
+    color: var(--accent);
+  }
+  .dash-tab[data-slot="tabs-trigger"][data-state="active"] {
+    color: var(--foreground);
+    border-bottom-color: var(--accent);
+    background: transparent;
+    box-shadow: none;
+  }
+  .dash-tab[data-slot="tabs-trigger"][data-state="active"] svg {
+    color: var(--accent);
+  }
+  .dash-tab--right { margin-left: auto; }
+
+  /* ---------- Sub-tabs inside Secciones ---------- */
+  .dash-subtabs {
+    background: var(--background);
+    border: 1px solid var(--dash-line);
+    border-radius: var(--dash-radius);
+    box-shadow: 0 1px 0 0 color-mix(in srgb, var(--foreground) 4%, transparent);
+    padding: 0.3rem;
+    gap: 0.15rem;
+  }
+  .dash-subtab[data-slot="tabs-trigger"] {
+    background: transparent;
+    border: none;
+    border-radius: 0.45rem;
+    color: color-mix(in srgb, var(--foreground) 60%, transparent);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.5rem 0.85rem;
+    height: auto;
+    flex: 0 0 auto;
+    box-shadow: none;
+    transition: all 160ms ease;
+    position: relative;
+  }
+  .dash-subtab[data-slot="tabs-trigger"]:hover {
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--foreground) 4%, transparent);
+  }
+  .dash-subtab[data-slot="tabs-trigger"][data-state="active"] {
+    color: var(--background);
+    background: var(--foreground);
+    box-shadow:
+      0 1px 0 0 color-mix(in srgb, var(--accent) 60%, transparent) inset,
+      0 6px 16px -10px color-mix(in srgb, var(--foreground) 70%, transparent);
+  }
+  .dash-subtab[data-slot="tabs-trigger"][data-state="active"]::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: 16px;
+    height: 2px;
+    background: var(--accent);
+    transform: translateX(-50%);
+    border-radius: 2px;
+    opacity: 0.85;
+  }
+
+  /* ---------- Cards inside scope ---------- */
+  .dashboard-scope [data-slot="card"] {
+    border: 1px solid var(--dash-line);
+    background: var(--background);
+    border-radius: var(--dash-radius);
+    box-shadow:
+      0 1px 0 0 color-mix(in srgb, var(--foreground) 3%, transparent),
+      0 18px 38px -28px color-mix(in srgb, var(--foreground) 32%, transparent);
+    transition: border-color 180ms ease, box-shadow 220ms ease;
+  }
+  .dashboard-scope [data-slot="card"]:hover {
+    border-color: var(--dash-line-strong);
+  }
+  .dashboard-scope [data-slot="card-title"] {
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- Refined buttons inside scope (shadcn Button) ---------- */
+  .dashboard-scope button[data-slot="button"],
+  .dashboard-scope a[data-slot="button"] {
+    border-radius: 0.55rem;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    transition: transform 140ms ease, box-shadow 180ms ease, background 180ms ease, color 180ms ease;
+  }
+  .dashboard-scope button[data-slot="button"]:hover,
+  .dashboard-scope a[data-slot="button"]:hover {
+    transform: translateY(-1px);
+  }
+  .dashboard-scope button[data-slot="button"]:active,
+  .dashboard-scope a[data-slot="button"]:active {
+    transform: translateY(0);
+  }
+
+  /* Subtle accent border on inputs / selects when focused */
+  .dashboard-scope input:focus-visible,
+  .dashboard-scope textarea:focus-visible,
+  .dashboard-scope select:focus-visible,
+  .dashboard-scope [data-slot="select-trigger"]:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+
+  /* Background grain (very subtle paper tone) */
+  .dashboard-scope::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(
+        1200px 600px at 100% -10%,
+        color-mix(in srgb, var(--accent) 8%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        900px 500px at -10% 110%,
+        color-mix(in srgb, var(--accent) 5%, transparent),
+        transparent 55%
+      );
+  }
+  .dashboard-scope > * { position: relative; z-index: 1; }
+
+  @media (max-width: 640px) {
+    .dash-topbar .container { gap: 0.5rem; }
+    .dash-btn-ghost,
+    .dash-btn-primary { padding: 0.4rem 0.65rem; font-size: 0.72rem; }
+    .dash-tab[data-slot="tabs-trigger"] { padding: 0.7rem 0.7rem; font-size: 0.8rem; }
+    .dash-tab--right { margin-left: 0; }
+  }
+}
+
+/* =====================================================
+   Section background overrides driven by content/section-styles.md
+   The wrapper sets --section-bg as an inline style; the class
+   reads it and forces the inner section to be transparent so the
+   chosen color always wins over the section's own background.
+   ===================================================== */
+.section-bg {
+  background-color: var(--section-bg, transparent);
+  transition: background-color 220ms ease;
+}
+.section-bg.section-bg--inner {
+  background-color: transparent;
+}
+.section-bg:not(.section-bg--inner) > section,
+.section-bg:not(.section-bg--inner) > div > section {
+  background-color: transparent !important;
+}
