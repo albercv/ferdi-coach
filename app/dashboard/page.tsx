@@ -24,6 +24,7 @@ import { MediaPicker } from "@/components/dashboard/MediaPicker"
 import { MediaLibraryTab } from "@/components/dashboard/MediaLibraryTab"
 import { MediaSectionCard } from "@/components/dashboard/MediaSectionCard"
 import { PaymentsTab } from "@/components/dashboard/PaymentsTab"
+import { DocsTab } from "@/components/dashboard/DocsTab"
 import { CheckCircle, Wrench, Handshake, SlidersHorizontal, Star, Heart, Shield, Users, ArrowRight, Sparkles, Target, Timer, MessageSquare, HeartCrack, Clock } from "lucide-react"
 
 function escapeProductSlug(input: string) {
@@ -1323,10 +1324,11 @@ export default function DashboardPage() {
         </div>
 
         <Tabs defaultValue="sections" className="">
-          <TabsList className="bg-card text-foreground shadow-sm border rounded-md">
+          <TabsList className="bg-card text-foreground shadow-sm border rounded-md flex w-full justify-start gap-1 h-auto p-1">
             <TabsTrigger value="sections">Secciones</TabsTrigger>
             <TabsTrigger value="media">Media</TabsTrigger>
             <TabsTrigger value="payments">Pagos</TabsTrigger>
+            <TabsTrigger value="docs" className="ml-auto">Documentación</TabsTrigger>
           </TabsList>
 
           <TabsContent value="media" className="mt-6">
@@ -1335,6 +1337,10 @@ export default function DashboardPage() {
 
           <TabsContent value="payments" className="mt-6">
             <PaymentsTab />
+          </TabsContent>
+
+          <TabsContent value="docs" className="mt-6">
+            <DocsTab />
           </TabsContent>
 
           <TabsContent value="sections" className="mt-6">
