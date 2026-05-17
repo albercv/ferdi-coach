@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { Star } from "lucide-react"
+import { Play, Star } from "lucide-react"
 import { useRef, useState } from "react"
 import Image from "next/image"
 
@@ -33,15 +33,28 @@ export function TestimonialCard({ name, age, text, rating, mediaUrl }: Testimoni
     }
   }
 
+  const handleVideoKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault()
+      handleVideoClick()
+    }
+  }
+
   const renderMedia = () => {
     const resolvedMediaUrl = mediaUrl?.trim() || undefined
     const isVideo = Boolean(resolvedMediaUrl && resolvedMediaUrl.toLowerCase().endsWith(".mp4"))
 
     if (resolvedMediaUrl && isVideo) {
+      const ariaLabel = isPlaying ? `Pausar vídeo de ${name}` : `Reproducir vídeo de ${name}`
+
       return (
         <div
-          className="w-16 h-16 rounded-full overflow-hidden cursor-pointer border-2 border-white shadow-lg hover:scale-105 transition-transform"
+          className="relative w-16 h-16 rounded-full overflow-hidden cursor-pointer border-2 border-white shadow-lg hover:scale-105 transition-transform"
           onClick={handleVideoClick}
+          onKeyDown={handleVideoKeyDown}
+          role="button"
+          tabIndex={0}
+          aria-label={ariaLabel}
         >
           <video
             ref={videoRef}
@@ -52,6 +65,11 @@ export function TestimonialCard({ name, age, text, rating, mediaUrl }: Testimoni
           >
             <source src={resolvedMediaUrl} type="video/mp4" />
           </video>
+          {!isPlaying && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40" data-testid="play-badge">
+              <Play className="h-6 w-6 text-white" />
+            </div>
+          )}
         </div>
       )
     }
