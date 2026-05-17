@@ -22,6 +22,11 @@ function isVideoUrl(url: string): boolean {
   return u.endsWith(".mp4")
 }
 
+function isNonMp4VideoFile(file: File): boolean {
+  const name = file.name.toLowerCase()
+  return name.endsWith(".mov") || file.type === "video/quicktime"
+}
+
 function isPdfUrl(url: string): boolean {
   const u = url.toLowerCase()
   return u.endsWith(".pdf")
@@ -34,7 +39,7 @@ export function MediaPicker(props: MediaPickerProps) {
   const [error, setError] = useState<string | null>(null)
 
   const accept = useMemo(() => {
-    return props.accept ?? "image/*,video/mp4,application/pdf"
+    return props.accept ?? "image/*,video/mp4,video/quicktime,application/pdf"
   }, [props.accept])
 
   const value = props.value ?? null
@@ -136,7 +141,11 @@ export function MediaPicker(props: MediaPickerProps) {
 
         <div className="flex gap-2">
           <Button type="button" onClick={onUpload} disabled={uploading || !selectedFile}>
-            {uploading ? "Subiendo..." : "Subir"}
+            {uploading && selectedFile && isNonMp4VideoFile(selectedFile)
+              ? "Convirtiendo vídeo… puede tardar 1 min"
+              : uploading
+              ? "Subiendo..."
+              : "Subir"}
           </Button>
           <Button type="button" variant="secondary" onClick={onRemove} disabled={uploading}>
             Quitar

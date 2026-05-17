@@ -7,6 +7,7 @@ export const ALLOWED_EXTENSIONS: ReadonlySet<string> = new Set([
   "webp",
   "avif",
   "mp4",
+  "mov",
   "pdf",
 ])
 

@@ -5,7 +5,8 @@ import { authOptions } from "@/lib/auth"
 import { assertAdmin } from "@/lib/auth/assertAdmin"
 import { MediaService } from "@/lib/media/mediaService"
 
-export const runtime = 'nodejs';
+export const runtime = 'nodejs'
+export const maxDuration = 300
 
 const ALLOWED_SCOPES = ["hero", "about", "testimonials", "products", "global"] as const
 const PRODUCT_SUBSCOPES = ["guides", "sessions"] as const
@@ -71,17 +72,34 @@ export async function POST(req: Request) {
     }
 
     const buf = new Uint8Array(await file.arrayBuffer())
+    const inputMime = file.type || undefined
+    const isNonMp4Video =
+      inputMime === "video/quicktime" ||
+      file.name.toLowerCase().endsWith(".mov")
+    const transcodeStart = isNonMp4Video ? Date.now() : null
 
     const media = new MediaService()
     const result = await media.upload({
       bytes: buf,
       originalName: file.name,
-      mimeType: file.type || undefined,
+      mimeType: inputMime,
       sizeBytes: file.size,
       scope: scopeRaw as any,
       entitySlug,
       productSubscope: productSubscope as any,
     })
+
+    if (transcodeStart !== null) {
+      Sentry.addBreadcrumb({
+        category: "media-upload",
+        message: "transcode",
+        data: {
+          durationMs: Date.now() - transcodeStart,
+          inputBytes: file.size,
+          outputBytes: result.size,
+        },
+      })
+    }
 
     return NextResponse.json(result)
   } catch (err: any) {

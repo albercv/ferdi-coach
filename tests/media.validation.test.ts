@@ -13,8 +13,12 @@ describe("media validation", () => {
       expect(inferKindFromExt(".JPG")).toBe("image")
     })
 
-    it("infers video", () => {
+    it("infers video from mp4", () => {
       expect(inferKindFromExt("mp4")).toBe("video")
+    })
+
+    it("infers video from mov", () => {
+      expect(inferKindFromExt("mov")).toBe("video")
     })
 
     it("infers document", () => {
@@ -66,9 +70,15 @@ describe("media validation", () => {
       ).toThrow()
     })
 
-    it("rejects mp4 with non-mp4 video mime", () => {
+    it("rejects mov with video/webm", () => {
       expect(() =>
-        validateUploadMeta({ ext: "mp4", mimeType: "video/quicktime", sizeBytes: 1 }),
+        validateUploadMeta({ ext: "mov", mimeType: "video/webm", sizeBytes: 1 }),
+      ).toThrow()
+    })
+
+    it("rejects mp4 with video/x-msvideo", () => {
+      expect(() =>
+        validateUploadMeta({ ext: "mp4", mimeType: "video/x-msvideo", sizeBytes: 1 }),
       ).toThrow()
     })
   })
@@ -90,6 +100,18 @@ describe("media validation", () => {
       expect(validateUploadMeta({ ext: "mp4", mimeType: "video/mp4", sizeBytes: 1 })).toEqual(
         { kind: "video", ext: "mp4" },
       )
+    })
+
+    it("accepts mov with video/quicktime", () => {
+      expect(
+        validateUploadMeta({ ext: "mov", mimeType: "video/quicktime", sizeBytes: 1 }),
+      ).toEqual({ kind: "video", ext: "mov" })
+    })
+
+    it("accepts mp4 with video/quicktime", () => {
+      expect(
+        validateUploadMeta({ ext: "mp4", mimeType: "video/quicktime", sizeBytes: 1 }),
+      ).toEqual({ kind: "video", ext: "mp4" })
     })
   })
 })
