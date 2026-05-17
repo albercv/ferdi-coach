@@ -22,6 +22,12 @@ The codebase was started by an external developer. Existing code must be respect
 
 ## Golden Rules
 
+**0. NEVER make unrequested changes**
+- Only execute changes the user explicitly asked for. If the user asked to *analyze*, *investigate*, *explain* or *review* — do ONLY that. Do NOT edit files.
+- "Analyze X" is a read-only request. Output findings, wait for orders before any Edit/Write.
+- Even if you spot the fix while analyzing: report it, do not apply it.
+- Applies to every change: file edits, file creation, file deletion, config changes, package installs, git operations beyond pure read. When in doubt → ask.
+
 **1. Never break what works**
 - Do not modify existing functionality, design, styles or logic unless explicitly part of the current task.
 - If unsure whether a change affects something existing: ask before executing.
