@@ -6,18 +6,29 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useEffect, useState } from "react"
 import type { Testimonial } from "@/lib/content-md"
 
-export function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
-  // const { testimonials } = siteContent
-  const [api, setApi] = useState<CarouselApi | null>(null)
+const AUTOPLAY_INTERVAL_MS = 3200
 
-  // Autoplay simple: avanza cada 3.2s; loop ya está activo en opts
+export function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
+  const [api, setApi] = useState<CarouselApi | null>(null)
+  const [autoplayActive, setAutoplayActive] = useState(true)
+
+  // Autoplay: advances every AUTOPLAY_INTERVAL_MS when active.
+  // Programmatic scrollNext calls from this interval do not affect the flag.
   useEffect(() => {
-    if (!api) return
-    const id = setInterval(() => {
-      api.scrollNext()
-    }, 3200)
+    if (!api || !autoplayActive) return
+    const id = setInterval(() => { api.scrollNext() }, AUTOPLAY_INTERVAL_MS)
     return () => clearInterval(id)
-  }, [api])
+  }, [api, autoplayActive])
+
+  function handlePreviousClick() {
+    // Left arrow always pauses; if already paused, stays paused.
+    setAutoplayActive(false)
+  }
+
+  function handleNextClick() {
+    // Right arrow toggles: pauses if active, resumes if paused.
+    setAutoplayActive((previous) => !previous)
+  }
 
   return (
     <Section id="testimonios" aria-labelledby="testimonios-title" className="bg-secondary">
@@ -34,7 +45,11 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
         <Carousel opts={{ align: "start", loop: true }} setApi={setApi} className="w-full">
           <CarouselContent>
             {testimonials.map((testimonial, index) => (
-              <CarouselItem key={index} className="basis-full md:basis-1/2 lg:basis-1/3">
+              <CarouselItem
+                key={index}
+                className="basis-full md:basis-1/2 lg:basis-1/3"
+                onClick={() => setAutoplayActive(false)}
+              >
                 <TestimonialCard
                   name={testimonial.name}
                   age={testimonial.age}
@@ -45,8 +60,13 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden md:flex top-1/2 md:-left-10" aria-label="Testimonio anterior" />
-          <CarouselNext className="hidden md:flex top-1/2 md:-right-10" aria-label="Siguiente testimonio" />
+          {/* onClickCapture fires before the button's own onClick, so scrollPrev/scrollNext still run */}
+          <div onClickCapture={handlePreviousClick}>
+            <CarouselPrevious className="hidden md:flex top-1/2 md:-left-10" aria-label="Testimonio anterior" />
+          </div>
+          <div onClickCapture={handleNextClick}>
+            <CarouselNext className="hidden md:flex top-1/2 md:-right-10" aria-label="Siguiente testimonio" />
+          </div>
         </Carousel>
       </div>
     </Section>
