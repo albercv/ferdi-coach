@@ -4,6 +4,7 @@ import type { MediaScope, ProductMediaSubscope } from "./paths"
 import { resolveUploadDir } from "./paths"
 import { buildUniqueFilename, getSafeExt } from "./filename"
 import { validateUploadMeta } from "./validation"
+import { transcodeToMp4 } from "./transcode"
 import { countUrlReferencesInContent } from "./reference-scan"
 import {
   countTerminalSubmissionRefsMatchingFileUrl,
@@ -53,7 +54,7 @@ export class MediaService {
       productSubscope: input.productSubscope,
     })
 
-    getSafeExt(input.originalName)
+    const inputExt = getSafeExt(input.originalName)
 
     const { kind } = validateUploadMeta({
       ext: input.originalName,
@@ -61,12 +62,24 @@ export class MediaService {
       sizeBytes: input.sizeBytes,
     })
 
-    const filename = buildUniqueFilename(input.originalName)
+    const needsTranscode = kind === "video" && inputExt !== "mp4"
+
+    let bytes = input.bytes
+    let mimeType = input.mimeType
+    let filenameExt: string | undefined
+
+    if (needsTranscode) {
+      bytes = await transcodeToMp4({ bytes: input.bytes, inputExt })
+      mimeType = "video/mp4"
+      filenameExt = "mp4"
+    }
+
+    const filename = buildUniqueFilename(input.originalName, filenameExt)
     const stored = await this.storage.save({
-      bytes: input.bytes,
+      bytes,
       dirRelToPublic,
       filename,
-      mimeType: input.mimeType,
+      mimeType,
     })
 
     return {

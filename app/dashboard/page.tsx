@@ -1664,11 +1664,11 @@ export default function DashboardPage() {
                           <div className="w-full max-w-2xl">
                             {createTName.trim() ? (
                               <MediaPicker
-                                label="Media (imagen o vídeo mp4)"
+                                label="Media (imagen o vídeo)"
                                 scope="testimonials"
                                 entitySlug={escapeProductSlug(createTName)}
                                 value={createTMediaUrl}
-                                accept="image/*,video/mp4"
+                                accept="image/*,video/mp4,video/quicktime"
                                 onChange={(url) => setCreateTMediaUrl(url ?? "")}
                               />
                             ) : (
@@ -1752,11 +1752,11 @@ export default function DashboardPage() {
                               <MediaSectionCard title="Media" description="Imagen o vídeo del testimonio" compact>
                                 <div className="w-full max-w-2xl">
                                   <MediaPicker
-                                    label="Media (imagen o vídeo mp4)"
+                                    label="Media (imagen o vídeo)"
                                     scope="testimonials"
                                     entitySlug={t.id}
                                     value={editingTMediaUrl}
-                                    accept="image/*,video/mp4"
+                                    accept="image/*,video/mp4,video/quicktime"
                                     onChange={(url) => setEditingTMediaUrl(url ?? "")}
                                   />
                                 </div>
@@ -2658,10 +2658,10 @@ export default function DashboardPage() {
                   <MediaSectionCard title="Media" description="Vídeo y póster de la sección" compact>
                     <div className="w-full max-w-2xl overflow-hidden [&_video]:max-h-48 [&_video]:w-full [&_video]:object-contain">
                       <MediaPicker
-                        label="Video (mp4)"
+                        label="Video"
                         scope="about"
                         value={aboutVideoUrl}
-                        accept="video/mp4"
+                        accept="video/mp4,video/quicktime"
                         onChange={(url) => setAboutVideoUrl(url ?? "")}
                       />
                     </div>

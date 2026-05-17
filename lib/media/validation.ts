@@ -25,7 +25,7 @@ export function inferKindFromExt(ext: string): MediaKind {
     return "image"
   }
 
-  if (normalizedExt === "mp4") {
+  if (normalizedExt === "mp4" || normalizedExt === "mov") {
     return "video"
   }
 
@@ -84,7 +84,7 @@ export function validateUploadMeta(args: {
       throw new Error(`MIME type '${mimeType}' is not allowed for kind 'image'`)
     }
 
-    if (kind === "video" && mimeType !== "video/mp4") {
+    if (kind === "video" && mimeType !== "video/mp4" && mimeType !== "video/quicktime") {
       throw new Error(`MIME type '${mimeType}' is not allowed for kind 'video'`)
     }
 
