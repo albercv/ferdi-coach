@@ -361,3 +361,17 @@ _Actualizar este archivo marcando `[x]` cada ítem al completarlo._
 - [x] Commit con prefijo `feat:` (sin Co-Authored-By)
 
 **Criterio de done:** Un admin entra al dashboard, ve el tab "Documentación" arriba a la derecha, puede buscar/filtrar por categoría/tag y leer cualquier doc renderizado.
+
+---
+
+## T11 — Footer y contacto: limpieza + WhatsApp + reserva 15min
+_Anotada: 2026-05-18_
+
+**Pendiente de ejecución. Sin tocar código hasta confirmación.**
+
+- [ ] **Quitar sellos de pago seguro** del footer/checkout (identificar componente que renderiza los badges "pago seguro" y eliminarlos).
+- [ ] **Incluir SWIFT del banco** en el footer/datos fiscales (pedir valor exacto al usuario antes de implementar).
+- [ ] **Convertir teléfono de Ferdy `+34 651 611 463` en botón de contacto WhatsApp** (link `https://wa.me/34651611463`, abrir en nueva pestaña, estilo botón coherente con sección contacto).
+- [ ] **Cambiar enlace "Sesión gratuita"**: actualmente lleva al pago de sesión. Debe llevar a reserva de **sesión de 15 minutos** con Ferdy (definir destino: Calendly / formulario / nueva ruta). Confirmar flujo antes de implementar.
+
+**Criterio de done:** footer sin badges de pago, SWIFT visible, teléfono Ferdy es CTA WhatsApp funcional, botón sesión gratuita lleva a reserva de 15min (no a checkout).

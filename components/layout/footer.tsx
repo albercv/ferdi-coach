@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { E2dAttribution } from "@/components/layout/e2d-attribution"
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -70,10 +71,10 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="mailto:ferdycoachdesamor@gmail.com"
+                  href="mailto:ferdy.jsierra@ferdycoachdesamor.com"
                   className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                 >
-                  ferdycoachdesamor@gmail.com
+                  ferdy.jsierra@ferdycoachdesamor.com
                 </Link>
               </li>
               <li>
@@ -87,6 +88,9 @@ export function Footer() {
                 </Link>
               </li>
             </ul>
+            <div className="mt-4">
+              <E2dAttribution />
+            </div>
           </div>
         </div>
 
