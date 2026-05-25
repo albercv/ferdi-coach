@@ -147,3 +147,6 @@ jspm_packages/
 .tern-port
 .worktrees/
 .claude/
+
+# Codegraph MCP local index
+.codegraph/
