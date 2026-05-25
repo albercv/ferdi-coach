@@ -56,16 +56,24 @@ function normalizeIban(raw: string): string {
   return raw.replace(/\s+/g, "").toUpperCase()
 }
 
+/** Strips whitespace and uppercases a SWIFT/BIC code. Returns empty string for blank input. */
+function normalizeSwift(raw: string): string {
+  return raw.replace(/\s+/g, "").toUpperCase()
+}
+
 export function getPaymentsConfig(): PaymentsConfig {
   ensureDirs()
 
   if (fs.existsSync(CONFIG_MD_PATH)) {
     const file = fs.readFileSync(CONFIG_MD_PATH, "utf8")
     const { data } = matter(file)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const d = data as any
     return {
-      iban: typeof (data as any)?.iban === "string" ? String((data as any).iban) : "",
-      updatedAtIso:
-        typeof (data as any)?.updatedAtIso === "string" ? String((data as any).updatedAtIso) : new Date(0).toISOString(),
+      iban: typeof d?.iban === "string" ? String(d.iban) : "",
+      swift: typeof d?.swift === "string" ? String(d.swift) : "",
+      bankName: typeof d?.bankName === "string" ? String(d.bankName) : "",
+      updatedAtIso: typeof d?.updatedAtIso === "string" ? String(d.updatedAtIso) : new Date(0).toISOString(),
     }
   }
 
@@ -74,22 +82,36 @@ export function getPaymentsConfig(): PaymentsConfig {
     const parsed = JSON.parse(raw)
     const config: PaymentsConfig = {
       iban: typeof parsed?.iban === "string" ? parsed.iban : "",
+      swift: "",
+      bankName: "",
       updatedAtIso: typeof parsed?.updatedAtIso === "string" ? parsed.updatedAtIso : new Date(0).toISOString(),
     }
-    atomicWriteMarkdownFile(CONFIG_MD_PATH, config as any, "")
+    atomicWriteMarkdownFile(CONFIG_MD_PATH, config as unknown as Record<string, unknown>, "")
     return config
   }
 
-  return { iban: "", updatedAtIso: new Date(0).toISOString() }
+  return { iban: "", swift: "", bankName: "", updatedAtIso: new Date(0).toISOString() }
 }
 
 export function setPaymentsIban(ibanRaw: string): PaymentsConfig {
-  const iban = normalizeIban(ibanRaw)
+  return setPaymentsConfig({ iban: ibanRaw })
+}
+
+/**
+ * Merges a partial config patch into the current stored config and persists it.
+ * Normalizes IBAN and SWIFT before writing.
+ */
+export function setPaymentsConfig(patch: Partial<PaymentsConfig>): PaymentsConfig {
+  const current = getPaymentsConfig()
   const next: PaymentsConfig = {
-    iban,
+    ...current,
+    ...patch,
+    iban: normalizeIban(patch.iban ?? current.iban),
+    swift: normalizeSwift(patch.swift ?? current.swift ?? ""),
+    bankName: (patch.bankName ?? current.bankName ?? "").trim(),
     updatedAtIso: new Date().toISOString(),
   }
-  atomicWriteMarkdownFile(CONFIG_MD_PATH, next as any, "")
+  atomicWriteMarkdownFile(CONFIG_MD_PATH, next as unknown as Record<string, unknown>, "")
   return next
 }
 

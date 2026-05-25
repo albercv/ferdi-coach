@@ -18,8 +18,8 @@ import {
 export async function sendPaymentConfirmation(submission: PaymentSubmission): Promise<void> {
   if (!process.env.RESEND_API_KEY) return
 
-  const { iban } = getPaymentsConfig()
-  const clientEmail = buildConfirmacionPagoEmail(submission, iban)
+  const { iban, swift, bankName } = getPaymentsConfig()
+  const clientEmail = buildConfirmacionPagoEmail(submission, { iban, swift, bankName })
   const coachEmail = buildCoachNotificationEmail(submission)
 
   await Promise.allSettled([
@@ -84,16 +84,16 @@ export async function sendPaymentConfirmed(submission: PaymentSubmission): Promi
 export async function sendPaymentReminder(submission: PaymentSubmission): Promise<void> {
   if (!process.env.RESEND_API_KEY) return
 
-  const { iban } = getPaymentsConfig()
-  const template = buildRecordatorioPagoEmail(submission, iban)
+  const { iban, swift, bankName } = getPaymentsConfig()
+  const template = buildRecordatorioPagoEmail(submission, { iban, swift, bankName })
   await resend.emails.send({ from: EMAIL_FROM, to: submission.payerEmail, subject: template.subject, html: template.html })
 }
 
 export async function sendPaymentFailed(submission: PaymentSubmission): Promise<void> {
   if (!process.env.RESEND_API_KEY) return
 
-  const { iban } = getPaymentsConfig()
-  const template = buildPagoFallidoEmail(submission, iban)
+  const { iban, swift, bankName } = getPaymentsConfig()
+  const template = buildPagoFallidoEmail(submission, { iban, swift, bankName })
   await resend.emails.send({ from: EMAIL_FROM, to: submission.payerEmail, subject: template.subject, html: template.html })
 }
 

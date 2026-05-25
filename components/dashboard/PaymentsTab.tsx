@@ -43,6 +43,8 @@ function statusBadge(status: PaymentSubmission["status"]) {
 export function PaymentsTab() {
   const { toast } = useToast()
   const [iban, setIban] = useState("")
+  const [swift, setSwift] = useState("")
+  const [bankName, setBankName] = useState("")
   const [savingIban, setSavingIban] = useState(false)
   const [submissions, setSubmissions] = useState<PaymentSubmission[]>([])
   const [loadingSubmissions, setLoadingSubmissions] = useState(false)
@@ -67,6 +69,8 @@ export function PaymentsTab() {
       if (configRes.ok) {
         const config = await configRes.json()
         if (typeof config?.iban === "string") setIban(config.iban)
+        if (typeof config?.swift === "string") setSwift(config.swift)
+        if (typeof config?.bankName === "string") setBankName(config.bankName)
       }
       if (subsRes.ok) {
         const data = await subsRes.json()
@@ -80,8 +84,8 @@ export function PaymentsTab() {
   useEffect(() => { loadAll() }, [])
 
   async function saveIban() {
-    const value = iban.trim()
-    if (value.length < 8) {
+    const ibanValue = iban.trim()
+    if (ibanValue.length < 8) {
       toast({ title: "IBAN inválido", description: "Introduce un IBAN válido." })
       return
     }
@@ -90,13 +94,13 @@ export function PaymentsTab() {
       const res = await fetch("/api/payments/config", {
         method: "PUT",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ iban: value }),
+        body: JSON.stringify({ iban: ibanValue, swift: swift.trim(), bankName: bankName.trim() }),
       })
       if (!res.ok) {
         toast({ title: "No se pudo guardar", description: "Revisa que sigues logado como admin." })
         return
       }
-      toast({ title: "Guardado", description: "IBAN actualizado." })
+      toast({ title: "Guardado", description: "Datos de pago actualizados." })
       await loadAll()
     } finally {
       setSavingIban(false)
@@ -153,6 +157,14 @@ export function PaymentsTab() {
           <div className="grid gap-2">
             <Label htmlFor="payments-iban">IBAN</Label>
             <Input id="payments-iban" value={iban} onChange={(e) => setIban(e.target.value)} placeholder="ES00...." />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="payments-swift">SWIFT/BIC</Label>
+            <Input id="payments-swift" value={swift} onChange={(e) => setSwift(e.target.value)} placeholder="TRWIBEBBXXX" />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="payments-bank-name">Banco</Label>
+            <Input id="payments-bank-name" value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="Wise Europe SA" />
           </div>
           <Button onClick={saveIban} disabled={savingIban} className="w-full sm:w-auto">
             {savingIban ? "Guardando..." : "Guardar"}

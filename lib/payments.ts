@@ -6,6 +6,8 @@ export type PaymentProductRef =
 
 export type PaymentsConfig = {
   iban: string
+  swift?: string
+  bankName?: string
   updatedAtIso: string
 }
 

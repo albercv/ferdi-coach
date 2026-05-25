@@ -29,6 +29,8 @@ export function PaymentDialog({ product, trigger, open, onOpenChange }: PaymentD
   const { toast } = useToast()
   const [internalOpen, setInternalOpen] = useState(false)
   const [iban, setIban] = useState<string>("")
+  const [swift, setSwift] = useState<string>("")
+  const [bankName, setBankName] = useState<string>("")
   const [payerName, setPayerName] = useState("")
   const [payerEmail, setPayerEmail] = useState("")
   const [payerPhone, setPayerPhone] = useState("")
@@ -60,8 +62,10 @@ export function PaymentDialog({ product, trigger, open, onOpenChange }: PaymentD
         const res = await fetch("/api/payments/config", { cache: "no-store" })
         if (!res.ok) return
         const data = await res.json()
-        if (!cancelled && typeof data?.iban === "string") {
-          setIban(data.iban)
+        if (!cancelled) {
+          if (typeof data?.iban === "string") setIban(data.iban)
+          if (typeof data?.swift === "string") setSwift(data.swift)
+          if (typeof data?.bankName === "string") setBankName(data.bankName)
         }
       } catch {
         return
@@ -145,6 +149,8 @@ export function PaymentDialog({ product, trigger, open, onOpenChange }: PaymentD
             <div className="text-2xl font-bold">{formatEuro(product.priceEuro)}</div>
             <div className="text-sm text-muted-foreground">a este IBAN</div>
             <div className="font-mono text-sm break-all">{iban || "(IBAN pendiente de configurar)"}</div>
+            {bankName && <div className="text-sm text-muted-foreground">Banco: <span className="text-foreground">{bankName}</span></div>}
+            {swift && <div className="text-sm text-muted-foreground">SWIFT/BIC: <span className="font-mono text-foreground">{swift}</span></div>}
             <div className="text-sm text-muted-foreground">con el concepto</div>
             <div className="font-semibold break-words">{conceptLine}</div>
           </div>
