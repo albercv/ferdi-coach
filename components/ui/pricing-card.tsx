@@ -68,7 +68,7 @@ export function PricingCard({
   }
 
   return (
-    <Card className={cn("relative", flipOnHover && "group", popular && "border-accent shadow-lg", className)}>
+    <Card className={cn("relative", flipOnHover && "group overflow-hidden", popular && "border-accent shadow-lg", className)}>
       {popular && (
         <div className="absolute top-[4px] right-4 z-10">
           <span className="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-2">
@@ -81,7 +81,7 @@ export function PricingCard({
       {/* Contenido principal: condicional según flipOnHover */}
       {flipOnHover ? (
         <div className={cn(
-          "relative group min-h-[420px]",
+          "relative group min-h-[520px] sm:min-h-[420px]",
           !forceSimpleFlip && "[perspective:1000px]"
         )} onClick={handleCardTap} onMouseEnter={() => flipOnHover && setIsFlipped(true)} onMouseLeave={() => flipOnHover && setIsFlipped(false)}>
           <div className={cn(
