@@ -432,3 +432,42 @@ Pasos (a definir tras T11.0):
 
 - **Pendiente de deploy:** rama `feat/footer-e2d-attribution` está en develop; al hacer el merge a main mañana, incluir también T11.
 - Tras deploy: `pm2 restart ferdy-web` (puerto 3000).
+
+---
+
+## T12 — Pendientes 2026-05-25
+
+### T12.1 — Rama `fix/guides-mobile-overflow` aprobada, falta subir y mergear
+
+**Estado:** Aprobada por Alberto tras prueba local. Commits ya en rama:
+- `7a7fcf1` fix: overflow móvil sección guías
+- `8668a52` chore: actualiza pnpm-lock (sentry, resend, react-markdown, remark-gfm)
+- `12b5d76` fix: 100dvh en hero y scroll-stack (iOS Safari sin saltos)
+
+**Pasos pendientes:**
+- [ ] `git push -u origin fix/guides-mobile-overflow`
+- [ ] Abrir PR a `develop`:
+      `gh pr create --base develop --head fix/guides-mobile-overflow --title "fix: overflow móvil guías + saltos iOS Safari"`
+- [ ] Merge a `develop` (PRE) → pull en server + `pnpm build` + `pm2 restart ferdy-test --update-env`.
+- [ ] Verificación visual en PRE.
+- [ ] PR `develop` → `main` (PRO).
+- [ ] Merge a `main` → pull en `/root/projects/ferdi-coach` + `pnpm build` + `pm2 restart ferdy-web`.
+- [ ] Tag versión: `git tag -a vX.Y.Z -m "..." && git push origin vX.Y.Z`.
+
+### T12.2 — Rama `feat/swift-bank-data` aprobada, mismo flujo pendiente
+
+**Estado:** Commit ya en rama:
+- `9f3325b` feat: añade SWIFT/BIC y nombre de banco a datos de pago
+
+**Pasos pendientes:** mismos que T12.1 con su propia rama. Tras deploy PRO, configurar desde dashboard:
+- Banco: `Wise Europe SA`
+- SWIFT/BIC: `TRWIBEBBXXX`
+
+### T12.3 — Footer: centrar y mejorar estilos
+
+**Pendiente de planificar.** Objetivo:
+- [ ] Centrar el footer correctamente (alineación horizontal de bloques).
+- [ ] Trabajar estilos (spacing, jerarquía visual, responsive).
+- [ ] Verificar que la atribución E2D (feat/footer-e2d-attribution ya en develop) sigue íntegra tras los cambios.
+
+Archivo principal: `components/layout/footer.tsx`.
