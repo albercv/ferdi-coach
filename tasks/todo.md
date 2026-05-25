@@ -365,13 +365,70 @@ _Actualizar este archivo marcando `[x]` cada ítem al completarlo._
 ---
 
 ## T11 — Footer y contacto: limpieza + WhatsApp + reserva 15min
-_Anotada: 2026-05-18_
+_Anotada: 2026-05-18 · Lanzamiento previsto: 2026-05-19_
 
-**Pendiente de ejecución. Sin tocar código hasta confirmación.**
+**Estado:** planificada, **sin tocar código hasta luz verde**. Plan pre-implementación abajo.
 
-- [ ] **Quitar sellos de pago seguro** del footer/checkout (identificar componente que renderiza los badges "pago seguro" y eliminarlos).
-- [ ] **Incluir SWIFT del banco** en el footer/datos fiscales (pedir valor exacto al usuario antes de implementar).
-- [ ] **Convertir teléfono de Ferdy `+34 651 611 463` en botón de contacto WhatsApp** (link `https://wa.me/34651611463`, abrir en nueva pestaña, estilo botón coherente con sección contacto).
-- [ ] **Cambiar enlace "Sesión gratuita"**: actualmente lleva al pago de sesión. Debe llevar a reserva de **sesión de 15 minutos** con Ferdy (definir destino: Calendly / formulario / nueva ruta). Confirmar flujo antes de implementar.
+### T11.0 — Pendientes de input del usuario (BLOQUEANTES)
 
-**Criterio de done:** footer sin badges de pago, SWIFT visible, teléfono Ferdy es CTA WhatsApp funcional, botón sesión gratuita lleva a reserva de 15min (no a checkout).
+- [ ] **SWIFT/BIC del banco de Ferdy**: pedir valor literal antes de tocar código.
+- [ ] **Destino del CTA "Sesión 15 min gratis"**: confirmar uno de:
+  - URL externa Calendly/Cal.com (pedir link).
+  - Ruta interna nueva (p. ej. `/reservar-15min`) con formulario propio.
+  - Sección anchor existente con copy adaptado.
+- [ ] **Confirmar copy del nuevo CTA** ("Reservar sesión de 15 min" / "Sesión gratuita 15 min" / otro).
+
+### T11.1 — Quitar sellos de pago seguro
+
+Ubicación detectada:
+- `components/sections/how-it-works-section.tsx`
+- `components/sections/how-it-works-section-v2.tsx`
+
+Pasos:
+- [ ] Localizar bloque "pago seguro" en cada archivo y eliminarlo (no comentar — borrar).
+- [ ] Revisar si hay imports/iconos huérfanos tras borrar y limpiarlos.
+- [ ] Verificar que ningún test/snapshot rompa: `npm run typecheck`, lint y build.
+- [ ] Inspección visual de la sección en `/`.
+
+### T11.2 — Incluir SWIFT en el footer
+
+- [ ] Tras recibir valor (T11.0), añadir línea SWIFT en el footer, junto al resto de datos fiscales/legales.
+- [ ] Si el footer no tiene aún sección de datos bancarios, crear bloque mínimo (label + valor) sin reestructurar el resto.
+- [ ] No alterar diseño del bloque e2d-attribution ni del email/Instagram.
+
+### T11.3 — Tel Ferdy → CTA WhatsApp
+
+Ubicación detectada: `app/contacto/page.tsx:73-76` (`tel:+34651611463`).
+
+- [ ] Sustituir `tel:` por `https://wa.me/34651611463` con `target="_blank"` y `rel="noopener noreferrer"`.
+- [ ] Cambiar icono y label: que el botón comunique WhatsApp claramente (icono `MessageCircle` o similar de `lucide-react`).
+- [ ] Mantener accesibilidad: `aria-label` descriptivo.
+- [ ] Revisar si el mismo número aparece en otro sitio (`grep "651 ?611 ?463"`) y unificar.
+
+### T11.4 — CTA "Sesión gratuita" → reserva 15 min
+
+Ubicación detectada del copy:
+- `data/content.ts:20` → `ctaPrimary: "Reservar sesión gratuita"`
+- `lib/content-md.ts:400` → mismo string
+- Uso en `components/sections/hero-section.tsx:72` → `href="#reservar"`
+
+Pasos (a definir tras T11.0):
+- [ ] Actualizar `href` del CTA primario del hero para apuntar al destino confirmado.
+- [ ] Verificar que ningún otro botón/CTA del mismo flujo apunta al checkout por error (`#reservar`, `/sesiones`, links de "Reservar sesión" en header `components/layout/header.tsx:86,98,154` y `components/sections/about-section.tsx:82`).
+- [ ] Si el destino es ruta nueva, crearla con el mínimo (formulario o embed) — alcance acotado, sin tocar checkout.
+- [ ] Confirmar que el flujo "ir al checkout de sesión" sigue accesible desde otros puntos (p. ej. la propia sección Sesiones), para no romper conversión existente.
+
+### Criterio de done (T11)
+
+- Sellos "pago seguro" eliminados de las dos secciones detectadas.
+- SWIFT visible en footer.
+- Botón WhatsApp en `/contacto` funcional (abre `wa.me/34651611463`).
+- CTA "Sesión gratuita" del hero (y resto del flujo equivalente) lleva a reserva de 15 min, **nunca al checkout de pago de sesión**.
+- `npm run typecheck` + build verdes.
+- Verificación visual en local antes de merge.
+- Commit con prefijo correcto (`feat:` / `fix:` / `refactor:`), **sin Co-Authored-By**.
+
+### Recordatorios cruzados
+
+- **Pendiente de deploy:** rama `feat/footer-e2d-attribution` está en develop; al hacer el merge a main mañana, incluir también T11.
+- Tras deploy: `pm2 restart ferdy-web` (puerto 3000).
