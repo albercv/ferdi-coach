@@ -27,12 +27,12 @@ export function ScrollStack({
   // stretch the container height so the scroll is consumed until the last item stacks
   const containerStyle = reduceMotion
     ? undefined
-    : ({ height: `calc(100vh + ${itemDistance * Math.max(0, items.length - 1)}px)` } as const)
+    : ({ height: `calc(100dvh + ${itemDistance * Math.max(0, items.length - 1)}px)` } as const)
 
   return (
     <div ref={localRef} className={`relative isolate ${className}`} style={containerStyle}>
       {/* Pin the stack in place; adjust top to your header height; keep a stable viewport height for the stack */}
-      <div className={reduceMotion ? "space-y-6" : "sticky top-24 h-[80vh] relative"}>
+      <div className={reduceMotion ? "space-y-6" : "sticky top-24 h-[80dvh] relative"}>
         <div className={reduceMotion ? "space-y-6" : "relative h-full"}>
           {items.map((child, index) => (
             <ScrollStackItem

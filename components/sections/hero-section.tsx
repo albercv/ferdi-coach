@@ -21,7 +21,7 @@ const iconMap = {
 
 export function HeroSection({ hero }: { hero: HeroContent }) {
   return (
-    <Section id="hero" aria-labelledby="hero-title" className="pt-8 pb-16 md:pt-16 md:pb-24 relative overflow-hidden min-h-screen flex items-center">
+    <Section id="hero" aria-labelledby="hero-title" className="pt-8 pb-16 md:pt-16 md:pb-24 relative overflow-hidden min-h-[100dvh] flex items-center">
       {/* Imagen de fondo que ocupa todo el ancho */}
       <div
         aria-hidden
