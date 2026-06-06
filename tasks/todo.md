@@ -280,37 +280,149 @@ En `lib/auth.ts`, el callback `jwt` no re-evalúa el rol si ya existe en el toke
 ---
 
 ## TAREA 9 — Auditoría SEO — Correcciones
+_Re-planificado 2026-06-06 tras `/seo audit` completo. Organizado por ramas._
 
-> Resultados de auditoría automática del 2026-04-21. Ordenadas por prioridad.
+### Estrategia de ramas
+Ejecutar en orden. Cada rama = un PR independiente.
 
-### CRÍTICO
+1. `fix/canonical-domain` — bloquea todo
+2. `fix/schema-critical` — datos fabricados / placeholders
+3. `fix/sitemap-robots` — depende de 1
+4. `feat/schema-improvements` — refactor schema completo
+5. `feat/og-image-meta` — OG image + metadata + GSC verification
+6. `feat/sobre-mi-eeat` — input necesario de Ferdy
+7. `feat/blog-foundation` + dos artículos largos
+8. `feat/cta-awareness` — guía gratuita above-the-fold
+9. `chore/img-to-next-image` — MEDIO, perf
+10. `chore/performance-baseline` — verificación final
 
-- [ ] **SEO-1** Dominio incorrecto en todo el sistema SEO. Reemplazar `ferdy-coach.com` → `ferdycoachdesamor.com` en:
-  - `app/layout.tsx` (openGraph.url y canonical)
-  - `app/robots.ts`
-  - `app/sitemap.ts`
-  - `lib/seo.ts` (todas las URLs hardcodeadas)
-- [ ] **SEO-2** Crear imagen OG `public/og-image.jpg` (1200×630 px) — referenciada pero inexistente.
-- [ ] **SEO-3** Reemplazar placeholder de verificación de Google Search Console en `app/layout.tsx` línea 85 (`"your-google-verification-code"`).
-- [ ] **SEO-4** Añadir export `metadata` específico a `app/page.tsx` (home). Actualmente hereda solo del layout global.
-- [ ] **SEO-5** Eliminar `export const dynamic = "force-dynamic"` de `app/page.tsx` — impide static generation y perjudica Core Web Vitals.
+---
 
-### ALTO
+### Rama 1 — `fix/canonical-domain` 🔴 CRÍTICO
+Inputs requeridos: ninguno.
 
-- [ ] **SEO-6** Crear `public/logo.png` o actualizar ruta en `lib/seo.ts` — el schema de Organization referencia un fichero inexistente.
-- [ ] **SEO-7** Añadir `robots: { index: false }` al metadata de `app/login/page.tsx` y `app/dashboard/page.tsx`.
-- [ ] **SEO-8** Reemplazar teléfono placeholder `+34-XXX-XXX-XXX` en `lib/seo.ts` (LocalBusiness schema) con número real o eliminarlo.
-- [ ] **SEO-9** Revisar URLs del sitemap en `app/sitemap.ts` — actualmente contiene fragments (`#sesiones`, `#programa-4`) que los crawlers no indexan.
+- [ ] Añadir `NEXT_PUBLIC_SITE_URL=https://ferdycoachdesamor.com` en `.env` y `.env.example`
+- [ ] Crear `lib/site-config.ts` exportando `SITE_URL` desde env con fallback canónico
+- [ ] `lib/seo.ts`: reemplazar todas las apariciones de `ferdy-coach.com` por `SITE_URL`
+- [ ] `lib/seo.ts:23`: corregir typo `ferdycoach_desamor_desamor` → `ferdycoach_desamor`
+- [ ] `lib/seo.ts:175`: cambiar `hola@ferdy-coach.com` → email real (ver Rama 2)
+- [ ] `app/layout.tsx:54,76`: usar `SITE_URL`
+- [ ] `app/sitemap.ts:4`: `baseUrl = SITE_URL`
+- [ ] `app/robots.ts:17,18`: usar `SITE_URL`
+- [ ] `public/llms.txt`: reemplazar `ferdycoach.com` → `ferdycoachdesamor.com` (líneas 40, 47-50)
+- [ ] `app/terminos/page.tsx`: corregir dominio
+- [ ] Grep verificación: `rg "ferdy-coach\.com|ferdycoach\.com"` → 0 hits
+- [ ] `npm run build` verde
+- [ ] Commit: `fix: unify canonical domain to ferdycoachdesamor.com`
 
-### MEDIO
+### Rama 2 — `fix/schema-critical` 🔴 CRÍTICO
+Inputs confirmados (2026-06-06): precios reales = 50€ sesión, 200€ programa, 17.99€ guía. Email = `ferdycoachdesamor@gmail.com`. Tel = `+34 651 611 463`.
 
-- [ ] **SEO-10** Convertir tags `<img>` nativos a `<Image>` de Next.js en:
-  - `components/sections/hero-section.tsx` (línea ~30)
-  - `components/sections/about-section.tsx` (líneas ~69-70, ~100-104)
-- [ ] **SEO-11** Corregir dominio en `app/terminos/page.tsx` (usa `ferdycoach.com` en lugar de `ferdycoachdesamor.com`).
-- [ ] **SEO-12** Añadir VideoObject JSON-LD en `components/sections/about-section.tsx` para el elemento `<video>`.
+- [ ] `lib/seo.ts:184-190`: eliminar bloque `aggregateRating` con datos fabricados (50 reviews, 5.0)
+- [ ] `lib/seo.ts:19,174`: reemplazar `"+34-XXX-XXX-XXX"` por `+34 651 611 463`
+- [ ] `lib/seo.ts`: corregir precios en `hasOfferCatalog` para match con datos reales
+- [ ] Verificar/limpiar testimonios `"Test Usuario"` lorem ipsum del data source
+- [ ] Commit: `fix: remove fabricated schema data and placeholders`
 
-**Criterio de done:** SEO-1 al SEO-9 completados y verificados con Google Search Console + herramienta de testing de rich results.
+### Rama 3 — `fix/sitemap-robots` 🔴 CRÍTICO
+Depende de Rama 1.
+
+- [ ] `app/sitemap.ts`: eliminar las 6 entradas `#fragment` (`#sesiones`, `#programa-4`, etc.)
+- [ ] Sustituir por URLs reales indexables: `/`, `/contacto`, `/privacidad`, `/terminos`, `/cancelacion`
+- [ ] Eliminar `changeFrequency` y `priority` (Google los ignora)
+- [ ] `lastModified` real por página (estático o mtime), no `new Date()` en cada render
+- [ ] `app/robots.ts`: añadir rules explícitas para `GPTBot`, `ClaudeBot`, `PerplexityBot`, `Google-Extended` con `Allow: /`
+- [ ] `app/login/page.tsx`, `app/dashboard/page.tsx`: añadir `metadata.robots = { index: false }`
+- [ ] Commit: `fix: clean sitemap and add AI bot rules in robots`
+
+### Rama 4 — `feat/schema-improvements` 🟠 HIGH
+Depende de Ramas 1-2. Reescribe `lib/seo.ts` casi entero.
+
+- [ ] Añadir `WebSite` schema con `SearchAction` y `@id="#website"`
+- [ ] Añadir `@id` a cada bloque: `#organization`, `#ferdy`, `#service-individual`, `#service-programa`, `#website`
+- [ ] Cross-link entidades: Person `worksFor` → Organization `@id`; Service `provider` → Person `@id`; Person `mainEntityOfPage` → Organization
+- [ ] Sustituir `Product` por `Service` en `generateProductStructuredData` (rename a `generateServiceStructuredData`)
+- [ ] `validFrom` → fecha ISO estática (no `new Date().toISOString()`)
+- [ ] Eliminar `serviceType` y `priceRange` de `Organization` (inválidos en ese tipo)
+- [ ] BreadcrumbList: si solo hay 1 item, no renderizar
+- [ ] Person `sameAs`: añadir Instagram + TikTok (`https://instagram.com/ferdycoach_desamor`, `https://tiktok.com/@ferdycoach_desamor`)
+- [ ] Person `alumniOf`: estructurar como `{ "@type": "EducationalOrganization", name: "..." }` (no string)
+- [ ] LocalBusiness `aggregateRating`: añadir solo con los 4 testimonios reales (no fabricado)
+- [ ] LocalBusiness `review`: añadir `Review` schema por cada testimonio real (4 entradas)
+- [ ] Validar con Rich Results Test antes de merge
+- [ ] Commit: `refactor(seo): improve schema structure with @id cross-linking and real reviews`
+
+### Rama 5 — `feat/og-image-meta` 🟠 HIGH
+Inputs requeridos: imagen OG diseñada (o brief para diseñador).
+
+- [ ] Crear `public/og-image.jpg` (1200×630) — diseño con logo + tagline
+- [ ] Crear `public/logo.png` (referenciado en Organization schema)
+- [ ] `app/layout.tsx:85`: sustituir `"your-google-verification-code"` por code real (necesita GSC propiedad creada)
+- [ ] Añadir `export const metadata` específico a `app/page.tsx` (no solo heredar del layout)
+- [ ] Eliminar `export const dynamic = "force-dynamic"` de `app/page.tsx` si existe — bloquea SSG y daña CWV
+- [ ] Meta description específica en `/sobre-mi`, `/contacto`, `/privacidad`, `/terminos`, `/cancelacion`
+- [ ] Commit: `feat(seo): add og image, page metadata and GSC verification`
+
+### Rama 6 — `feat/sobre-mi-eeat` 🟠 HIGH
+Inputs requeridos: bio completa de Ferdy, foto profesional, nombre exacto de la escuela de coaching, año de certificación, redes sociales adicionales.
+
+- [ ] Página `/sobre-mi` (o sección expandida si ya existe) con:
+  - Foto profesional
+  - Bio con credencial: escuela + año + organismo profesional
+  - Diferenciación "coaching ≠ terapia" (ya en llms.txt)
+  - Método (4 hitos mencionados en hasCredential)
+- [ ] Person schema: `alumniOf` con `@type: EducationalOrganization` + `name` + `url`
+- [ ] Person schema: `hasCredential` estructurado como `EducationalOccupationalCredential`
+- [ ] Person schema: `sameAs` Instagram + TikTok
+- [ ] Commit: `feat(content): expand sobre-mi page with full E-E-A-T signals`
+
+### Rama 7a — `feat/blog-foundation` 🟡 MEDIUM
+Sin inputs externos.
+
+- [ ] Ruta `/blog` con listado MDX
+- [ ] Layout artículo individual con `Article` schema (author → Person `@id`)
+- [ ] Estructura `content/blog/*.md` (mantiene patrón doc-DB del proyecto)
+- [ ] Sitemap.ts: añadir generación dinámica desde `content/blog/`
+- [ ] Commit: `feat(blog): foundation routes and Article schema`
+
+### Rama 7b — `feat/blog-articulo-superar-ruptura` 🟡 MEDIUM
+Depende de 7a.
+
+- [ ] `content/blog/como-superar-una-ruptura.md` ≥1800 palabras
+- [ ] FAQ section con preguntas reales de PAA
+- [ ] CTA interno a sesión gratuita 15min
+- [ ] Imagen hero con alt descriptivo
+- [ ] Commit: `feat(blog): add article "cómo superar una ruptura"`
+
+### Rama 7c — `feat/blog-articulo-olvidar-alguien` 🟡 MEDIUM
+Depende de 7a.
+
+- [ ] `content/blog/como-olvidar-a-alguien.md` ≥1800 palabras
+- [ ] Misma estructura que 7b
+- [ ] Commit: `feat(blog): add article "cómo olvidar a alguien"`
+
+### Rama 8 — `feat/cta-awareness` 🟡 MEDIUM
+- [ ] CTA above-the-fold de fricción cero: descarga guía gratis (la que ya existe) con email gate o WhatsApp directo
+- [ ] Mantener "Reservar sesión gratuita" como secundario
+- [ ] Tracking separado por tipo de CTA
+- [ ] Commit: `feat(ui): add zero-friction awareness CTA above the fold`
+
+### Rama 9 — `chore/img-to-next-image` 🟡 MEDIUM (perf)
+- [ ] `components/sections/hero-section.tsx` (~línea 30): `<img>` → `<Image>`
+- [ ] `components/sections/about-section.tsx` (~69-70, ~100-104): idem
+- [ ] Definir `width`, `height`, `alt`, `priority` (hero), `loading="lazy"` (resto)
+- [ ] Añadir `VideoObject` JSON-LD para `<video>` en about-section
+- [ ] Commit: `chore(perf): migrate img tags to next/image and add VideoObject schema`
+
+### Rama 10 — `chore/performance-baseline` 🟢 LOW
+Verificación, no implementación.
+- [ ] PageSpeed Insights mobile + desktop tras deploy de todas las anteriores
+- [ ] Registrar LCP / INP / CLS / FCP / TTFB
+- [ ] Crear issues separados por hallazgo si CWV en rojo
+
+---
+
+**Criterio de done T9:** Ramas 1-5 + 7 mergeadas. Rich Results Test sin warnings. Sitemap submission en GSC sin "location mismatch". `rg "ferdy-coach\.com|ferdycoach\.com"` → 0 hits en todo el repo.
 
 ---
 
