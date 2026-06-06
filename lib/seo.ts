@@ -1,3 +1,9 @@
+import {
+  SITE_URL,
+  CONTACT_EMAIL,
+  SOCIAL_INSTAGRAM,
+} from "@/lib/site-config"
+
 export interface SEOConfig {
   title: string
   description: string
@@ -12,15 +18,15 @@ export function generateStructuredData() {
     "@type": "Organization",
     name: "Ferdy Coach",
     description: "Coach emocional especializado en superar rupturas de pareja y duelo amoroso",
-    url: "https://ferdy-coach.com",
-    logo: "https://ferdy-coach.com/logo.png",
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+34-XXX-XXX-XXX",
       contactType: "customer service",
       availableLanguage: "Spanish",
     },
-    sameAs: ["https://instagram.com/ferdycoach_desamor_desamor"],
+    sameAs: [SOCIAL_INSTAGRAM],
     areaServed: {
       "@type": "Country",
       name: "Spain",
@@ -40,7 +46,7 @@ export function generateStructuredData() {
           }
         },
         {
-          "@type": "Offer", 
+          "@type": "Offer",
           itemOffered: {
             "@type": "Service",
             name: "Programa intensivo 4 semanas",
@@ -57,7 +63,7 @@ export function generateStructuredData() {
     name: "Ferdy",
     jobTitle: "Coach emocional especializado en rupturas de pareja",
     description: "Coach especializado en ayudar a superar rupturas amorosas, duelo emocional y dependencia emocional",
-    url: "https://ferdy-coach.com/sobre-mi",
+    url: `${SITE_URL}/sobre-mi`,
     worksFor: {
       "@type": "Organization",
       name: "Ferdy Coach",
@@ -167,12 +173,12 @@ export function generateLocalBusinessStructuredData() {
   return {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "@id": "https://ferdy-coach.com",
+    "@id": SITE_URL,
     name: "Ferdy Coach",
     description: "Coach emocional especializado en superar rupturas de pareja y duelo amoroso",
-    url: "https://ferdy-coach.com",
+    url: SITE_URL,
     telephone: "+34-XXX-XXX-XXX",
-    email: "hola@ferdy-coach.com",
+    email: CONTACT_EMAIL,
     areaServed: {
       "@type": "Country",
       name: "Spain",
@@ -180,7 +186,7 @@ export function generateLocalBusinessStructuredData() {
     serviceType: "Coaching emocional online para rupturas de pareja",
     priceRange: "€€",
     openingHours: "Mo-Fr 09:00-18:00",
-    sameAs: ["https://instagram.com/ferdycoach_desamor"],
+    sameAs: [SOCIAL_INSTAGRAM],
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "5.0",
@@ -209,7 +215,7 @@ export function generateLocalBusinessStructuredData() {
         {
           "@type": "Offer",
           itemOffered: {
-            "@type": "Service", 
+            "@type": "Service",
             name: "Programa intensivo 4 semanas",
             description: "Programa completo para superar ruptura y recuperar bienestar",
             provider: {

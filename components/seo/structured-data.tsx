@@ -5,6 +5,7 @@ import {
   generateProductStructuredData,
   generateLocalBusinessStructuredData,
 } from "@/lib/seo"
+import { SITE_URL } from "@/lib/site-config"
 import { siteContent } from "@/data/content"
 
 export function StructuredData() {
@@ -18,8 +19,8 @@ export function StructuredData() {
   )
 
   const breadcrumbData = generateBreadcrumbStructuredData([
-    { name: "Inicio", url: "https://ferdy-coach.com" },
-    { name: "Coach para superar rupturas", url: "https://ferdy-coach.com" },
+    { name: "Inicio", url: SITE_URL },
+    { name: "Coach para superar rupturas", url: SITE_URL },
   ])
 
   const sessionProduct = generateProductStructuredData({

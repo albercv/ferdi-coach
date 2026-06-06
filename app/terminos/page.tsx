@@ -49,7 +49,7 @@ export default function TerminosPage() {
                 <h2 className="text-xl font-semibold mb-3">1. Identificación del prestador</h2>
                 <p className="text-muted-foreground">
                   Los presentes Términos y Condiciones regulan la contratación de los servicios
-                  ofrecidos a través del sitio web ferdycoach.com, de conformidad con la Ley 34/2002
+                  ofrecidos a través del sitio web ferdycoachdesamor.com, de conformidad con la Ley 34/2002
                   de Servicios de la Sociedad de la Información (LSSICE) y el Real Decreto Legislativo
                   1/2007 (TRLGDCU).
                 </p>
