@@ -298,31 +298,41 @@ Ejecutar en orden. Cada rama = un PR independiente.
 
 ---
 
-### Rama 1 — `fix/canonical-domain` 🔴 CRÍTICO
-Inputs requeridos: ninguno.
+### Rama 1 — `fix/canonical-domain` ✅ COMPLETADA (2026-06-06)
+Rama local: `fix/canonical-domain`. **No pusheada todavía.** Sin PR.
+Commits:
+- `bc7b109` docs(seo): re-plan T9 with branch-grouped tasks after audit
+- `1f1c30d` fix(seo): unify canonical domain to ferdycoachdesamor.com
 
-- [ ] Añadir `NEXT_PUBLIC_SITE_URL=https://ferdycoachdesamor.com` en `.env` y `.env.example`
-- [ ] Crear `lib/site-config.ts` exportando `SITE_URL` desde env con fallback canónico
-- [ ] `lib/seo.ts`: reemplazar todas las apariciones de `ferdy-coach.com` por `SITE_URL`
-- [ ] `lib/seo.ts:23`: corregir typo `ferdycoach_desamor_desamor` → `ferdycoach_desamor`
-- [ ] `lib/seo.ts:175`: cambiar `hola@ferdy-coach.com` → email real (ver Rama 2)
-- [ ] `app/layout.tsx:54,76`: usar `SITE_URL`
-- [ ] `app/sitemap.ts:4`: `baseUrl = SITE_URL`
-- [ ] `app/robots.ts:17,18`: usar `SITE_URL`
-- [ ] `public/llms.txt`: reemplazar `ferdycoach.com` → `ferdycoachdesamor.com` (líneas 40, 47-50)
-- [ ] `app/terminos/page.tsx`: corregir dominio
-- [ ] Grep verificación: `rg "ferdy-coach\.com|ferdycoach\.com"` → 0 hits
-- [ ] `npm run build` verde
-- [ ] Commit: `fix: unify canonical domain to ferdycoachdesamor.com`
+- [x] `NEXT_PUBLIC_SITE_URL=https://ferdycoachdesamor.com` en `.env.example` (`.env` real → pendiente Ferdy/Alberto)
+- [x] `lib/site-config.ts` con `SITE_URL`, `CONTACT_EMAIL`, `CONTACT_PHONE`, `SOCIAL_INSTAGRAM`, `SOCIAL_TIKTOK`
+- [x] `lib/seo.ts`: todas las apariciones via `SITE_URL`
+- [x] typo `ferdycoach_desamor_desamor` → `ferdycoach_desamor`
+- [x] `hola@ferdy-coach.com` → `ferdycoachdesamor@gmail.com` (`CONTACT_EMAIL`)
+- [x] `app/layout.tsx`, `app/sitemap.ts`, `app/robots.ts`, `components/seo/structured-data.tsx`: usan `SITE_URL`
+- [x] `public/llms.txt`: `ferdycoach.com` → `ferdycoachdesamor.com`
+- [x] `app/terminos/page.tsx`: dominio corregido (precios viejos 45€/180€ siguen → Rama 2)
+- [x] `README.md`: env doc corregida
+- [x] `rg "ferdy-coach\.com|ferdycoach\.com"` → 0 hits
+- [x] `npm run build` verde
+- [x] `npm run typecheck` verde
 
-### Rama 2 — `fix/schema-critical` 🔴 CRÍTICO
-Inputs confirmados (2026-06-06): precios reales = 50€ sesión, 200€ programa, 17.99€ guía. Email = `ferdycoachdesamor@gmail.com`. Tel = `+34 651 611 463`.
+**Pendiente al retomar:**
+- Decidir: push + PR a `develop`, o seguir con Rama 2 sobre la misma rama y luego push consolidado
+- Añadir `NEXT_PUBLIC_SITE_URL` al `.env` de producción (servidor PM2) antes de deploy
+- Tras deploy: `pm2 restart ferdy-web`
 
-- [ ] `lib/seo.ts:184-190`: eliminar bloque `aggregateRating` con datos fabricados (50 reviews, 5.0)
-- [ ] `lib/seo.ts:19,174`: reemplazar `"+34-XXX-XXX-XXX"` por `+34 651 611 463`
-- [ ] `lib/seo.ts`: corregir precios en `hasOfferCatalog` para match con datos reales
-- [ ] Verificar/limpiar testimonios `"Test Usuario"` lorem ipsum del data source
-- [ ] Commit: `fix: remove fabricated schema data and placeholders`
+### Rama 2 — `fix/schema-critical` 🔴 CRÍTICO — SIGUIENTE
+Inputs confirmados (2026-06-06): precios reales = **50€ sesión**, **200€ programa**, **17.99€ guía**. Email = `ferdycoachdesamor@gmail.com`. Tel = `+34 651 611 463`.
+
+- [ ] `lib/seo.ts:~184-190`: eliminar bloque `aggregateRating` fabricado (50 reviews, 5.0). Re-añadir en Rama 4 con `Review` reales (4 testimonios reales en Lo que dicen mis clientes — usuario confirmó son reales)
+- [ ] `lib/seo.ts`: reemplazar `"+34-XXX-XXX-XXX"` por `CONTACT_PHONE` (ya disponible en `site-config.ts`)
+- [ ] `lib/seo.ts` `hasOfferCatalog`: corregir precios 97/297 → 50/200
+- [ ] `components/seo/structured-data.tsx`: corregir precios pasados a `generateProductStructuredData` (97 → 50, 297 → 200)
+- [ ] `app/terminos/page.tsx` tabla precios líneas 91-105: 45€ → 50€, 180€ → 200€, Gratuita → 17.99€ (la guía ya no es gratuita)
+- [ ] `public/llms.txt`: actualizar precios igual que terminos
+- [ ] Verificar/limpiar testimonios `"Test Usuario"` lorem ipsum si quedan en data source (los 4 visibles son reales; los lorem fueron desarrollo, posiblemente ya migrados a BD)
+- [ ] Commit: `fix(seo): remove fabricated schema data and correct real prices`
 
 ### Rama 3 — `fix/sitemap-robots` 🔴 CRÍTICO
 Depende de Rama 1.
