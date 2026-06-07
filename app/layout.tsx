@@ -16,6 +16,7 @@ const geistSans = GeistSans
 const geistMono = GeistMono
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Transformación personal tras una ruptura: empieza a sanar desde dentro",
   description:
     "¿Acabas de terminar una relación? Te ayudo a superar tu ruptura de pareja en 4 semanas. Coach emocional especializado en duelo amoroso, dependencia emocional y recuperación tras separación. Programa personalizado con resultados comprobados.",
