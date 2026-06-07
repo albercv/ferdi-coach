@@ -83,9 +83,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   generator: "Next.js",
-  verification: {
-    google: "your-google-verification-code",
-  },
+  // Propiedad GSC verificada por DNS — no se necesita meta google-site-verification.
   other: {
     "theme-color": "#ff4d6d",
     "color-scheme": "light",
