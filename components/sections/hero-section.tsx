@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Section } from "@/components/ui/section"
 import { HeroContent } from "@/lib/content-md"
@@ -27,10 +28,13 @@ export function HeroSection({ hero }: { hero: HeroContent }) {
         aria-hidden
         className="absolute inset-0 -z-10"
       >
-        <img
+        <Image
           src={hero.backgroundImageUrl || "/hero-img-v1.png"}
           alt=""
-          className="w-full h-full object-cover object-center md:object-[center_15%] lg:object-[center_20%] xl:object-[center_30%]"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center md:object-[center_15%] lg:object-[center_20%] xl:object-[center_30%]"
         />
         {/* Overlay para mejorar la legibilidad del texto */}
         <div className="absolute inset-0 bg-black/40" />

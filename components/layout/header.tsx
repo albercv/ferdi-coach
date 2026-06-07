@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import type { PaymentProductRef } from "@/lib/payments"
 import { PaymentDialog } from "@/components/payments/PaymentDialog"
@@ -33,7 +34,7 @@ export function Header({ reserveProduct }: { reserveProduct: PaymentProductRef }
         <div className="flex items-center">
           <a href="/" className="flex items-center space-x-2">
             <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center overflow-hidden">
-              <img src="/logo2.webp" alt="Ferdy Coach - Logo del especialista en superar rupturas de pareja y coaching emocional" className="w-full h-full object-cover" />
+              <Image src="/logo2.webp" alt="Ferdy Coach - Logo del especialista en superar rupturas de pareja y coaching emocional" width={32} height={32} className="w-full h-full object-cover" />
             </div>
             <span className="font-bold text-lg text-foreground">Ferdy | Coach del desamor</span>
           </a>

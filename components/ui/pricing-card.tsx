@@ -1,5 +1,6 @@
 'use client'
 
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check } from "lucide-react"
@@ -155,10 +156,12 @@ export function PricingCard({
                 
                 {/* Imagen fija en el fondo */}
                 <div className="absolute inset-x-6 top-20 bottom-20 z-0">
-                  <img
+                  <Image
                     src={backCover}
                     alt={`Portada de ${title}`}
-                    className="w-full h-full object-cover rounded-lg"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 384px"
+                    className="object-cover rounded-lg"
                   />
                 </div>
                 
