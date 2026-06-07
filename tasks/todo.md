@@ -428,12 +428,14 @@ Depende de 7a.
 - [ ] Tracking separado por tipo de CTA
 - [ ] Commit: `feat(ui): add zero-friction awareness CTA above the fold`
 
-### Rama 9 — `chore/img-to-next-image` 🟡 MEDIUM (perf)
-- [ ] `components/sections/hero-section.tsx` (~línea 30): `<img>` → `<Image>`
-- [ ] `components/sections/about-section.tsx` (~69-70, ~100-104): idem
-- [ ] Definir `width`, `height`, `alt`, `priority` (hero), `loading="lazy"` (resto)
-- [ ] Añadir `VideoObject` JSON-LD para `<video>` en about-section
-- [ ] Commit: `chore(perf): migrate img tags to next/image and add VideoObject schema`
+### Rama 9 — `chore/img-to-next-image` 🟡 MEDIUM (perf) — EN RAMA (commit `a353ea8`), pend. verificación visual + deploy
+- [x] `hero-section.tsx`: `<img>` background → `<Image fill priority sizes="100vw">` (LCP)
+- [x] `header.tsx` logo + `about-section.tsx` logo stamp → `<Image>` 32×32
+- [x] `pricing-card.tsx` backcover → `<Image fill sizes>`
+- [x] `about-section.tsx:103` `<img>` (fallback dentro de `<video>`) → se deja raw (correcto)
+- [x] Dashboard `<img>` (4 archivos) fuera de alcance: interno/noindex, cero beneficio SEO
+- [ ] **Verificación visual tras build** (hero, logos, flip de pricing-card) — Alberto
+- [ ] **VideoObject JSON-LD** (about `<video>`) ⏸ necesita: uploadDate, duración del vídeo, thumbnailUrl (no fabricar)
 
 ### Rama 10 — `chore/performance-baseline` 🟢 LOW
 Verificación, no implementación.
