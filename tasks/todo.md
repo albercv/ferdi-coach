@@ -322,48 +322,55 @@ Commits:
 - Añadir `NEXT_PUBLIC_SITE_URL` al `.env` de producción (servidor PM2) antes de deploy
 - Tras deploy: `pm2 restart ferdy-web`
 
-### Rama 2 — `fix/schema-critical` 🔴 CRÍTICO — SIGUIENTE
+### Rama 2 — `fix/schema-critical` ✅ COMPLETADA (2026-06-07) — commit `f93fe17`
 Inputs confirmados (2026-06-06): precios reales = **50€ sesión**, **200€ programa**, **17.99€ guía**. Email = `ferdycoachdesamor@gmail.com`. Tel = `+34 651 611 463`.
 
-- [ ] `lib/seo.ts:~184-190`: eliminar bloque `aggregateRating` fabricado (50 reviews, 5.0). Re-añadir en Rama 4 con `Review` reales (4 testimonios reales en Lo que dicen mis clientes — usuario confirmó son reales)
-- [ ] `lib/seo.ts`: reemplazar `"+34-XXX-XXX-XXX"` por `CONTACT_PHONE` (ya disponible en `site-config.ts`)
-- [ ] `lib/seo.ts` `hasOfferCatalog`: corregir precios 97/297 → 50/200
-- [ ] `components/seo/structured-data.tsx`: corregir precios pasados a `generateProductStructuredData` (97 → 50, 297 → 200)
-- [ ] `app/terminos/page.tsx` tabla precios líneas 91-105: 45€ → 50€, 180€ → 200€, Gratuita → 17.99€ (la guía ya no es gratuita)
-- [ ] `public/llms.txt`: actualizar precios igual que terminos
-- [ ] Verificar/limpiar testimonios `"Test Usuario"` lorem ipsum si quedan en data source (los 4 visibles son reales; los lorem fueron desarrollo, posiblemente ya migrados a BD)
-- [ ] Commit: `fix(seo): remove fabricated schema data and correct real prices`
+- [x] `lib/seo.ts`: eliminado bloque `aggregateRating` fabricado (50 reviews, 5.0)
+- [x] `lib/seo.ts`: `"+34-XXX-XXX-XXX"` → `CONTACT_PHONE_E164` (2 sitios)
+- [x] `lib/seo.ts` `hasOfferCatalog`: precios 97/297 → 50/200
+- [x] `components/seo/structured-data.tsx`: precios 97 → 50, 297 → 200
+- [x] `app/terminos/page.tsx` tabla: 45€ → 50€, 180€ → 200€, Gratuita → 17,99€
+- [x] `app/cancelacion/page.tsx`: 45€ → 50€, 180€ → 200€ (extra, mismo scope)
+- [x] `public/llms.txt`: precios + guía ya no gratuita
+- [x] `data/content.ts`: borrados 3 testimonios lorem "Test Usuario" (datos muertos, no renderizados) + precios display €97/€297 → €50/€200
+- [x] Commit `f93fe17`
+
+**Pendiente legal (no en mi alcance — decisión Ferdy):** `app/cancelacion/page.tsx` sección 3 "Guía digital gratuita / producto gratuito" — la guía ahora cuesta 17,99€; la política de reembolso de producto digital de pago necesita copy legal.
 
 ### Rama 3 — `fix/sitemap-robots` 🔴 CRÍTICO
 Depende de Rama 1.
 
 - [ ] `app/sitemap.ts`: eliminar las 6 entradas `#fragment` (`#sesiones`, `#programa-4`, etc.)
-- [ ] Sustituir por URLs reales indexables: `/`, `/contacto`, `/privacidad`, `/terminos`, `/cancelacion`
-- [ ] Eliminar `changeFrequency` y `priority` (Google los ignora)
-- [ ] `lastModified` real por página (estático o mtime), no `new Date()` en cada render
-- [ ] `app/robots.ts`: añadir rules explícitas para `GPTBot`, `ClaudeBot`, `PerplexityBot`, `Google-Extended` con `Allow: /`
-- [ ] `app/login/page.tsx`, `app/dashboard/page.tsx`: añadir `metadata.robots = { index: false }`
-- [ ] Commit: `fix: clean sitemap and add AI bot rules in robots`
+- [x] Sustituir por URLs reales indexables: `/`, `/contacto`, `/privacidad`, `/terminos`, `/cancelacion`
+- [x] Eliminar `changeFrequency` y `priority`
+- [x] `lastModified` estático (constante `LAST_REVIEWED`), no `new Date()`
+- [x] `app/robots.ts`: rules explícitas para `GPTBot`, `ClaudeBot`, `PerplexityBot`, `Google-Extended`; disallow `/dashboard` y `/login`
+- [x] `app/login` + `app/dashboard`: `noindex` vía `layout.tsx` server (las pages son `"use client"`, no pueden exportar metadata)
+- [x] Commit `22f8ed3`
 
-### Rama 4 — `feat/schema-improvements` 🟠 HIGH
-Depende de Ramas 1-2. Reescribe `lib/seo.ts` casi entero.
+### Rama 4 — `feat/schema-improvements` ✅ COMPLETADA (2026-06-07) — commit `8e5a644`
+Reescrito `lib/seo.ts` casi entero.
 
-- [ ] Añadir `WebSite` schema con `SearchAction` y `@id="#website"`
-- [ ] Añadir `@id` a cada bloque: `#organization`, `#ferdy`, `#service-individual`, `#service-programa`, `#website`
-- [ ] Cross-link entidades: Person `worksFor` → Organization `@id`; Service `provider` → Person `@id`; Person `mainEntityOfPage` → Organization
-- [ ] Sustituir `Product` por `Service` en `generateProductStructuredData` (rename a `generateServiceStructuredData`)
-- [ ] `validFrom` → fecha ISO estática (no `new Date().toISOString()`)
-- [ ] Eliminar `serviceType` y `priceRange` de `Organization` (inválidos en ese tipo)
-- [ ] BreadcrumbList: si solo hay 1 item, no renderizar
-- [ ] Person `sameAs`: añadir Instagram + TikTok (`https://instagram.com/ferdycoach_desamor`, `https://tiktok.com/@ferdycoach_desamor`)
-- [ ] Person `alumniOf`: estructurar como `{ "@type": "EducationalOrganization", name: "..." }` (no string)
-- [ ] LocalBusiness `aggregateRating`: añadir solo con los 4 testimonios reales (no fabricado)
-- [ ] LocalBusiness `review`: añadir `Review` schema por cada testimonio real (4 entradas)
-- [ ] Validar con Rich Results Test antes de merge
-- [ ] Commit: `refactor(seo): improve schema structure with @id cross-linking and real reviews`
+- [x] `WebSite` con `@id="#website"`. **`SearchAction` OMITIDO**: el sitio no tiene buscador → sería dato fabricado
+- [x] `@id` en Organization, Person, WebSite, LocalBusiness, Services
+- [x] Cross-link por @id: Person `worksFor`/`mainEntityOfPage` → Org; Service `provider` → Person; Offer `seller` → Org
+- [x] `generateProductStructuredData` → `generateServiceStructuredData` (Product → Service)
+- [x] `validFrom` ISO estático (`OFFER_VALID_FROM`)
+- [x] Quitados `serviceType` y `priceRange` de `Organization`
+- [x] BreadcrumbList: retorna `null` si ≤1 item
+- [x] Person `sameAs`: Instagram + TikTok
+- [x] Person `alumniOf`: `EducationalOrganization`
+- [x] LocalBusiness `aggregateRating` + `review[]` desde los 4 testimonios reales del md DB (Francisco, Ángel, Angie, Flavio)
+- [ ] **PENDIENTE: validar con Rich Results Test** (requiere deploy o URL pública)
 
-### Rama 5 — `feat/og-image-meta` 🟠 HIGH
+### Rama 5 — `feat/og-image-meta` 🟠 HIGH ⏸ BLOQUEADA (assets + GSC + decisión)
 Inputs requeridos: imagen OG diseñada (o brief para diseñador).
+
+**Bloqueos detectados (2026-06-07):**
+- `public/logo.png` y `public/og-image.jpg` NO existen. El schema Organization ya referencia `${SITE_URL}/logo.png` → **apunta a 404 ahora mismo**. Necesita assets.
+- GSC verification: necesita propiedad creada + code real de Alberto/Ferdy.
+- `export const dynamic = "force-dynamic"` en `app/page.tsx`: quitarlo congela el contenido editado por dashboard (md DB en vivo) hasta rebuild. **Decisión**: ¿migrar a ISR con `revalidate`? No es cambio seguro silencioso.
+- Las 4 páginas legales (`contacto`, `privacidad`, `terminos`, `cancelacion`) YA tienen `export const metadata` — revisar si las descriptions son específicas.
 
 - [ ] Crear `public/og-image.jpg` (1200×630) — diseño con logo + tagline
 - [ ] Crear `public/logo.png` (referenciado en Organization schema)
