@@ -1,68 +1,15 @@
 import type { MetadataRoute } from "next"
+import { SITE_URL } from "@/lib/site-config"
+
+// Fecha de última revisión de contenido. Estática a propósito: evita que
+// cada render reporte `new Date()` y degrade la señal de frescura.
+const LAST_REVIEWED = "2026-06-07"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://ferdy-coach.com"
+  const routes = ["", "/contacto", "/privacidad", "/terminos", "/cancelacion"]
 
-  return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/#sesiones`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/#programa-4`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/#guias`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/#como-funciona`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/#preguntas-frecuentes`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/#sobre-mi`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/privacidad`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/terminos`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/cancelacion`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-  ]
+  return routes.map((route) => ({
+    url: `${SITE_URL}${route}`,
+    lastModified: LAST_REVIEWED,
+  }))
 }

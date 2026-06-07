@@ -16,7 +16,7 @@ console.warn("  - IVA: Confirmar si los precios incluyen IVA o están exentos (e
 export const metadata: Metadata = {
   title: "Términos y Condiciones - Ferdy Coach",
   description: "Condiciones generales de contratación de los servicios de coaching emocional de Ferdy Coach.",
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 }
 
 export default function TerminosPage() {
@@ -49,7 +49,7 @@ export default function TerminosPage() {
                 <h2 className="text-xl font-semibold mb-3">1. Identificación del prestador</h2>
                 <p className="text-muted-foreground">
                   Los presentes Términos y Condiciones regulan la contratación de los servicios
-                  ofrecidos a través del sitio web ferdycoach.com, de conformidad con la Ley 34/2002
+                  ofrecidos a través del sitio web ferdycoachdesamor.com, de conformidad con la Ley 34/2002
                   de Servicios de la Sociedad de la Información (LSSICE) y el Real Decreto Legislativo
                   1/2007 (TRLGDCU).
                 </p>
@@ -90,17 +90,17 @@ export default function TerminosPage() {
                     <tbody className="divide-y divide-border">
                       <tr>
                         <td className="py-2 pr-4">Sesión individual (70 min)</td>
-                        <td className="py-2 pr-4">45 €</td>
+                        <td className="py-2 pr-4">50 €</td>
                         <td className="py-2">Videollamada online</td>
                       </tr>
                       <tr>
                         <td className="py-2 pr-4">La Brújula — Programa 4 semanas (4 sesiones)</td>
-                        <td className="py-2 pr-4">180 €</td>
+                        <td className="py-2 pr-4">200 €</td>
                         <td className="py-2">Videollamada online + WhatsApp</td>
                       </tr>
                       <tr>
                         <td className="py-2 pr-4">Guía digital descargable</td>
-                        <td className="py-2 pr-4">Gratuita</td>
+                        <td className="py-2 pr-4">17,99 €</td>
                         <td className="py-2">Descarga inmediata</td>
                       </tr>
                     </tbody>
@@ -166,8 +166,8 @@ export default function TerminosPage() {
                   </li>
                 </ul>
                 <p className="mt-3 text-muted-foreground text-sm">
-                  Los servicios digitales gratuitos (guías descargables) no son reembolsables al
-                  carecer de coste económico para el usuario.
+                  Las guías digitales descargables son contenido digital de pago. Una vez iniciada
+                  la descarga, no son reembolsables conforme al apartado 6 (Derecho de desistimiento).
                 </p>
               </div>
 

@@ -4,6 +4,7 @@ import { Section } from "@/components/ui/section"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import Image from "next/image"
 import { Award } from "lucide-react"
 import { useEffect, useRef } from "react"
 import type { AboutContent } from "@/lib/content-md"
@@ -66,9 +67,11 @@ export function AboutSection({ about }: { about: AboutContent }) {
               </ul>
               {/* Logo stamp en esquina superior derecha */}
               <div className="absolute -top-2 -right-2 w-12 h-12 bg-white rounded-full shadow-lg border-2 border-accent/20 flex items-center justify-center">
-                <img 
-                  src="/logo2.webp" 
-                  alt="Logo Ferdy Coach" 
+                <Image
+                  src="/logo2.webp"
+                  alt="Logo Ferdy Coach"
+                  width={32}
+                  height={32}
                   className="w-8 h-8 object-contain"
                 />
               </div>

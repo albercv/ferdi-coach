@@ -9,12 +9,14 @@ import { SkipLink } from "@/components/ui/skip-link"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { AuthProvider } from "@/components/providers/session-provider"
 import { Toaster } from "@/components/ui/toaster"
+import { SITE_URL } from "@/lib/site-config"
 import "./globals.css"
 
 const geistSans = GeistSans
 const geistMono = GeistMono
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Transformación personal tras una ruptura: empieza a sanar desde dentro",
   description:
     "¿Acabas de terminar una relación? Te ayudo a superar tu ruptura de pareja en 4 semanas. Coach emocional especializado en duelo amoroso, dependencia emocional y recuperación tras separación. Programa personalizado con resultados comprobados.",
@@ -51,7 +53,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_ES",
-    url: "https://ferdy-coach.com",
+    url: SITE_URL,
     title: "Transformación personal tras una ruptura: empieza a sanar desde dentro",
     description:
       "¿Acabas de terminar una relación? Te ayudo a superar tu ruptura de pareja en 4 semanas. Coach emocional especializado en duelo amoroso y dependencia emocional con resultados comprobados.",
@@ -73,7 +75,7 @@ export const metadata: Metadata = {
     images: ["/og-image.jpg"]
   },
   alternates: {
-    canonical: "https://ferdy-coach.com",
+    canonical: SITE_URL,
   },
   icons: {
     icon: "/favicon.ico",
@@ -81,9 +83,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   generator: "Next.js",
-  verification: {
-    google: "your-google-verification-code",
-  },
+  // Propiedad GSC verificada por DNS — no se necesita meta google-site-verification.
   other: {
     "theme-color": "#ff4d6d",
     "color-scheme": "light",

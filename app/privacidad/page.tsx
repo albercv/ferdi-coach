@@ -15,7 +15,7 @@ console.warn("  - CIUDAD_JURISDICCIÓN: Ciudad para determinar fuero judicial co
 export const metadata: Metadata = {
   title: "Política de Privacidad - Ferdy Coach",
   description: "Información sobre el tratamiento de tus datos personales conforme al RGPD y la LOPD.",
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 }
 
 export default function PrivacidadPage() {
