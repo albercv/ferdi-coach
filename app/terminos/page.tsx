@@ -166,8 +166,8 @@ export default function TerminosPage() {
                   </li>
                 </ul>
                 <p className="mt-3 text-muted-foreground text-sm">
-                  Los servicios digitales gratuitos (guías descargables) no son reembolsables al
-                  carecer de coste económico para el usuario.
+                  Las guías digitales descargables son contenido digital de pago. Una vez iniciada
+                  la descarga, no son reembolsables conforme al apartado 6 (Derecho de desistimiento).
                 </p>
               </div>
 

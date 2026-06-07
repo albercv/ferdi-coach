@@ -111,9 +111,13 @@ export default function CancelacionPage() {
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold mb-3">3. Guía digital gratuita</h2>
+                <h2 className="text-xl font-semibold mb-3">3. Guía digital descargable</h2>
                 <p className="text-muted-foreground">
-                  Al ser un producto gratuito, no aplica ninguna política de devolución.
+                  La guía digital es contenido digital de pago de descarga inmediata. De conformidad
+                  con el artículo 103.m) del TRLGDCU, al iniciarse la descarga con tu consentimiento
+                  previo y reconocimiento de la pérdida del derecho de desistimiento, no procede
+                  reembolso. Si la descarga no llega a iniciarse por un fallo técnico imputable a
+                  Ferdy Coach, se reembolsará el importe íntegro.
                 </p>
               </div>
 

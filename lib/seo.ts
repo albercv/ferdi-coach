@@ -51,7 +51,7 @@ export function generateStructuredData() {
     name: "Ferdy Coach",
     description: "Coach emocional especializado en superar rupturas de pareja y duelo amoroso",
     url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
+    logo: `${SITE_URL}/logo2.webp`,
     contactPoint: {
       "@type": "ContactPoint",
       telephone: CONTACT_PHONE_E164,
