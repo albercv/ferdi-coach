@@ -1,6 +1,7 @@
 import {
   SITE_URL,
   CONTACT_EMAIL,
+  CONTACT_PHONE_E164,
   SOCIAL_INSTAGRAM,
 } from "@/lib/site-config"
 
@@ -22,7 +23,7 @@ export function generateStructuredData() {
     logo: `${SITE_URL}/logo.png`,
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+34-XXX-XXX-XXX",
+      telephone: CONTACT_PHONE_E164,
       contactType: "customer service",
       availableLanguage: "Spanish",
     },
@@ -177,7 +178,7 @@ export function generateLocalBusinessStructuredData() {
     name: "Ferdy Coach",
     description: "Coach emocional especializado en superar rupturas de pareja y duelo amoroso",
     url: SITE_URL,
-    telephone: "+34-XXX-XXX-XXX",
+    telephone: CONTACT_PHONE_E164,
     email: CONTACT_EMAIL,
     areaServed: {
       "@type": "Country",
@@ -187,13 +188,6 @@ export function generateLocalBusinessStructuredData() {
     priceRange: "€€",
     openingHours: "Mo-Fr 09:00-18:00",
     sameAs: [SOCIAL_INSTAGRAM],
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5.0",
-      reviewCount: "50",
-      bestRating: "5",
-      worstRating: "1"
-    },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Servicios de coaching para superar rupturas",
@@ -209,7 +203,7 @@ export function generateLocalBusinessStructuredData() {
               name: "Ferdy"
             }
           },
-          price: "97",
+          price: "50",
           priceCurrency: "EUR"
         },
         {
@@ -223,7 +217,7 @@ export function generateLocalBusinessStructuredData() {
               name: "Ferdy"
             }
           },
-          price: "297",
+          price: "200",
           priceCurrency: "EUR"
         }
       ]

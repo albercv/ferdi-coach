@@ -46,7 +46,7 @@ export default function CancelacionPage() {
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold mb-3">1. Sesión individual (45 €)</h2>
+                <h2 className="text-xl font-semibold mb-3">1. Sesión individual (50 €)</h2>
                 <div className="space-y-3">
                   <div className="border-l-4 border-green-500 pl-4">
                     <p className="font-semibold text-foreground">Con más de 24 horas de antelación</p>
@@ -75,13 +75,13 @@ export default function CancelacionPage() {
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold mb-3">2. La Brújula — Programa 4 semanas (180 €)</h2>
+                <h2 className="text-xl font-semibold mb-3">2. La Brújula — Programa 4 semanas (200 €)</h2>
                 <div className="space-y-3">
                   <div className="border-l-4 border-green-500 pl-4">
                     <p className="font-semibold text-foreground">Antes del inicio del programa</p>
                     <p className="text-muted-foreground">
                       Cancelación con más de 24 horas antes de la primera sesión: reembolso íntegro
-                      de los 180 € en un plazo máximo de 5 días hábiles.
+                      de los 200 € en un plazo máximo de 5 días hábiles.
                     </p>
                   </div>
                   <div className="border-l-4 border-red-500 pl-4">

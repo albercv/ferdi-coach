@@ -26,14 +26,14 @@ export function StructuredData() {
   const sessionProduct = generateProductStructuredData({
     name: "Sesiones individuales de coaching emocional",
     description: "Acompañamiento personalizado para superar tu ruptura de pareja",
-    price: "97",
+    price: "50",
     currency: "EUR",
   })
 
   const programProduct = generateProductStructuredData({
     name: "Programa intensivo: Supera tu ruptura en 4 semanas",
     description: "Transforma tu dolor en crecimiento personal y recupera tu bienestar emocional",
-    price: "297",
+    price: "200",
     currency: "EUR",
   })
 

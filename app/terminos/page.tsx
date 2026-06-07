@@ -90,17 +90,17 @@ export default function TerminosPage() {
                     <tbody className="divide-y divide-border">
                       <tr>
                         <td className="py-2 pr-4">Sesión individual (70 min)</td>
-                        <td className="py-2 pr-4">45 €</td>
+                        <td className="py-2 pr-4">50 €</td>
                         <td className="py-2">Videollamada online</td>
                       </tr>
                       <tr>
                         <td className="py-2 pr-4">La Brújula — Programa 4 semanas (4 sesiones)</td>
-                        <td className="py-2 pr-4">180 €</td>
+                        <td className="py-2 pr-4">200 €</td>
                         <td className="py-2">Videollamada online + WhatsApp</td>
                       </tr>
                       <tr>
                         <td className="py-2 pr-4">Guía digital descargable</td>
-                        <td className="py-2 pr-4">Gratuita</td>
+                        <td className="py-2 pr-4">17,99 €</td>
                         <td className="py-2">Descarga inmediata</td>
                       </tr>
                     </tbody>
