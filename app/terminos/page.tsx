@@ -16,7 +16,7 @@ console.warn("  - IVA: Confirmar si los precios incluyen IVA o están exentos (e
 export const metadata: Metadata = {
   title: "Términos y Condiciones - Ferdy Coach",
   description: "Condiciones generales de contratación de los servicios de coaching emocional de Ferdy Coach.",
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 }
 
 export default function TerminosPage() {
