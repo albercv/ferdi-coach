@@ -2,13 +2,17 @@ import {
   generateStructuredData,
   generateFAQStructuredData,
   generateBreadcrumbStructuredData,
-  generateProductStructuredData,
+  generateServiceStructuredData,
   generateLocalBusinessStructuredData,
+  SERVICE_IDS,
+  type ReviewInput,
 } from "@/lib/seo"
+import { SITE_URL } from "@/lib/site-config"
 import { siteContent } from "@/data/content"
+import { getTestimonials } from "@/lib/content-md"
 
 export function StructuredData() {
-  const { organization, person } = generateStructuredData()
+  const { website, organization, person } = generateStructuredData()
 
   const faqStructuredData = generateFAQStructuredData(
     siteContent.faq.items.map((item: { question: string; answer: string }) => ({
@@ -18,35 +22,54 @@ export function StructuredData() {
   )
 
   const breadcrumbData = generateBreadcrumbStructuredData([
-    { name: "Inicio", url: "https://ferdy-coach.com" },
-    { name: "Coach para superar rupturas", url: "https://ferdy-coach.com" },
+    { name: "Inicio", url: SITE_URL },
+    { name: "Coach para superar rupturas", url: SITE_URL },
   ])
 
-  const sessionProduct = generateProductStructuredData({
+  const sessionService = generateServiceStructuredData({
+    id: SERVICE_IDS.individual,
     name: "Sesiones individuales de coaching emocional",
     description: "Acompañamiento personalizado para superar tu ruptura de pareja",
-    price: "97",
+    price: "50",
     currency: "EUR",
   })
 
-  const programProduct = generateProductStructuredData({
+  const programService = generateServiceStructuredData({
+    id: SERVICE_IDS.programa,
     name: "Programa intensivo: Supera tu ruptura en 4 semanas",
     description: "Transforma tu dolor en crecimiento personal y recupera tu bienestar emocional",
-    price: "297",
+    price: "200",
     currency: "EUR",
   })
 
-  const localBusiness = generateLocalBusinessStructuredData()
+  const reviews: ReviewInput[] = getTestimonials().map((testimonial) => ({
+    author: testimonial.name,
+    rating: testimonial.rating,
+    text: testimonial.text,
+  }))
+
+  const localBusiness = generateLocalBusinessStructuredData(reviews)
+
+  const blocks = [
+    website,
+    organization,
+    person,
+    faqStructuredData,
+    breadcrumbData,
+    sessionService,
+    programService,
+    localBusiness,
+  ].filter(Boolean)
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(person) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(sessionProduct) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(programProduct) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusiness) }} />
+      {blocks.map((block, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(block) }}
+        />
+      ))}
     </>
   )
 }

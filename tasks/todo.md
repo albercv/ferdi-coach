@@ -280,37 +280,167 @@ En `lib/auth.ts`, el callback `jwt` no re-evalúa el rol si ya existe en el toke
 ---
 
 ## TAREA 9 — Auditoría SEO — Correcciones
+_Re-planificado 2026-06-06 tras `/seo audit` completo. Organizado por ramas._
 
-> Resultados de auditoría automática del 2026-04-21. Ordenadas por prioridad.
+### Estrategia de ramas
+Ejecutar en orden. Cada rama = un PR independiente.
 
-### CRÍTICO
+1. `fix/canonical-domain` — bloquea todo
+2. `fix/schema-critical` — datos fabricados / placeholders
+3. `fix/sitemap-robots` — depende de 1
+4. `feat/schema-improvements` — refactor schema completo
+5. `feat/og-image-meta` — OG image + metadata + GSC verification
+6. `feat/sobre-mi-eeat` — input necesario de Ferdy
+7. `feat/blog-foundation` + dos artículos largos
+8. `feat/cta-awareness` — guía gratuita above-the-fold
+9. `chore/img-to-next-image` — MEDIO, perf
+10. `chore/performance-baseline` — verificación final
 
-- [ ] **SEO-1** Dominio incorrecto en todo el sistema SEO. Reemplazar `ferdy-coach.com` → `ferdycoachdesamor.com` en:
-  - `app/layout.tsx` (openGraph.url y canonical)
-  - `app/robots.ts`
-  - `app/sitemap.ts`
-  - `lib/seo.ts` (todas las URLs hardcodeadas)
-- [ ] **SEO-2** Crear imagen OG `public/og-image.jpg` (1200×630 px) — referenciada pero inexistente.
-- [ ] **SEO-3** Reemplazar placeholder de verificación de Google Search Console en `app/layout.tsx` línea 85 (`"your-google-verification-code"`).
-- [ ] **SEO-4** Añadir export `metadata` específico a `app/page.tsx` (home). Actualmente hereda solo del layout global.
-- [ ] **SEO-5** Eliminar `export const dynamic = "force-dynamic"` de `app/page.tsx` — impide static generation y perjudica Core Web Vitals.
+---
 
-### ALTO
+### Rama 1 — `fix/canonical-domain` ✅ COMPLETADA (2026-06-06)
+Rama local: `fix/canonical-domain`. **No pusheada todavía.** Sin PR.
+Commits:
+- `bc7b109` docs(seo): re-plan T9 with branch-grouped tasks after audit
+- `1f1c30d` fix(seo): unify canonical domain to ferdycoachdesamor.com
 
-- [ ] **SEO-6** Crear `public/logo.png` o actualizar ruta en `lib/seo.ts` — el schema de Organization referencia un fichero inexistente.
-- [ ] **SEO-7** Añadir `robots: { index: false }` al metadata de `app/login/page.tsx` y `app/dashboard/page.tsx`.
-- [ ] **SEO-8** Reemplazar teléfono placeholder `+34-XXX-XXX-XXX` en `lib/seo.ts` (LocalBusiness schema) con número real o eliminarlo.
-- [ ] **SEO-9** Revisar URLs del sitemap en `app/sitemap.ts` — actualmente contiene fragments (`#sesiones`, `#programa-4`) que los crawlers no indexan.
+- [x] `NEXT_PUBLIC_SITE_URL=https://ferdycoachdesamor.com` en `.env.example` (`.env` real → pendiente Ferdy/Alberto)
+- [x] `lib/site-config.ts` con `SITE_URL`, `CONTACT_EMAIL`, `CONTACT_PHONE`, `SOCIAL_INSTAGRAM`, `SOCIAL_TIKTOK`
+- [x] `lib/seo.ts`: todas las apariciones via `SITE_URL`
+- [x] typo `ferdycoach_desamor_desamor` → `ferdycoach_desamor`
+- [x] `hola@ferdy-coach.com` → `ferdycoachdesamor@gmail.com` (`CONTACT_EMAIL`)
+- [x] `app/layout.tsx`, `app/sitemap.ts`, `app/robots.ts`, `components/seo/structured-data.tsx`: usan `SITE_URL`
+- [x] `public/llms.txt`: `ferdycoach.com` → `ferdycoachdesamor.com`
+- [x] `app/terminos/page.tsx`: dominio corregido (precios viejos 45€/180€ siguen → Rama 2)
+- [x] `README.md`: env doc corregida
+- [x] `rg "ferdy-coach\.com|ferdycoach\.com"` → 0 hits
+- [x] `npm run build` verde
+- [x] `npm run typecheck` verde
 
-### MEDIO
+**Pendiente al retomar:**
+- Decidir: push + PR a `develop`, o seguir con Rama 2 sobre la misma rama y luego push consolidado
+- Añadir `NEXT_PUBLIC_SITE_URL` al `.env` de producción (servidor PM2) antes de deploy
+- Tras deploy: `pm2 restart ferdy-web`
 
-- [ ] **SEO-10** Convertir tags `<img>` nativos a `<Image>` de Next.js en:
-  - `components/sections/hero-section.tsx` (línea ~30)
-  - `components/sections/about-section.tsx` (líneas ~69-70, ~100-104)
-- [ ] **SEO-11** Corregir dominio en `app/terminos/page.tsx` (usa `ferdycoach.com` en lugar de `ferdycoachdesamor.com`).
-- [ ] **SEO-12** Añadir VideoObject JSON-LD en `components/sections/about-section.tsx` para el elemento `<video>`.
+### Rama 2 — `fix/schema-critical` ✅ COMPLETADA (2026-06-07) — commit `f93fe17`
+Inputs confirmados (2026-06-06): precios reales = **50€ sesión**, **200€ programa**, **17.99€ guía**. Email = `ferdycoachdesamor@gmail.com`. Tel = `+34 651 611 463`.
 
-**Criterio de done:** SEO-1 al SEO-9 completados y verificados con Google Search Console + herramienta de testing de rich results.
+- [x] `lib/seo.ts`: eliminado bloque `aggregateRating` fabricado (50 reviews, 5.0)
+- [x] `lib/seo.ts`: `"+34-XXX-XXX-XXX"` → `CONTACT_PHONE_E164` (2 sitios)
+- [x] `lib/seo.ts` `hasOfferCatalog`: precios 97/297 → 50/200
+- [x] `components/seo/structured-data.tsx`: precios 97 → 50, 297 → 200
+- [x] `app/terminos/page.tsx` tabla: 45€ → 50€, 180€ → 200€, Gratuita → 17,99€
+- [x] `app/cancelacion/page.tsx`: 45€ → 50€, 180€ → 200€ (extra, mismo scope)
+- [x] `public/llms.txt`: precios + guía ya no gratuita
+- [x] `data/content.ts`: borrados 3 testimonios lorem "Test Usuario" (datos muertos, no renderizados) + precios display €97/€297 → €50/€200
+- [x] Commit `f93fe17`
+
+**Pendiente legal (no en mi alcance — decisión Ferdy):** `app/cancelacion/page.tsx` sección 3 "Guía digital gratuita / producto gratuito" — la guía ahora cuesta 17,99€; la política de reembolso de producto digital de pago necesita copy legal.
+
+### Rama 3 — `fix/sitemap-robots` 🔴 CRÍTICO
+Depende de Rama 1.
+
+- [ ] `app/sitemap.ts`: eliminar las 6 entradas `#fragment` (`#sesiones`, `#programa-4`, etc.)
+- [x] Sustituir por URLs reales indexables: `/`, `/contacto`, `/privacidad`, `/terminos`, `/cancelacion`
+- [x] Eliminar `changeFrequency` y `priority`
+- [x] `lastModified` estático (constante `LAST_REVIEWED`), no `new Date()`
+- [x] `app/robots.ts`: rules explícitas para `GPTBot`, `ClaudeBot`, `PerplexityBot`, `Google-Extended`; disallow `/dashboard` y `/login`
+- [x] `app/login` + `app/dashboard`: `noindex` vía `layout.tsx` server (las pages son `"use client"`, no pueden exportar metadata)
+- [x] Commit `22f8ed3`
+
+### Rama 4 — `feat/schema-improvements` ✅ COMPLETADA (2026-06-07) — commit `8e5a644`
+Reescrito `lib/seo.ts` casi entero.
+
+- [x] `WebSite` con `@id="#website"`. **`SearchAction` OMITIDO**: el sitio no tiene buscador → sería dato fabricado
+- [x] `@id` en Organization, Person, WebSite, LocalBusiness, Services
+- [x] Cross-link por @id: Person `worksFor`/`mainEntityOfPage` → Org; Service `provider` → Person; Offer `seller` → Org
+- [x] `generateProductStructuredData` → `generateServiceStructuredData` (Product → Service)
+- [x] `validFrom` ISO estático (`OFFER_VALID_FROM`)
+- [x] Quitados `serviceType` y `priceRange` de `Organization`
+- [x] BreadcrumbList: retorna `null` si ≤1 item
+- [x] Person `sameAs`: Instagram + TikTok
+- [x] Person `alumniOf`: `EducationalOrganization`
+- [x] LocalBusiness `aggregateRating` + `review[]` desde los 4 testimonios reales del md DB (Francisco, Ángel, Angie, Flavio)
+- [ ] **PENDIENTE: validar con Rich Results Test** (requiere deploy o URL pública)
+
+### Rama 5 — `feat/og-image-meta` 🟠 HIGH ⏸ BLOQUEADA (assets + GSC + decisión)
+Inputs requeridos: imagen OG diseñada (o brief para diseñador).
+
+**Bloqueos detectados (2026-06-07):**
+- `public/logo.png` y `public/og-image.jpg` NO existen. El schema Organization ya referencia `${SITE_URL}/logo.png` → **apunta a 404 ahora mismo**. Necesita assets.
+- GSC verification: necesita propiedad creada + code real de Alberto/Ferdy.
+- `export const dynamic = "force-dynamic"` en `app/page.tsx`: quitarlo congela el contenido editado por dashboard (md DB en vivo) hasta rebuild. **Decisión**: ¿migrar a ISR con `revalidate`? No es cambio seguro silencioso.
+- Las 4 páginas legales (`contacto`, `privacidad`, `terminos`, `cancelacion`) YA tienen `export const metadata` — revisar si las descriptions son específicas.
+
+- [x] `public/og-image.jpg` (1200×630) — subida por Alberto, sirve 200 image/jpeg ~99KB, validada en prod
+- [x] `metadataBase` añadido (commit `3d29530`): og:image/twitter:image resuelven a dominio prod, no localhost
+- [x] Logo schema → `/logo2.webp` (commit `e5cb9fb`) — sustituye el `logo.png` inexistente
+- [ ] `app/layout.tsx`: `"your-google-verification-code"` → code real ⏸ BLOQUEADO (necesita propiedad GSC de Ferdy/Alberto)
+- [ ] Añadir `export const metadata` específico a `app/page.tsx` (hereda del layout; revisar si hace falta)
+- [ ] `export const dynamic = "force-dynamic"` en `app/page.tsx`: DECISIÓN pendiente (md DB en vivo vs SSG/ISR)
+- [ ] Meta description específica por página legal — revisar si las actuales ya son específicas
+- [ ] (opcional) `og:image:type: "image/jpeg"` en layout (la imagen ya es jpeg real)
+
+### Rama 6 — `feat/sobre-mi-eeat` 🟠 HIGH
+Inputs requeridos: bio completa de Ferdy, foto profesional, nombre exacto de la escuela de coaching, año de certificación, redes sociales adicionales.
+
+- [ ] Página `/sobre-mi` (o sección expandida si ya existe) con:
+  - Foto profesional
+  - Bio con credencial: escuela + año + organismo profesional
+  - Diferenciación "coaching ≠ terapia" (ya en llms.txt)
+  - Método (4 hitos mencionados en hasCredential)
+- [ ] Person schema: `alumniOf` con `@type: EducationalOrganization` + `name` + `url`
+- [ ] Person schema: `hasCredential` estructurado como `EducationalOccupationalCredential`
+- [ ] Person schema: `sameAs` Instagram + TikTok
+- [ ] Commit: `feat(content): expand sobre-mi page with full E-E-A-T signals`
+
+### Rama 7a — `feat/blog-foundation` 🟡 MEDIUM
+Sin inputs externos.
+
+- [ ] Ruta `/blog` con listado MDX
+- [ ] Layout artículo individual con `Article` schema (author → Person `@id`)
+- [ ] Estructura `content/blog/*.md` (mantiene patrón doc-DB del proyecto)
+- [ ] Sitemap.ts: añadir generación dinámica desde `content/blog/`
+- [ ] Commit: `feat(blog): foundation routes and Article schema`
+
+### Rama 7b — `feat/blog-articulo-superar-ruptura` 🟡 MEDIUM
+Depende de 7a.
+
+- [ ] `content/blog/como-superar-una-ruptura.md` ≥1800 palabras
+- [ ] FAQ section con preguntas reales de PAA
+- [ ] CTA interno a sesión gratuita 15min
+- [ ] Imagen hero con alt descriptivo
+- [ ] Commit: `feat(blog): add article "cómo superar una ruptura"`
+
+### Rama 7c — `feat/blog-articulo-olvidar-alguien` 🟡 MEDIUM
+Depende de 7a.
+
+- [ ] `content/blog/como-olvidar-a-alguien.md` ≥1800 palabras
+- [ ] Misma estructura que 7b
+- [ ] Commit: `feat(blog): add article "cómo olvidar a alguien"`
+
+### Rama 8 — `feat/cta-awareness` 🟡 MEDIUM
+- [ ] CTA above-the-fold de fricción cero: descarga guía gratis (la que ya existe) con email gate o WhatsApp directo
+- [ ] Mantener "Reservar sesión gratuita" como secundario
+- [ ] Tracking separado por tipo de CTA
+- [ ] Commit: `feat(ui): add zero-friction awareness CTA above the fold`
+
+### Rama 9 — `chore/img-to-next-image` 🟡 MEDIUM (perf)
+- [ ] `components/sections/hero-section.tsx` (~línea 30): `<img>` → `<Image>`
+- [ ] `components/sections/about-section.tsx` (~69-70, ~100-104): idem
+- [ ] Definir `width`, `height`, `alt`, `priority` (hero), `loading="lazy"` (resto)
+- [ ] Añadir `VideoObject` JSON-LD para `<video>` en about-section
+- [ ] Commit: `chore(perf): migrate img tags to next/image and add VideoObject schema`
+
+### Rama 10 — `chore/performance-baseline` 🟢 LOW
+Verificación, no implementación.
+- [ ] PageSpeed Insights mobile + desktop tras deploy de todas las anteriores
+- [ ] Registrar LCP / INP / CLS / FCP / TTFB
+- [ ] Crear issues separados por hallazgo si CWV en rojo
+
+---
+
+**Criterio de done T9:** Ramas 1-5 + 7 mergeadas. Rich Results Test sin warnings. Sitemap submission en GSC sin "location mismatch". `rg "ferdy-coach\.com|ferdycoach\.com"` → 0 hits en todo el repo.
 
 ---
 

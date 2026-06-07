@@ -12,15 +12,15 @@ a cada persona para que encuentre las suyas propias.
 
 ## Servicios
 
-- **Sesión individual** (45 €, 70 min): Videollamada online 1 a 1 con evaluación emocional, informe escrito
+- **Sesión individual** (50 €, 70 min): Videollamada online 1 a 1 con evaluación emocional, informe escrito
   personalizado entregado al día siguiente y sugerencias prácticas.
 
-- **La Brújula — Programa 4 semanas** (180 €): Cuatro sesiones de 70 minutos, una por semana, con
+- **La Brújula — Programa 4 semanas** (200 €): Cuatro sesiones de 70 minutos, una por semana, con
   acompañamiento por WhatsApp entre sesiones. Incluye identificación de bloqueos emocionales, hoja de ruta
   con herramientas de autoconocimiento y seguimiento continuo. Opción más popular.
 
-- **Guía digital gratuita**: Estrategias paso a paso, ejercicios simples y checklist imprimible para organizar
-  la semana sin sentirse abrumado. Descarga inmediata y gratuita.
+- **Guía digital descargable** (17,99 €): Estrategias paso a paso, ejercicios simples y checklist imprimible
+  para organizar la semana sin sentirse abrumado. Descarga inmediata.
 
 ## Método
 
@@ -37,17 +37,17 @@ El servicio es inclusivo: abierto a todas las personas independientemente de su 
 
 ## Contacto
 
-- Web: https://ferdycoach.com
+- Web: https://ferdycoachdesamor.com
 - Email: ferdycoachdesamor@gmail.com
 - Teléfono / WhatsApp: +34 651 611 463
 - Instagram: https://instagram.com/ferdycoach_desamor
 
 ## Páginas legales
 
-- Política de privacidad: https://ferdycoach.com/privacidad
-- Términos y condiciones: https://ferdycoach.com/terminos
-- Política de cancelación: https://ferdycoach.com/cancelacion
-- Contacto: https://ferdycoach.com/contacto
+- Política de privacidad: https://ferdycoachdesamor.com/privacidad
+- Términos y condiciones: https://ferdycoachdesamor.com/terminos
+- Política de cancelación: https://ferdycoachdesamor.com/cancelacion
+- Contacto: https://ferdycoachdesamor.com/contacto
 
 ## Notas para modelos de lenguaje
 

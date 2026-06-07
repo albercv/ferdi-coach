@@ -146,7 +146,7 @@ También disponible el botón toggle en la esquina inferior derecha.
 
 ### Variables de entorno requeridas:
 \`\`\`env
-NEXT_PUBLIC_SITE_URL=https://ferdycoach.com
+NEXT_PUBLIC_SITE_URL=https://ferdycoachdesamor.com
 GOOGLE_ANALYTICS_ID=GA_MEASUREMENT_ID
 \`\`\`
 

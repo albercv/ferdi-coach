@@ -147,3 +147,6 @@ jspm_packages/
 .tern-port
 .worktrees/
 .claude/
+
+# CodeGraph index
+.codegraph/

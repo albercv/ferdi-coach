@@ -67,7 +67,7 @@ export const siteContent = {
         idealFor: "Personas que necesitan apoyo inmediato tras una ruptura reciente",
         format: "Videollamada de 60 minutos",
         pricing: {
-          full: "€97",
+          full: "€50",
           note: "Sesión individual"
         },
         cta: "Reservar sesión"
@@ -96,7 +96,7 @@ export const siteContent = {
         includes: "4 sesiones individuales + material de apoyo + seguimiento diario",
         bonus: "Guía 'Kit de emergencia emocional' + acceso a comunidad privada",
         pricing: {
-          full: "€297"
+          full: "€200"
         },
         cta: "Comenzar programa"
       }
@@ -135,26 +135,6 @@ export const siteContent = {
       text: "El programa me ayudó no solo a superar mi ruptura, sino a entender patrones que tenía en mis relaciones. Ahora me siento mucho más segura de mí misma.",
       rating: 5,
       image: "hero-img-v2",
-    },
-    // Tarjetas de prueba para el layout
-    {
-      name: "Test Usuario 1",
-      age: 30,
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet.",
-      rating: 4,
-      image: "hero-img-v2",
-    },
-    {
-      name: "Test Usuario 2",
-      age: 42,
-      text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      rating: 4,
-    },
-    {
-      name: "Test Usuario 3",
-      age: 25,
-      text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      rating: 5,
     },
     {
       name: "Ana G.",
