@@ -372,13 +372,14 @@ Inputs requeridos: imagen OG diseñada (o brief para diseñador).
 - `export const dynamic = "force-dynamic"` en `app/page.tsx`: quitarlo congela el contenido editado por dashboard (md DB en vivo) hasta rebuild. **Decisión**: ¿migrar a ISR con `revalidate`? No es cambio seguro silencioso.
 - Las 4 páginas legales (`contacto`, `privacidad`, `terminos`, `cancelacion`) YA tienen `export const metadata` — revisar si las descriptions son específicas.
 
-- [ ] Crear `public/og-image.jpg` (1200×630) — diseño con logo + tagline
-- [ ] Crear `public/logo.png` (referenciado en Organization schema)
-- [ ] `app/layout.tsx:85`: sustituir `"your-google-verification-code"` por code real (necesita GSC propiedad creada)
-- [ ] Añadir `export const metadata` específico a `app/page.tsx` (no solo heredar del layout)
-- [ ] Eliminar `export const dynamic = "force-dynamic"` de `app/page.tsx` si existe — bloquea SSG y daña CWV
-- [ ] Meta description específica en `/sobre-mi`, `/contacto`, `/privacidad`, `/terminos`, `/cancelacion`
-- [ ] Commit: `feat(seo): add og image, page metadata and GSC verification`
+- [x] `public/og-image.jpg` (1200×630) — subida por Alberto, sirve 200 image/jpeg ~99KB, validada en prod
+- [x] `metadataBase` añadido (commit `3d29530`): og:image/twitter:image resuelven a dominio prod, no localhost
+- [x] Logo schema → `/logo2.webp` (commit `e5cb9fb`) — sustituye el `logo.png` inexistente
+- [ ] `app/layout.tsx`: `"your-google-verification-code"` → code real ⏸ BLOQUEADO (necesita propiedad GSC de Ferdy/Alberto)
+- [ ] Añadir `export const metadata` específico a `app/page.tsx` (hereda del layout; revisar si hace falta)
+- [ ] `export const dynamic = "force-dynamic"` en `app/page.tsx`: DECISIÓN pendiente (md DB en vivo vs SSG/ISR)
+- [ ] Meta description específica por página legal — revisar si las actuales ya son específicas
+- [ ] (opcional) `og:image:type: "image/jpeg"` en layout (la imagen ya es jpeg real)
 
 ### Rama 6 — `feat/sobre-mi-eeat` 🟠 HIGH
 Inputs requeridos: bio completa de Ferdy, foto profesional, nombre exacto de la escuela de coaching, año de certificación, redes sociales adicionales.
