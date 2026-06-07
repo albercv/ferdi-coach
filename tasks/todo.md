@@ -372,14 +372,17 @@ Inputs requeridos: imagen OG diseñada (o brief para diseñador).
 - `export const dynamic = "force-dynamic"` en `app/page.tsx`: quitarlo congela el contenido editado por dashboard (md DB en vivo) hasta rebuild. **Decisión**: ¿migrar a ISR con `revalidate`? No es cambio seguro silencioso.
 - Las 4 páginas legales (`contacto`, `privacidad`, `terminos`, `cancelacion`) YA tienen `export const metadata` — revisar si las descriptions son específicas.
 
-- [x] `public/og-image.jpg` (1200×630) — subida por Alberto, sirve 200 image/jpeg ~99KB, validada en prod
+### Rama 5 ✅ COMPLETADA (2026-06-07)
+- [x] `public/og-image.jpg` (1200×630) — subida por Alberto, sirve 200 image/jpeg ~99KB, validada en prod (commit `febb50d`)
 - [x] `metadataBase` añadido (commit `3d29530`): og:image/twitter:image resuelven a dominio prod, no localhost
 - [x] Logo schema → `/logo2.webp` (commit `e5cb9fb`) — sustituye el `logo.png` inexistente
-- [ ] `app/layout.tsx`: `"your-google-verification-code"` → code real ⏸ BLOQUEADO (necesita propiedad GSC de Ferdy/Alberto)
-- [ ] Añadir `export const metadata` específico a `app/page.tsx` (hereda del layout; revisar si hace falta)
-- [ ] `export const dynamic = "force-dynamic"` en `app/page.tsx`: DECISIÓN pendiente (md DB en vivo vs SSG/ISR)
-- [ ] Meta description específica por página legal — revisar si las actuales ya son específicas
-- [ ] (opcional) `og:image:type: "image/jpeg"` en layout (la imagen ya es jpeg real)
+- [x] Verification: GSC verificado por DNS → placeholder `google-site-verification` ELIMINADO (commit `3226a1c`)
+- [x] `force-dynamic` en `page.tsx`: SE QUEDA — Ferdy edita textos a menudo, necesita render fresco
+- [x] Descriptions legales: ya específicas en las 4 páginas
+- [x] privacidad + terminos: `noindex` → `index` (commit `4841698`) para casar con sitemap y evitar error GSC
+- [ ] (opcional, próximo rebuild) `og:image:type: "image/jpeg"` en layout
+
+**Pendiente de deploy (commits posteriores al build de las 14:02):** `3226a1c` (verification) y `4841698` (legal index) NO están aún en prod → rebuild+restart antes de enviar el sitemap a GSC.
 
 ### Rama 6 — `feat/sobre-mi-eeat` 🟠 HIGH
 Inputs requeridos: bio completa de Ferdy, foto profesional, nombre exacto de la escuela de coaching, año de certificación, redes sociales adicionales.
